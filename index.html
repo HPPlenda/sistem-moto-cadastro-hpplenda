@@ -1,324 +1,537 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Motoboy - Delivery App</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- Poppins Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        .map-tiles-grayscale {
-            filter: grayscale(100%) !important;
-        }
-        body {
-            font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-        }
-        .delivery-bottom-panel {
-            padding-bottom: calc(1rem + env(safe-area-inset-bottom)) !important;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema Motoboy - Delivery App</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- React & ReactDOM (production) -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  
+  <!-- Babel para JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    /* REQUISITO CRÍTICO: esconder atribuição do Leaflet */
+    .leaflet-control-attribution {
+      display: none !important;
+    }
+    
+    /* Animações customizadas */
+    @keyframes zoomIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .animate-zoom-in {
+      animation: zoomIn 0.3s ease-out forwards;
+    }
+    
+    body {
+      font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    }
+  </style>
 </head>
-<body class="bg-gray-50 text-black font-sans antialiased">
-    <div id="root"></div>
-    <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+<body class="bg-gray-50 text-gray-900 font-sans overflow-hidden">
+  <div id="root"></div>
 
-        // Ícones SVG Inline (mantidos exatamente como no original)
-        const IconMapPin = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>;
-        const IconPackage = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>;
-        const IconNavigation = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>;
-        const IconLayers = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 12 12 17 22 12"/><polyline points="2 17 12 22 22 17"/></svg>;
-        const IconCheck = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>;
-        const IconLogOut = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>;
-        const IconUser = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
 
-        // === MOCK DATABASE DE COORDENADAS REAIS (associado por ID de pedido) ===
-        // NUNCA envia nome de rua para API (Nominatim, Google, etc.). Tudo hardcoded.
-        const MOCK_COORDS = {
-            'MO1042': [-3.029850, -59.973120], // R. Esperança, 81 - Cidade Nova
-            'MO1043': [-3.035510, -59.982540], // Av. Atroaris, 930 - Cj Cidade Nova I
-            'MO1044': [-3.115200, -60.025800]  // R. Fernando De Cordoba, 49 - De Marco (coord real Manaus)
+    // ===================== ÍCONES SVG (todos dos dois códigos combinados) =====================
+    const IconNav = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>;
+    const IconMapPin = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>;
+    const IconCheckCircle = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>;
+    const IconQrCode = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>;
+    const IconWallet = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>;
+    const IconMessage = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>;
+    const IconSend = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>;
+    const IconCopy = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>;
+    const IconCheck = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>;
+    const IconArrowRight = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>;
+    const IconPackage = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>;
+    const IconLogOut = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>;
+
+    // ===================== MOCK DELIVERIES - NOVOS ENDEREÇOS EM MANAUS (apaguei todos os antigos) =====================
+    const MOCK_DELIVERIES = [
+      {
+        id: 'MO1051',
+        product: 'Documentos Importantes',
+        distance: '2.8 km',
+        payout: 'R$ 13,50',
+        address: 'Rua Recife, 456 - Cidade Nova, Manaus - AM, 69095-000',
+        coords: [-3.082, -59.985]
+      },
+      {
+        id: 'MO1052',
+        product: 'Peças Automotivas',
+        distance: '4.1 km',
+        payout: 'R$ 17,00',
+        address: 'Av. Efigênio Sales, 1200 - Adrianópolis, Manaus - AM, 69060-000',
+        coords: [-3.105, -60.000]
+      },
+      {
+        id: 'MO1053',
+        product: 'Roupas e Acessórios',
+        distance: '1.9 km',
+        payout: 'R$ 11,00',
+        address: 'Rua 10 de Julho, 89 - Centro, Manaus - AM, 69010-000',
+        coords: [-3.130, -60.020]
+      }
+    ];
+
+    const MANAUS_CENTER = [-3.117, -60.026]; // Motoboy sempre começa no centro de Manaus
+
+    // ===================== FUNÇÃO DE DISTÂNCIA (do segundo código) =====================
+    function getDistanceFromLatLonInM(lat1, lon1, lat2, lon2) {
+      const R = 6371000;
+      const dLat = (lat2 - lat1) * (Math.PI / 180);
+      const dLon = (lon2 - lon1) * (Math.PI / 180);
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return Math.round(R * c);
+    }
+
+    const pad = (n) => n.toString().padStart(2, '0');
+    const getFormattedDate = () => {
+      const d = new Date();
+      return `${pad(d.getDate())}${pad(d.getMonth() + 1)}`;
+    };
+    const getFormattedTime = () => {
+      const d = new Date();
+      return `${pad(d.getHours())}${pad(d.getMinutes())}`;
+    };
+
+    // ===================== MAPA (do segundo código + ícone de motoboy do primeiro código) =====================
+    const DeliveryMap = ({ motoboyPos, clientPos, productName }) => {
+      const mapRef = useRef(null);
+      const mapInstance = useRef(null);
+      const markers = useRef({});
+
+      useEffect(() => {
+        if (!mapInstance.current && mapRef.current) {
+          mapInstance.current = L.map(mapRef.current, { zoomControl: false }).setView(motoboyPos, 15);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapInstance.current);
+
+          // ÍCONE DO MOTOBÓY (exatamente o SVG complexo do primeiro código)
+          const driverIconHtml = `<div class="flex items-center justify-center w-10 h-10 bg-black rounded-full border-2 border-white shadow-md">
+            <svg width="28" height="28" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <path fill="white" d="m 50.507473,15.527671 c -3.44945,0 -6.334908,2.129446 -7.156163,5.282451 -0.56,2.149985 0.247875,6.380116 1.592827,8.33749 0.266652,0.388071 0.827714,0.957738 1.246058,1.265708 0.446498,0.328692 0.901571,0.558951 1.102727,0.5583 0.241499,-7.81e-4 0.726601,-0.327698 1.641375,-1.109662 0.713887,-0.610239 1.911295,-1.585878 2.660876,-2.167308 3.856176,-2.991131 4.813293,-3.768474 4.944929,-4.014434 0.209678,-0.391783 0.163505,-2.156051 -0.08091,-3.11052 -0.278232,-1.086513 -0.96924,-2.510965 -1.541967,-3.177562 -1.021451,-1.188861 -2.620253,-1.864463 -4.40975,-1.864463 z m -2.433165,6.13666 c 0.170079,-0.0023 0.287801,0.03075 0.398786,0.09016 0.762252,0.407947 1.054324,1.961377 0.530555,2.820391 -0.291439,0.477977 -1.821703,1.729971 -2.960252,2.421605 -0.427581,0.259736 -0.832283,0.471605 -0.898134,0.471605 -0.261604,0 -1.078452,-3.149062 -1.078452,-4.156608 v -0.50628 l 1.617101,-0.516687 c 1.385545,-0.442946 2.016218,-0.619034 2.390396,-0.624186 z m 8.75708,3.235359 c -0.208009,0.01322 -1.083587,0.595085 -2.512921,1.671428 -3.836128,2.888745 -3.876453,2.936113 -3.112834,3.578657 0.32428,0.272873 0.38954,0.422466 0.38954,0.899289 0,0.305062 0.03549,0.556761 0.07977,0.572169 h 0.0012 v 0.0012 h 0.0012 0.0012 c 0.04624,0 0.592022,-0.489522 1.212536,-1.087698 0.870545,-0.839216 1.536496,-1.381777 1.629814,-1.352401 h 0.0012 l 0.0012,0.0012 0.0012,0.0012 h 0.0012 l 0.0012,0.0012 0.0012,0.0012 v 0.0012 l 0.0012,0.0012 0.0012,0.0012 c 0.0086,0.02255 -0.02047,0.08388 -0.09479,0.187255 -2.838636,3.948388 -4.555144,6.277488 -4.91719,6.672998 l -0.454267,0.497035 -4.15314,0.656549 c -2.284432,0.361344 -4.255927,0.687789 -4.380852,0.725905 -0.13613,0.04154 -0.227711,0.197887 -0.227711,0.389535 0,0.463265 -0.24596,0.496216 -1.444872,0.193036 -0.588716,-0.148877 -1.307641,-0.269735 -1.59745,-0.268166 -0.690843,0.0037 -1.476585,0.370904 -2.043625,0.95477 -0.403944,0.415936 -0.530947,0.47045 -1.099261,0.47045 -1.277152,0 -2.507522,0.923002 -3.248071,2.436631 -0.268429,0.548656 -0.394569,0.682883 -0.611469,0.651925 -0.281748,-0.04022 -0.338257,-0.335034 -0.149113,-0.78023 0.09702,-0.228353 -0.506885,-0.854365 -2.720981,-2.819233 -1.380109,-1.224759 -1.26246,-1.213802 -2.24013,-0.191881 -1.028055,1.07459 -1.588204,1.831166 -1.588204,2.145349 0,0.275125 0.871384,1.289207 1.847125,2.148813 0.946308,0.833704 1.164844,1.191246 0.959393,1.572019 -0.159696,0.295971 -0.162337,0.295379 -0.912002,-0.360639 -1.287461,-1.126627 -2.732899,-1.68761 -4.346176,-1.68761 -1.388171,0 -1.313099,-0.258631 -1.313099,4.538054 0,3.352986 0.0339,4.154416 0.184943,4.360046 0.159346,0.216947 0.325306,0.248586 1.190574,0.223087 1.221856,-0.03601 2.117957,-0.28382 2.955631,-0.816063 0.336482,-0.213797 0.638734,-0.36453 0.686603,-0.344457 h 0.0012 v 0.0012 h 0.0012 l 0.0012,0.0012 0.0012,0.0012 c 0.0674,0.09765 -0.583475,1.385021 -0.864613,1.706105 -0.312376,0.35676 -0.536006,1.071904 -0.446176,1.429846 0.05291,0.210829 -0.266721,0.996845 -1.102726,2.71058 -0.647541,1.327397 -1.206227,2.413515 -1.241434,2.413515 -0.0352,0 -0.488872,-0.141374 -1.007943,-0.314407 -3.137713,-1.045957 -7.070353,-0.97822 -10.033192,0.17223 -1.1267285,0.437502 -2.3973304,1.12305 -2.3973304,1.293449 0,0.342683 1.1984959,0.789442 2.1326308,0.795257 h 0.00117 0.00117 0.00117 v 0.0012 h 0.00117 v 0.0012 h 0.00117 v 0.0012 0.0012 l -0.00117,0.0012 c -0.024759,0.05137 -0.4889044,0.365722 -1.1004119,0.74093 -2.2452964,1.377666 -4.2605156,3.672558 -5.2697387,6.001419 -0.8481247,1.957098 -1.0042622,2.785096 -1.005631,5.324066 -0.00114,2.102724 0.025044,2.357395 0.3525484,3.438796 0.6640316,2.192607 1.5394317,3.76296 2.9718125,5.32753 2.0842921,2.276641 4.6529983,3.70417 7.6901863,4.273354 1.500049,0.281116 3.787921,0.176449 5.448902,-0.248519 5.681497,-1.453627 9.932629,-6.738346 9.932629,-12.348454 0,-0.572372 0.02894,-1.045751 0.06589,-1.088855 l 0.0012,-0.0012 v -0.0012 h 0.0012 0.0012 v -0.0012 h 0.0012 0.0012 c 0.04521,0.0044 0.290509,0.149124 0.54905,0.324808 0.262645,0.178474 0.61024,0.324809 0.772139,0.324809 0.272441,0 0.293598,-0.0565 0.293598,-0.761738 0,-0.41898 -0.08486,-1.252288 -0.189567,-1.850593 -0.645226,-3.687088 -2.727042,-7.10931 -5.715914,-9.398601 -0.52708,-0.403711 -0.959871,-0.781995 -0.973264,-0.849585 v -0.0012 -0.0012 c 0,-0.174047 2.215525,-4.591829 2.322197,-4.630527 0.0539,-0.01955 0.430618,0.111118 0.838026,0.291287 1.165836,0.515587 1.571659,0.424497 1.962714,-0.442709 0.195185,-0.432841 0.302426,-0.527088 0.598755,-0.527088 0.436555,0 0.642518,0.267527 1.463367,1.906074 l 0.597599,1.192887 -0.549052,0.305157 c -0.506227,0.28183 -0.548452,0.345562 -0.537492,0.819532 0.0116,0.50974 0.820811,2.497649 1.199822,2.947538 0.234596,0.278474 0.621366,0.288549 1.234497,0.03236 0.256286,-0.107079 0.516482,-0.19419 0.577948,-0.19419 0.06148,0 0.249141,0.292947 0.41728,0.651926 l 0.306315,0.653084 -0.602223,0.612625 c -0.858921,0.874436 -1.191844,1.678056 -1.1952,2.883964 -0.0023,0.860007 0.05355,1.092986 0.483166,1.992766 0.59098,1.237705 2.375346,4.223403 2.982216,4.990011 1.462705,1.847709 3.905711,2.992799 6.957346,3.260787 0.811902,0.07131 4.344022,0.0849 8.527059,0.03351 l 7.142289,-0.08786 0.864612,-0.425369 c 0.475264,-0.234049 1.257018,-0.782006 1.738471,-1.218318 l 0.87617,-0.794101 1.696857,0.089 c 2.414074,0.125452 2.670125,0.176036 2.670125,0.531714 0,1.139918 1.109064,4.029376 2.117603,5.5171 3.195379,4.713609 9.405313,6.834141 14.797801,5.053581 1.909736,-0.630578 4.130987,-2.043493 5.356429,-3.406428 3.3029,-3.673472 4.332045,-8.331348 2.843509,-12.869764 -1.440123,-4.390812 -5.054807,-7.582398 -9.726879,-8.588319 -1.21349,-0.26123 -3.753307,-0.259874 -4.999258,0.0036 -0.53256,0.112646 -1.006602,0.161487 -1.054179,0.108651 -0.04757,-0.05282 -0.209729,-0.429764 -0.359483,-0.838025 l -0.271636,-0.742089 0.65655,-0.195346 c 1.773439,-0.526654 4.577433,-0.653658 6.281148,-0.284351 3.137429,0.680083 5.67502,2.062839 7.931769,4.319589 1.127553,1.127554 1.932099,1.62097 2.937134,1.803203 0.550238,0.09978 1.136249,-0.008 1.136249,-0.209219 0,-0.190033 -2.351554,-3.568922 -4.171635,-5.993329 l -1.536011,-2.045362 h 1.027594 c 0.954847,0 1.045639,-0.02416 1.295761,-0.342146 0.225018,-0.286072 0.269324,-0.525018 0.269324,-1.463365 0,-1.258934 -0.186765,-1.69917 -0.72128,-1.69917 -0.174426,0 -0.317871,-0.05222 -0.317871,-0.115583 0,-0.06336 0.61404,-0.676585 1.363957,-1.362803 l 1.362805,-1.247212 h 2.085238 c 1.188804,0 2.192891,-0.05746 2.336069,-0.13409 0.290023,-0.155215 0.353672,-1.009136 0.09478,-1.26802 -0.223232,-0.223224 -10.847228,-0.200453 -17.432091,0.037 -6.317656,0.227808 -6.142442,0.190446 -7.670536,1.629817 -1.403685,1.322183 -2.028253,1.618258 -7.774567,3.687312 -2.498598,0.899659 -4.88208,1.759624 -5.296323,1.910698 -0.583592,0.212827 -0.735872,0.3214 -0.673889,0.483167 0.04401,0.114819 0.896757,1.743062 1.894517,3.617957 1.561046,2.933367 2.750374,5.202159 4.124241,7.869352 0.617668,1.199125 0.477056,2.619439 -0.330583,3.349792 -0.370565,0.335102 -6.471953,3.33839 -7.495999,3.689623 -1.098234,0.376672 -1.617986,0.386627 -2.285208,0.04623 -0.657137,-0.335244 -1.034528,-1.047596 -1.034528,-1.952312 0,-0.93818 0.265369,-1.403653 1.645996,-2.880496 l 1.211382,-1.295761 -0.287819,-0.471606 c -0.158346,-0.259358 -1.16995,-1.844386 -2.248219,-3.522015 -5.98614,-9.313569 -5.837786,-9.036169 -5.745964,-10.700146 0.106378,-1.928073 0.770001,-2.783431 3.324358,-4.287222 l 1.599763,-0.940902 -0.561765,-0.418433 C 51.651874,48.663024 50.606387,48.080967 49.637048,47.59922 46.328489,45.954921 42.8727,45.125881 39.328752,45.125601 c -2.773039,-2.21e-4 -4.073672,0.464493 -5.394572,1.928037 -0.731625,0.810638 -0.76605,0.832432 -1.183641,0.713186 -0.597598,-0.170655 -0.608573,-0.516112 -0.05086,-1.64484 0.566971,-1.147454 0.578216,-1.442805 0.07398,-1.885269 -0.214161,-0.187926 -0.389539,-0.46575 -0.389539,-0.61725 0,-0.347778 0.933587,-1.804384 1.228719,-1.917632 0.598392,-0.229626 1.133549,-0.09076 1.634439,0.425369 0.619569,0.638434 1.311396,0.860807 1.84828,0.592974 0.329578,-0.164404 0.4231,-0.163867 0.74671,0.0036 0.20343,0.105197 0.481714,0.190726 0.618405,0.190726 0.351543,0 0.869176,-0.44055 1.061115,-0.903914 0.146528,-0.353729 0.221157,-0.39416 0.731681,-0.39416 0.521569,0 0.567547,0.02674 0.567547,0.328273 0,0.180711 0.07692,0.358486 0.169917,0.394162 0.22257,0.0854 9.468637,-0.939967 10.183459,-1.129312 1.0708,-0.283654 1.99525,-1.14962 5.541372,-5.185357 0.778823,-0.886355 1.464847,-1.631311 1.523471,-1.655244 0.103951,-0.04243 -0.958745,1.873795 -1.88758,3.402962 l -0.463514,0.762894 0.982512,1.118907 c 1.361607,1.550026 1.762947,2.168244 1.87718,2.8909 0.140727,0.890249 1.031579,2.359262 1.591669,2.625044 0.245017,0.116273 0.508752,0.211529 0.587195,0.211529 0.346237,0 0.09506,0.408121 -0.408029,0.662331 -0.735666,0.371726 -3.534521,1.929656 -6.328539,3.523174 -4.660234,2.657878 -4.93873,2.867867 -5.387642,4.043329 -0.297345,0.778581 -0.211187,2.005081 0.19766,2.807675 0.162576,0.319149 1.552939,2.536078 3.089714,4.927593 1.536778,2.391513 3.19839,4.990744 3.693093,5.776019 0.494704,0.785273 1.020051,1.558822 1.167457,1.718821 l 0.268168,0.291284 -0.313248,0.439243 c -0.172477,0.241311 -0.831122,0.985719 -1.463366,1.655244 -0.632245,0.669526 -1.201914,1.352418 -1.265708,1.517695 -0.217962,0.564695 -0.134662,1.18537 0.203437,1.523471 0.56683,0.56683 0.971699,0.445664 4.937993,-1.466835 3.465332,-1.670936 3.886196,-1.911456 4.082632,-2.341846 0.288362,-0.631762 0.04626,-1.643729 -0.621871,-2.599614 -0.133603,-0.191133 -0.922992,-1.676379 -1.753499,-3.300087 -0.830505,-1.623709 -1.911983,-3.696824 -2.40311,-4.607409 -1.448946,-2.686449 -1.990987,-3.823178 -1.877178,-3.933518 0.05885,-0.05705 1.508162,-0.608824 3.221486,-1.226409 8.738473,-3.14987 9.583108,-3.487268 10.510577,-4.19013 0.836543,-0.633951 1.538941,-1.572405 1.911854,-2.554532 0.413845,-1.089781 0.410519,-3.014784 -0.0069,-4.200531 l -0.288974,-0.821843 0.329432,-0.258922 c 0.181085,-0.142445 0.329429,-0.380033 0.329429,-0.528245 0,-0.511484 -1.858328,-3.712373 -3.864165,-6.655657 -1.499282,-2.199981 -2.990074,-4.075079 -4.725308,-5.941314 -2.021209,-2.1738 -3.404416,-3.023628 -5.492825,-3.376375 -0.968881,-0.163651 -0.973786,-0.166615 -1.265708,-0.745556 -0.17973,-0.35644 -0.393096,-0.595387 -0.553674,-0.618404 -0.0053,-7.62e-4 -0.01175,-4.28e-4 -0.01848,0 z m 29.18757,4.257171 c -10.08865,-5.21e-4 -9.990133,-0.0069 -10.459718,0.663484 -0.154295,0.220279 -0.211529,0.593458 -0.211529,1.376674 v 2.110669 6.958505 6.957346 l 0.441553,0.441553 0.440397,0.441553 9.650589,-0.0012 c 9.336399,-4.7e-4 9.664279,-0.0085 10.065555,-0.253142 0.275222,-0.167804 0.462461,-0.418456 0.557144,-0.745553 0.09771,-0.337697 0.131429,-2.577382 0.105185,-7.112237 l 0.02658,-6.485743 v -2.085239 c 0,-1.051305 -0.245656,-1.664311 -0.803348,-2.004327 -0.420459,-0.256397 -0.631158,-0.261911 -9.812417,-0.262387 z m -0.0046,0.666952 c 0.139977,0.01102 0.447023,0.147239 1.587049,0.705098 0.77714,0.380283 1.413206,0.699917 1.413659,0.710877 9.17e-4,0.02275 -8.005533,4.127855 -8.041576,4.123085 -0.01322,-0.0018 -0.732652,-0.354228 -1.598608,-0.782542 -0.865953,-0.42832 -1.566958,-0.785297 -1.558148,-0.7941 0.0089,-0.0089 1.817782,-0.90714 4.02021,-1.996235 3.9098,-1.933389 4.008041,-1.979505 4.177414,-1.966183 z m 4.538054,2.168463 1.81707,0.895822 c 0.999439,0.492302 1.80502,0.906123 1.790486,0.920093 -0.01454,0.0141 -1.602827,0.805037 -3.530113,1.758121 C 88.7026,36.5194 86.8732,37.425898 86.565746,37.579885 l -0.558298,0.279727 -1.696858,-0.835713 c -0.932878,-0.459413 -1.721075,-0.852346 -1.752341,-0.873858 -0.04673,-0.03217 0.659144,-0.40541 3.968196,-2.097954 z m 4.312654,2.991464 c 0.0077,0 0.01043,1.869554 0.0058,4.154296 l -0.0093,4.154296 -4.059512,2.123385 c -2.232597,1.167623 -4.078428,2.124223 -4.102281,2.125694 -0.03438,0.0022 -0.04193,-0.560317 -0.03814,-2.712892 0.0024,-1.493168 0.01381,-3.415297 0.02544,-4.271042 l 0.02196,-1.555837 4.069915,-2.00895 c 2.239045,-1.104928 4.078155,-2.00895 4.086098,-2.00895 z m -17.688702,0.01619 c 0.03341,0.01249 0.782446,0.377233 1.664494,0.810285 l 1.60323,0.787166 0.0023,1.509602 c 0.0019,1.690935 -1.79e-4,1.67455 0.2543,1.897984 0.30292,0.265974 0.813348,0.15928 0.990604,-0.206906 0.07061,-0.145823 0.07398,-0.200224 0.07398,-1.340842 0,-0.698675 0.01277,-1.184653 0.0312,-1.177857 0.01723,0.0065 0.821641,0.401656 1.78702,0.877325 l 1.754651,0.864611 v 4.277978 c 0,2.353243 -0.0032,4.277853 -0.0081,4.276819 -0.005,-0.001 -1.78938,-0.930615 -3.964729,-2.066746 -2.175347,-1.136129 -3.992099,-2.099568 -4.037551,-2.140721 -0.04547,-0.04115 -0.111589,-0.137495 -0.146807,-0.213839 -0.06107,-0.132326 -0.064,-0.325146 -0.06473,-4.158919 -7.27e-4,-3.814013 0.0023,-4.017763 0.06011,-3.99594 z m 11.113979,15.44279 h 1.9107 l -0.709723,0.728216 c -0.390195,0.400433 -1.048019,1.013655 -1.46221,1.362802 -0.529125,0.446022 -0.867385,0.634589 -1.136245,0.634589 -0.190739,0 -0.349305,-0.01219 -0.376824,-0.02774 h -0.0012 l -0.0012,-0.0012 -0.0012,-0.0012 -0.0012,-0.0012 v -0.0012 c 7.6e-4,-0.01785 0.08244,-0.299016 0.181475,-0.625341 0.162309,-0.534709 0.156184,-0.66289 -0.06589,-1.293448 -0.135528,-0.384819 -0.246204,-0.716886 -0.246204,-0.737464 0,-0.02065 0.858999,-0.037 1.90954,-0.037 z M 72.030356,60.621548 c 0.0306,-5.96e-4 0.05362,0.0059 0.06821,0.02081 0.06378,0.06531 0.233784,0.423104 0.379131,0.794099 l 0.2647,0.67389 -0.871545,0.58026 c -2.318505,1.541338 -4.050012,3.900386 -5.132186,6.994335 -0.05929,0.169504 -0.223393,0.227714 -0.646145,0.227714 -0.311591,0 -0.5993,-0.03407 -0.640367,-0.07514 -0.129549,-0.12955 0.761586,-2.582919 1.347776,-3.710429 0.727669,-1.399646 1.841023,-2.871708 2.937135,-3.881505 0.990906,-0.91288 1.997631,-1.618269 2.2933,-1.624036 z m -56.398555,3.407588 c 0.891585,-0.0063 1.800779,0.104962 2.433166,0.310938 l 0.412653,0.135233 -0.96055,1.960405 -0.960552,1.961557 -1.009096,0.01734 c -0.788367,0.01366 -1.171416,0.09254 -1.746563,0.357173 -1.425132,0.655713 -2.391237,1.86661 -2.70133,3.387937 -0.42229,2.071754 0.696663,4.195456 2.70133,5.127561 0.612792,0.284932 0.922378,0.342145 1.840191,0.3433 0.965224,0.0012 1.208416,-0.04861 1.946531,-0.398782 2.147106,-1.018595 3.148482,-3.17622 2.531416,-5.455838 -0.133898,-0.494643 -0.41413,-1.092852 -0.666954,-1.424066 -0.23987,-0.314245 -0.437973,-0.615185 -0.439241,-0.668108 -0.0049,-0.19996 1.875519,-3.925427 1.981208,-3.925427 0.230885,0 1.998721,1.923186 2.411204,2.62273 1.215065,2.060674 1.563788,4.766487 0.92125,7.152695 -0.210634,0.782224 -1.065558,2.393784 -1.665651,3.139418 -1.155438,1.43567 -3.142144,2.685321 -4.942617,3.108209 -1.033315,0.242772 -3.173925,0.245186 -4.164699,0.0046 -3.160326,-0.767329 -5.934917,-3.548629 -6.6672157,-6.68224 -0.2795642,-1.196302 -0.2577085,-3.112995 0.049708,-4.314965 0.9411781,-3.679971 4.0158117,-6.319403 7.8208027,-6.713452 0.282177,-0.02923 0.57782,-0.04412 0.875014,-0.04623 z m 63.544313,0.760581 c 1.491409,0.004 1.798615,0.04447 2.640069,0.347924 2.249552,0.811249 4.026154,2.377835 4.995791,4.403972 0.319706,0.668051 0.659915,1.535399 0.754801,1.928036 0.248072,1.026432 0.212529,3.137108 -0.06821,4.08841 -1.008304,3.416836 -3.985138,6.050304 -7.200087,6.368995 -0.402828,0.03994 -0.848984,0.08876 -0.991759,0.108652 -0.456252,0.06388 -1.986708,-0.152559 -2.692086,-0.381445 -2.665976,-0.865084 -4.864157,-3.010267 -5.742499,-5.603794 -0.161686,-0.477436 -0.276985,-0.897533 -0.260077,-0.945523 l 0.0012,-0.0012 v -0.0012 c 0.0293,-0.0499 3.974853,0.195626 4.030618,0.25083 0.0059,0.0058 0.19197,0.289394 0.412652,0.629962 1.146897,1.769961 3.436304,2.610503 5.435031,1.996236 3.59051,-1.103466 4.608565,-5.571408 1.850593,-8.124803 -0.898439,-0.831796 -1.886661,-1.246083 -3.100118,-1.299229 l -0.843803,-0.037 -0.671578,-1.737315 c -0.604202,-1.563472 -0.649472,-1.748767 -0.454267,-1.865616 0.119271,-0.07139 0.975713,-0.128464 1.903762,-0.125997 z m -43.903301,0.716655 c 0.0119,3.48e-4 0.02167,0.0044 0.0289,0.0116 0.04621,0.04602 0.90147,1.681283 1.900298,3.634141 0.998826,1.952863 1.993657,3.774361 2.211231,4.046799 0.210772,0.263926 0.361514,0.504547 0.343302,0.546738 l -0.0012,0.0012 v 0.0012 h -0.0012 c -0.104345,0.104345 -1.282285,-0.723634 -1.826316,-1.284201 -0.522632,-0.538576 -2.781318,-4.166336 -3.068877,-4.928776 -0.222013,-0.588641 -0.168586,-1.449135 0.110971,-1.793955 0.115289,-0.142211 0.23899,-0.236513 0.302845,-0.234648 z m 39.019633,0.727062 c 0.0093,-3.98e-4 0.01737,0.0012 0.02312,0.0046 0.0012,8.66e-4 0.0037,0.0036 0.0046,0.0046 0.0526,0.05542 0.391414,0.880617 0.753645,1.83441 l 0.658863,1.733847 -0.290131,0.368729 c -0.245011,0.31075 -0.380429,0.365189 -0.87386,0.356018 -0.846219,-0.01588 -3.416433,-0.231939 -3.476938,-0.292442 v -0.0012 c -0.06314,-0.09142 0.553957,-1.287629 1.003318,-1.940753 0.460987,-0.670021 1.94727,-2.057157 2.19736,-2.067901 z" />
+            </svg>
+          </div>`;
+
+          const driverIcon = L.divIcon({
+            className: 'bg-transparent border-0',
+            html: driverIconHtml,
+            iconSize: [40, 40],
+            iconAnchor: [20, 20]
+          });
+
+          const clientIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34]
+          });
+
+          markers.current.motoboy = L.marker(motoboyPos, { icon: driverIcon }).addTo(mapInstance.current).bindPopup('Motoboy - Você');
+          markers.current.client = L.marker(clientPos, { icon: clientIcon }).addTo(mapInstance.current).bindPopup(`Destino: ${productName}`);
+        }
+      }, []);
+
+      // Atualiza posição do motoboy em tempo real (simulação)
+      useEffect(() => {
+        if (mapInstance.current && markers.current.motoboy) {
+          markers.current.motoboy.setLatLng(motoboyPos);
+          mapInstance.current.setView(motoboyPos, mapInstance.current.getZoom());
+        }
+      }, [motoboyPos]);
+
+      return <div ref={mapRef} style={{ width: '100%', height: '100%', zIndex: 0 }} />;
+    };
+
+    // ===================== COMPONENTE PRINCIPAL - TUDO INTEGRADO =====================
+    function App() {
+      const [view, setView] = useState('dashboard'); // 'dashboard' ou 'control'
+      const [activeDelivery, setActiveDelivery] = useState(null);
+      const [motoboyPos, setMotoboyPos] = useState(MANAUS_CENTER);
+      const [statusIndex, setStatusIndex] = useState(3);
+      const [showQR, setShowQR] = useState(false);
+      const [trackingCode, setTrackingCode] = useState("");
+      const [commissionCode, setCommissionCode] = useState("");
+      const [showCommissionPopup, setShowCommissionPopup] = useState(false);
+      const [copied, setCopied] = useState(false);
+      const [walletBalance, setWalletBalance] = useState(0);
+      const [walletInput, setWalletInput] = useState("");
+      const [withdrawing, setWithdrawing] = useState(false);
+      const [messages, setMessages] = useState([
+        { id: "1", sender: "ADM", text: "Entrega confirmada. Boa rota!", time: "14:00" },
+        { id: "2", sender: "Cliente", text: "Estou esperando no endereço.", time: "14:02" }
+      ]);
+      const [chatInput, setChatInput] = useState("");
+      const [activeTab, setActiveTab] = useState("entrega");
+      const [mounted, setMounted] = useState(false);
+
+      const distance = getDistanceFromLatLonInM(motoboyPos[0], motoboyPos[1], activeDelivery ? activeDelivery.coords[0] : 0, activeDelivery ? activeDelivery.coords[1] : 0);
+
+      // Carregar / salvar estado
+      useEffect(() => {
+        setMounted(true);
+        const saved = localStorage.getItem("motoboyControlState");
+        if (saved) {
+          try {
+            const parsed = JSON.parse(saved);
+            if (parsed.motoboyPos) setMotoboyPos(parsed.motoboyPos);
+            if (parsed.statusIndex !== undefined) setStatusIndex(parsed.statusIndex);
+            if (parsed.walletBalance !== undefined) setWalletBalance(parsed.walletBalance);
+            if (parsed.messages) setMessages(parsed.messages);
+          } catch (e) {}
+        }
+      }, []);
+
+      useEffect(() => {
+        if (!mounted) return;
+        localStorage.setItem("motoboyControlState", JSON.stringify({ motoboyPos, statusIndex, walletBalance, messages }));
+      }, [motoboyPos, statusIndex, walletBalance, messages, mounted]);
+
+      // Atualiza status automaticamente pela distância
+      useEffect(() => {
+        if (!mounted || !activeDelivery) return;
+        if (distance <= 10 && statusIndex < 5) setStatusIndex(5);
+        else if (distance <= 500 && distance > 10 && statusIndex < 4) setStatusIndex(4);
+      }, [distance, statusIndex, mounted, activeDelivery]);
+
+      // Simular movimento do motoboy em direção ao cliente
+      const handleSimulateMovement = () => {
+        if (!activeDelivery || statusIndex === 6) return;
+        const latDiff = activeDelivery.coords[0] - motoboyPos[0];
+        const lngDiff = activeDelivery.coords[1] - motoboyPos[1];
+        setMotoboyPos([
+          motoboyPos[0] + latDiff * 0.18,
+          motoboyPos[1] + lngDiff * 0.18
+        ]);
+      };
+
+      const acceptDelivery = (delivery) => {
+        setActiveDelivery(delivery);
+        setMotoboyPos(MANAUS_CENTER); // Sempre começa no centro de Manaus
+        setStatusIndex(3);
+        setView('control');
+      };
+
+      const finishDelivery = () => {
+        setStatusIndex(6);
+        setShowQR(false);
+        const commCode = `MN${getFormattedDate()}${getFormattedTime()}`;
+        setCommissionCode(commCode);
+        setShowCommissionPopup(true);
+      };
+
+      const handleGenerateQR = () => {
+        if (distance > 10) return;
+        const code = `MNJS${getFormattedDate()}`;
+        setTrackingCode(code);
+        setShowQR(true);
+      };
+
+      const handleSimulateScan = () => {
+        finishDelivery();
+      };
+
+      const handleCopyCode = () => {
+        navigator.clipboard.writeText(commissionCode);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      };
+
+      const handleRedeem = () => {
+        if (!walletInput.trim()) return;
+        setWalletBalance(prev => prev + 15.50);
+        setWalletInput("");
+        alert("Comissão resgatada com sucesso!");
+      };
+
+      const handleWithdraw = () => {
+        if (walletBalance <= 0) return;
+        setWithdrawing(true);
+        setTimeout(() => {
+          setWalletBalance(0);
+          setWithdrawing(false);
+          alert("Pix enviado com sucesso!");
+        }, 1500);
+      };
+
+      const handleSendMessage = (e) => {
+        e.preventDefault();
+        if (!chatInput.trim()) return;
+        const newMsg = {
+          id: Date.now().toString(),
+          sender: "Motoboy",
+          text: chatInput,
+          time: `${pad(new Date().getHours())}:${pad(new Date().getMinutes())}`
         };
+        setMessages([...messages, newMsg]);
+        setChatInput("");
+      };
 
-        // Mock Data (endereços mantidos, coords agora vêm do MOCK_COORDS acima)
-        const MOCK_DELIVERIES = [
-            { id: 'MO1042', product: 'Documentos Confidenciais', distance: '3.2 km', payout: 'R$ 12,50', address: 'R. Esperança, 81 - Cidade Nova, Manaus - AM, 69097-182' },
-            { id: 'MO1043', product: 'Peças de Computador', distance: '5.8 km', payout: 'R$ 18,00', address: 'Av. Atroaris, 930 - Cj Cidade Nova I, Manaus - AM, 69090-625' },
-            { id: 'MO1044', product: 'Roupas de Loja', distance: '2.1 km', payout: 'R$ 9,00', address: 'R. Fernando De Cordoba, 49 - De Marco, Manaus - AM, 69077-090' },
-        ];
+      const resetToDashboard = () => {
+        setActiveDelivery(null);
+        setView('dashboard');
+        setShowCommissionPopup(false);
+      };
 
-        // Localização real do Motoboy (Alvorada 2)
-        const DRIVER_START_LOCATION = [-3.078421, -60.041315];
-
-        // Função de inicialização de corrida (conforme solicitado)
-        // Limpa mapa anterior + busca coords diretamente no mock (sem API de texto)
-        function carregarCorrida(idPedido) {
-            const coordsEntrega = MOCK_COORDS[idPedido];
-            if (!coordsEntrega) {
-                console.error(`❌ Coordenadas não encontradas para o pedido ${idPedido}`);
-                return null;
-            }
-            console.log(`✅ Corrida ${idPedido} carregada com sucesso | Coords entrega: [${coordsEntrega[0]}, ${coordsEntrega[1]}]`);
-            return coordsEntrega;
-        }
-
-        // Map Component (mantido 100% igual ao original + correções de render)
-        function DeliveryMap({ driverLocation, deliveryLocation, productName }) {
-            const mapContainerRef = useRef(null);
-            const mapInstanceRef = useRef(null);
-            const [mapMode, setMapMode] = useState('normal');
-
-            useEffect(() => {
-                if (!mapInstanceRef.current && mapContainerRef.current) {
-                    mapInstanceRef.current = L.map(mapContainerRef.current, {
-                        zoomControl: false,
-                        attributionControl: false
-                    });
-                    mapInstanceRef.current.setView(DRIVER_START_LOCATION, 13);
-
-                    // 1. Implemente map.invalidateSize() logo após a inicialização
-                    // 3. Adicione um pequeno delay (setTimeout) para garantir que o container DOM esteja visível
-                    setTimeout(() => {
-                        if (mapInstanceRef.current) {
-                            mapInstanceRef.current.invalidateSize();
-                        }
-                    }, 100);
-                }
-                return () => {
-                    if (mapInstanceRef.current) {
-                        mapInstanceRef.current.remove();
-                        mapInstanceRef.current = null;
-                    }
-                };
-            }, []);
-
-            useEffect(() => {
-                const map = mapInstanceRef.current;
-                if (!map) return;
-                map.eachLayer((layer) => map.removeLayer(layer));
-
-                if (mapMode === 'normal') {
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '&copy; OpenStreetMap contributors',
-                        className: 'map-tiles-grayscale'
-                    }).addTo(map);
-                } else {
-                    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                        attribution: 'Tiles &copy; Esri',
-                        className: 'map-tiles-grayscale'
-                    }).addTo(map);
-                }
-
-                const driverIcon = L.divIcon({
-                    className: 'bg-transparent border-0',
-                    html: `<div class="flex items-center justify-center w-10 h-10 bg-black rounded-full border-2 border-white shadow-md">
-                      <svg width="28" height="28" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <path fill="white" d="m 50.507473,15.527671 c -3.44945,0 -6.334908,2.129446 -7.156163,5.282451 -0.56,2.149985 0.247875,6.380116 1.592827,8.33749 0.266652,0.388071 0.827714,0.957738 1.246058,1.265708 0.446498,0.328692 0.901571,0.558951 1.102727,0.5583 0.241499,-7.81e-4 0.726601,-0.327698 1.641375,-1.109662 0.713887,-0.610239 1.911295,-1.585878 2.660876,-2.167308 3.856176,-2.991131 4.813293,-3.768474 4.944929,-4.014434 0.209678,-0.391783 0.163505,-2.156051 -0.08091,-3.11052 -0.278232,-1.086513 -0.96924,-2.510965 -1.541967,-3.177562 -1.021451,-1.188861 -2.620253,-1.864463 -4.40975,-1.864463 z m -2.433165,6.13666 c 0.170079,-0.0023 0.287801,0.03075 0.398786,0.09016 0.762252,0.407947 1.054324,1.961377 0.530555,2.820391 -0.291439,0.477977 -1.821703,1.729971 -2.960252,2.421605 -0.427581,0.259736 -0.832283,0.471605 -0.898134,0.471605 -0.261604,0 -1.078452,-3.149062 -1.078452,-4.156608 v -0.50628 l 1.617101,-0.516687 c 1.385545,-0.442946 2.016218,-0.619034 2.390396,-0.624186 z m 8.75708,3.235359 c -0.208009,0.01322 -1.083587,0.595085 -2.512921,1.671428 -3.836128,2.888745 -3.876453,2.936113 -3.112834,3.578657 0.32428,0.272873 0.38954,0.422466 0.38954,0.899289 0,0.305062 0.03549,0.556761 0.07977,0.572169 h 0.0012 v 0.0012 h 0.0012 0.0012 c 0.04624,0 0.592022,-0.489522 1.212536,-1.087698 0.870545,-0.839216 1.536496,-1.381777 1.629814,-1.352401 h 0.0012 l 0.0012,0.0012 0.0012,0.0012 h 0.0012 l 0.0012,0.0012 0.0012,0.0012 v 0.0012 l 0.0012,0.0012 0.0012,0.0012 c 0.0086,0.02255 -0.02047,0.08388 -0.09479,0.187255 -2.838636,3.948388 -4.555144,6.277488 -4.91719,6.672998 l -0.454267,0.497035 -4.15314,0.656549 c -2.284432,0.361344 -4.255927,0.687789 -4.380852,0.725905 -0.13613,0.04154 -0.227711,0.197887 -0.227711,0.389535 0,0.463265 -0.24596,0.496216 -1.444872,0.193036 -0.588716,-0.148877 -1.307641,-0.269735 -1.59745,-0.268166 -0.690843,0.0037 -1.476585,0.370904 -2.043625,0.95477 -0.403944,0.415936 -0.530947,0.47045 -1.099261,0.47045 -1.277152,0 -2.507522,0.923002 -3.248071,2.436631 -0.268429,0.548656 -0.394569,0.682883 -0.611469,0.651925 -0.281748,-0.04022 -0.338257,-0.335034 -0.149113,-0.78023 0.09702,-0.228353 -0.506885,-0.854365 -2.720981,-2.819233 -1.380109,-1.224759 -1.26246,-1.213802 -2.24013,-0.191881 -1.028055,1.07459 -1.588204,1.831166 -1.588204,2.145349 0,0.275125 0.871384,1.289207 1.847125,2.148813 0.946308,0.833704 1.164844,1.191246 0.959393,1.572019 -0.159696,0.295971 -0.162337,0.295379 -0.912002,-0.360639 -1.287461,-1.126627 -2.732899,-1.68761 -4.346176,-1.68761 -1.388171,0 -1.313099,-0.258631 -1.313099,4.538054 0,3.352986 0.0339,4.154416 0.184943,4.360046 0.159346,0.216947 0.325306,0.248586 1.190574,0.223087 1.221856,-0.03601 2.117957,-0.28382 2.955631,-0.816063 0.336482,-0.213797 0.638734,-0.36453 0.686603,-0.344457 h 0.0012 v 0.0012 h 0.0012 l 0.0012,0.0012 0.0012,0.0012 c 0.0674,0.09765 -0.583475,1.385021 -0.864613,1.706105 -0.312376,0.35676 -0.536006,1.071904 -0.446176,1.429846 0.05291,0.210829 -0.266721,0.996845 -1.102726,2.71058 -0.647541,1.327397 -1.206227,2.413515 -1.241434,2.413515 -0.0352,0 -0.488872,-0.141374 -1.007943,-0.314407 -3.137713,-1.045957 -7.070353,-0.97822 -10.033192,0.17223 -1.1267285,0.437502 -2.3973304,1.12305 -2.3973304,1.293449 0,0.342683 1.1984959,0.789442 2.1326308,0.795257 h 0.00117 0.00117 0.00117 v 0.0012 h 0.00117 v 0.0012 h 0.00117 v 0.0012 0.0012 l -0.00117,0.0012 c -0.024759,0.05137 -0.4889044,0.365722 -1.1004119,0.74093 -2.2452964,1.377666 -4.2605156,3.672558 -5.2697387,6.001419 -0.8481247,1.957098 -1.0042622,2.785096 -1.005631,5.324066 -0.00114,2.102724 0.025044,2.357395 0.3525484,3.438796 0.6640316,2.192607 1.5394317,3.76296 2.9718125,5.32753 2.0842921,2.276641 4.6529983,3.70417 7.6901863,4.273354 1.500049,0.281116 3.787921,0.176449 5.448902,-0.248519 5.681497,-1.453627 9.932629,-6.738346 9.932629,-12.348454 0,-0.572372 0.02894,-1.045751 0.06589,-1.088855 l 0.0012,-0.0012 v -0.0012 h 0.0012 0.0012 v -0.0012 h 0.0012 0.0012 c 0.04521,0.0044 0.290509,0.149124 0.54905,0.324808 0.262645,0.178474 0.61024,0.324809 0.772139,0.324809 0.272441,0 0.293598,-0.0565 0.293598,-0.761738 0,-0.41898 -0.08486,-1.252288 -0.189567,-1.850593 -0.645226,-3.687088 -2.727042,-7.10931 -5.715914,-9.398601 -0.52708,-0.403711 -0.959871,-0.781995 -0.973264,-0.849585 v -0.0012 -0.0012 c 0,-0.174047 2.215525,-4.591829 2.322197,-4.630527 0.0539,-0.01955 0.430618,0.111118 0.838026,0.291287 1.165836,0.515587 1.571659,0.424497 1.962714,-0.442709 0.195185,-0.432841 0.302426,-0.527088 0.598755,-0.527088 0.436555,0 0.642518,0.267527 1.463367,1.906074 l 0.597599,1.192887 -0.549052,0.305157 c -0.506227,0.28183 -0.548452,0.345562 -0.537492,0.819532 0.0116,0.50974 0.820811,2.497649 1.199822,2.947538 0.234596,0.278474 0.621366,0.288549 1.234497,0.03236 0.256286,-0.107079 0.516482,-0.19419 0.577948,-0.19419 0.06148,0 0.249141,0.292947 0.41728,0.651926 l 0.306315,0.653084 -0.602223,0.612625 c -0.858921,0.874436 -1.191844,1.678056 -1.1952,2.883964 -0.0023,0.860007 0.05355,1.092986 0.483166,1.992766 0.59098,1.237705 2.375346,4.223403 2.982216,4.990011 1.462705,1.847709 3.905711,2.992799 6.957346,3.260787 0.811902,0.07131 4.344022,0.0849 8.527059,0.03351 l 7.142289,-0.08786 0.864612,-0.425369 c 0.475264,-0.234049 1.257018,-0.782006 1.738471,-1.218318 l 0.87617,-0.794101 1.696857,0.089 c 2.414074,0.125452 2.670125,0.176036 2.670125,0.531714 0,1.139918 1.109064,4.029376 2.117603,5.5171 3.195379,4.713609 9.405313,6.834141 14.797801,5.053581 1.909736,-0.630578 4.130987,-2.043493 5.356429,-3.406428 3.3029,-3.673472 4.332045,-8.331348 2.843509,-12.869764 -1.440123,-4.390812 -5.054807,-7.582398 -9.726879,-8.588319 -1.21349,-0.26123 -3.753307,-0.259874 -4.999258,0.0036 -0.53256,0.112646 -1.006602,0.161487 -1.054179,0.108651 -0.04757,-0.05282 -0.209729,-0.429764 -0.359483,-0.838025 l -0.271636,-0.742089 0.65655,-0.195346 c 1.773439,-0.526654 4.577433,-0.653658 6.281148,-0.284351 3.137429,0.680083 5.67502,2.062839 7.931769,4.319589 1.127553,1.127554 1.932099,1.62097 2.937134,1.803203 0.550238,0.09978 1.136249,-0.008 1.136249,-0.209219 0,-0.190033 -2.351554,-3.568922 -4.171635,-5.993329 l -1.536011,-2.045362 h 1.027594 c 0.954847,0 1.045639,-0.02416 1.295761,-0.342146 0.225018,-0.286072 0.269324,-0.525018 0.269324,-1.463365 0,-1.258934 -0.186765,-1.69917 -0.72128,-1.69917 -0.174426,0 -0.317871,-0.05222 -0.317871,-0.115583 0,-0.06336 0.61404,-0.676585 1.363957,-1.362803 l 1.362805,-1.247212 h 2.085238 c 1.188804,0 2.192891,-0.05746 2.336069,-0.13409 0.290023,-0.155215 0.353672,-1.009136 0.09478,-1.26802 -0.223232,-0.223224 -10.847228,-0.200453 -17.432091,0.037 -6.317656,0.227808 -6.142442,0.190446 -7.670536,1.629817 -1.403685,1.322183 -2.028253,1.618258 -7.774567,3.687312 -2.498598,0.899659 -4.88208,1.759624 -5.296323,1.910698 -0.583592,0.212827 -0.735872,0.3214 -0.673889,0.483167 0.04401,0.114819 0.896757,1.743062 1.894517,3.617957 1.561046,2.933367 2.750374,5.202159 4.124241,7.869352 0.617668,1.199125 0.477056,2.619439 -0.330583,3.349792 -0.370565,0.335102 -6.471953,3.33839 -7.495999,3.689623 -1.098234,0.376672 -1.617986,0.386627 -2.285208,0.04623 -0.657137,-0.335244 -1.034528,-1.047596 -1.034528,-1.952312 0,-0.93818 0.265369,-1.403653 1.645996,-2.880496 l 1.211382,-1.295761 -0.287819,-0.471606 c -0.158346,-0.259358 -1.16995,-1.844386 -2.248219,-3.522015 -5.98614,-9.313569 -5.837786,-9.036169 -5.745964,-10.700146 0.106378,-1.928073 0.770001,-2.783431 3.324358,-4.287222 l 1.599763,-0.940902 -0.561765,-0.418433 C 51.651874,48.663024 50.606387,48.080967 49.637048,47.59922 46.328489,45.954921 42.8727,45.125881 39.328752,45.125601 c -2.773039,-2.21e-4 -4.073672,0.464493 -5.394572,1.928037 -0.731625,0.810638 -0.76605,0.832432 -1.183641,0.713186 -0.597598,-0.170655 -0.608573,-0.516112 -0.05086,-1.64484 0.566971,-1.147454 0.578216,-1.442805 0.07398,-1.885269 -0.214161,-0.187926 -0.389539,-0.46575 -0.389539,-0.61725 0,-0.347778 0.933587,-1.804384 1.228719,-1.917632 0.598392,-0.229626 1.133549,-0.09076 1.634439,0.425369 0.619569,0.638434 1.311396,0.860807 1.84828,0.592974 0.329578,-0.164404 0.4231,-0.163867 0.74671,0.0036 0.20343,0.105197 0.481714,0.190726 0.618405,0.190726 0.351543,0 0.869176,-0.44055 1.061115,-0.903914 0.146528,-0.353729 0.221157,-0.39416 0.731681,-0.39416 0.521569,0 0.567547,0.02674 0.567547,0.328273 0,0.180711 0.07692,0.358486 0.169917,0.394162 0.22257,0.0854 9.468637,-0.939967 10.183459,-1.129312 1.0708,-0.283654 1.99525,-1.14962 5.541372,-5.185357 0.778823,-0.886355 1.464847,-1.631311 1.523471,-1.655244 0.103951,-0.04243 -0.958745,1.873795 -1.88758,3.402962 l -0.463514,0.762894 0.982512,1.118907 c 1.361607,1.550026 1.762947,2.168244 1.87718,2.8909 0.140727,0.890249 1.031579,2.359262 1.591669,2.625044 0.245017,0.116273 0.508752,0.211529 0.587195,0.211529 0.346237,0 0.09506,0.408121 -0.408029,0.662331 -0.735666,0.371726 -3.534521,1.929656 -6.328539,3.523174 -4.660234,2.657878 -4.93873,2.867867 -5.387642,4.043329 -0.297345,0.778581 -0.211187,2.005081 0.19766,2.807675 0.162576,0.319149 1.552939,2.536078 3.089714,4.927593 1.536778,2.391513 3.19839,4.990744 3.693093,5.776019 0.494704,0.785273 1.020051,1.558822 1.167457,1.718821 l 0.268168,0.291284 -0.313248,0.439243 c -0.172477,0.241311 -0.831122,0.985719 -1.463366,1.655244 -0.632245,0.669526 -1.201914,1.352418 -1.265708,1.517695 -0.217962,0.564695 -0.134662,1.18537 0.203437,1.523471 0.56683,0.56683 0.971699,0.445664 4.937993,-1.466835 3.465332,-1.670936 3.886196,-1.911456 4.082632,-2.341846 0.288362,-0.631762 0.04626,-1.643729 -0.621871,-2.599614 -0.133603,-0.191133 -0.922992,-1.676379 -1.753499,-3.300087 -0.830505,-1.623709 -1.911983,-3.696824 -2.40311,-4.607409 -1.448946,-2.686449 -1.990987,-3.823178 -1.877178,-3.933518 0.05885,-0.05705 1.508162,-0.608824 3.221486,-1.226409 8.738473,-3.14987 9.583108,-3.487268 10.510577,-4.19013 0.836543,-0.633951 1.538941,-1.572405 1.911854,-2.554532 0.413845,-1.089781 0.410519,-3.014784 -0.0069,-4.200531 l -0.288974,-0.821843 0.329432,-0.258922 c 0.181085,-0.142445 0.329429,-0.380033 0.329429,-0.528245 0,-0.511484 -1.858328,-3.712373 -3.864165,-6.655657 -1.499282,-2.199981 -2.990074,-4.075079 -4.725308,-5.941314 -2.021209,-2.1738 -3.404416,-3.023628 -5.492825,-3.376375 -0.968881,-0.163651 -0.973786,-0.166615 -1.265708,-0.745556 -0.17973,-0.35644 -0.393096,-0.595387 -0.553674,-0.618404 -0.0053,-7.62e-4 -0.01175,-4.28e-4 -0.01848,0 z m 29.18757,4.257171 c -10.08865,-5.21e-4 -9.990133,-0.0069 -10.459718,0.663484 -0.154295,0.220279 -0.211529,0.593458 -0.211529,1.376674 v 2.110669 6.958505 6.957346 l 0.441553,0.441553 0.440397,0.441553 9.650589,-0.0012 c 9.336399,-4.7e-4 9.664279,-0.0085 10.065555,-0.253142 0.275222,-0.167804 0.462461,-0.418456 0.557144,-0.745553 0.09771,-0.337697 0.131429,-2.577382 0.105185,-7.112237 l 0.02658,-6.485743 v -2.085239 c 0,-1.051305 -0.245656,-1.664311 -0.803348,-2.004327 -0.420459,-0.256397 -0.631158,-0.261911 -9.812417,-0.262387 z m -0.0046,0.666952 c 0.139977,0.01102 0.447023,0.147239 1.587049,0.705098 0.77714,0.380283 1.413206,0.699917 1.413659,0.710877 9.17e-4,0.02275 -8.005533,4.127855 -8.041576,4.123085 -0.01322,-0.0018 -0.732652,-0.354228 -1.598608,-0.782542 -0.865953,-0.42832 -1.566958,-0.785297 -1.558148,-0.7941 0.0089,-0.0089 1.817782,-0.90714 4.02021,-1.996235 3.9098,-1.933389 4.008041,-1.979505 4.177414,-1.966183 z m 4.538054,2.168463 1.81707,0.895822 c 0.999439,0.492302 1.80502,0.906123 1.790486,0.920093 -0.01454,0.0141 -1.602827,0.805037 -3.530113,1.758121 C 88.7026,36.5194 86.8732,37.425898 86.565746,37.579885 l -0.558298,0.279727 -1.696858,-0.835713 c -0.932878,-0.459413 -1.721075,-0.852346 -1.752341,-0.873858 -0.04673,-0.03217 0.659144,-0.40541 3.968196,-2.097954 z m 4.312654,2.991464 c 0.0077,0 0.01043,1.869554 0.0058,4.154296 l -0.0093,4.154296 -4.059512,2.123385 c -2.232597,1.167623 -4.078428,2.124223 -4.102281,2.125694 -0.03438,0.0022 -0.04193,-0.560317 -0.03814,-2.712892 0.0024,-1.493168 0.01381,-3.415297 0.02544,-4.271042 l 0.02196,-1.555837 4.069915,-2.00895 c 2.239045,-1.104928 4.078155,-2.00895 4.086098,-2.00895 z m -17.688702,0.01619 c 0.03341,0.01249 0.782446,0.377233 1.664494,0.810285 l 1.60323,0.787166 0.0023,1.509602 c 0.0019,1.690935 -1.79e-4,1.67455 0.2543,1.897984 0.30292,0.265974 0.813348,0.15928 0.990604,-0.206906 0.07061,-0.145823 0.07398,-0.200224 0.07398,-1.340842 0,-0.698675 0.01277,-1.184653 0.0312,-1.177857 0.01723,0.0065 0.821641,0.401656 1.78702,0.877325 l 1.754651,0.864611 v 4.277978 c 0,2.353243 -0.0032,4.277853 -0.0081,4.276819 -0.005,-0.001 -1.78938,-0.930615 -3.964729,-2.066746 -2.175347,-1.136129 -3.992099,-2.099568 -4.037551,-2.140721 -0.04547,-0.04115 -0.111589,-0.137495 -0.146807,-0.213839 -0.06107,-0.132326 -0.064,-0.325146 -0.06473,-4.158919 -7.27e-4,-3.814013 0.0023,-4.017763 0.06011,-3.99594 z m 11.113979,15.44279 h 1.9107 l -0.709723,0.728216 c -0.390195,0.400433 -1.048019,1.013655 -1.46221,1.362802 -0.529125,0.446022 -0.867385,0.634589 -1.136245,0.634589 -0.190739,0 -0.349305,-0.01219 -0.376824,-0.02774 h -0.0012 l -0.0012,-0.0012 -0.0012,-0.0012 -0.0012,-0.0012 v -0.0012 c 7.6e-4,-0.01785 0.08244,-0.299016 0.181475,-0.625341 0.162309,-0.534709 0.156184,-0.66289 -0.06589,-1.293448 -0.135528,-0.384819 -0.246204,-0.716886 -0.246204,-0.737464 0,-0.02065 0.858999,-0.037 1.90954,-0.037 z M 72.030356,60.621548 c 0.0306,-5.96e-4 0.05362,0.0059 0.06821,0.02081 0.06378,0.06531 0.233784,0.423104 0.379131,0.794099 l 0.2647,0.67389 -0.871545,0.58026 c -2.318505,1.541338 -4.050012,3.900386 -5.132186,6.994335 -0.05929,0.169504 -0.223393,0.227714 -0.646145,0.227714 -0.311591,0 -0.5993,-0.03407 -0.640367,-0.07514 -0.129549,-0.12955 0.761586,-2.582919 1.347776,-3.710429 0.727669,-1.399646 1.841023,-2.871708 2.937135,-3.881505 0.990906,-0.91288 1.997631,-1.618269 2.2933,-1.624036 z m -56.398555,3.407588 c 0.891585,-0.0063 1.800779,0.104962 2.433166,0.310938 l 0.412653,0.135233 -0.96055,1.960405 -0.960552,1.961557 -1.009096,0.01734 c -0.788367,0.01366 -1.171416,0.09254 -1.746563,0.357173 -1.425132,0.655713 -2.391237,1.86661 -2.70133,3.387937 -0.42229,2.071754 0.696663,4.195456 2.70133,5.127561 0.612792,0.284932 0.922378,0.342145 1.840191,0.3433 0.965224,0.0012 1.208416,-0.04861 1.946531,-0.398782 2.147106,-1.018595 3.148482,-3.17622 2.531416,-5.455838 -0.133898,-0.494643 -0.41413,-1.092852 -0.666954,-1.424066 -0.23987,-0.314245 -0.437973,-0.615185 -0.439241,-0.668108 -0.0049,-0.19996 1.875519,-3.925427 1.981208,-3.925427 0.230885,0 1.998721,1.923186 2.411204,2.62273 1.215065,2.060674 1.563788,4.766487 0.92125,7.152695 -0.210634,0.782224 -1.065558,2.393784 -1.665651,3.139418 -1.155438,1.43567 -3.142144,2.685321 -4.942617,3.108209 -1.033315,0.242772 -3.173925,0.245186 -4.164699,0.0046 -3.160326,-0.767329 -5.934917,-3.548629 -6.6672157,-6.68224 -0.2795642,-1.196302 -0.2577085,-3.112995 0.049708,-4.314965 0.9411781,-3.679971 4.0158117,-6.319403 7.8208027,-6.713452 0.282177,-0.02923 0.57782,-0.04412 0.875014,-0.04623 z m 63.544313,0.760581 c 1.491409,0.004 1.798615,0.04447 2.640069,0.347924 2.249552,0.811249 4.026154,2.377835 4.995791,4.403972 0.319706,0.668051 0.659915,1.535399 0.754801,1.928036 0.248072,1.026432 0.212529,3.137108 -0.06821,4.08841 -1.008304,3.416836 -3.985138,6.050304 -7.200087,6.368995 -0.402828,0.03994 -0.848984,0.08876 -0.991759,0.108652 -0.456252,0.06388 -1.986708,-0.152559 -2.692086,-0.381445 -2.665976,-0.865084 -4.864157,-3.010267 -5.742499,-5.603794 -0.161686,-0.477436 -0.276985,-0.897533 -0.260077,-0.945523 l 0.0012,-0.0012 v -0.0012 c 0.0293,-0.0499 3.974853,0.195626 4.030618,0.25083 0.0059,0.0058 0.19197,0.289394 0.412652,0.629962 1.146897,1.769961 3.436304,2.610503 5.435031,1.996236 3.59051,-1.103466 4.608565,-5.571408 1.850593,-8.124803 -0.898439,-0.831796 -1.886661,-1.246083 -3.100118,-1.299229 l -0.843803,-0.037 -0.671578,-1.737315 c -0.604202,-1.563472 -0.649472,-1.748767 -0.454267,-1.865616 0.119271,-0.07139 0.975713,-0.128464 1.903762,-0.125997 z m -43.903301,0.716655 c 0.0119,3.48e-4 0.02167,0.0044 0.0289,0.0116 0.04621,0.04602 0.90147,1.681283 1.900298,3.634141 0.998826,1.952863 1.993657,3.774361 2.211231,4.046799 0.210772,0.263926 0.361514,0.504547 0.343302,0.546738 l -0.0012,0.0012 v 0.0012 h -0.0012 c -0.104345,0.104345 -1.282285,-0.723634 -1.826316,-1.284201 -0.522632,-0.538576 -2.781318,-4.166336 -3.068877,-4.928776 -0.222013,-0.588641 -0.168586,-1.449135 0.110971,-1.793955 0.115289,-0.142211 0.23899,-0.236513 0.302845,-0.234648 z m 39.019633,0.727062 c 0.0093,-3.98e-4 0.01737,0.0012 0.02312,0.0046 0.0012,8.66e-4 0.0037,0.0036 0.0046,0.0046 0.0526,0.05542 0.391414,0.880617 0.753645,1.83441 l 0.658863,1.733847 -0.290131,0.368729 c -0.245011,0.31075 -0.380429,0.365189 -0.87386,0.356018 -0.846219,-0.01588 -3.416433,-0.231939 -3.476938,-0.292442 v -0.0012 c -0.06314,-0.09142 0.553957,-1.287629 1.003318,-1.940753 0.460987,-0.670021 1.94727,-2.057157 2.19736,-2.067901 z" />
-                      </svg>
-                    </div>`,
-                    iconSize: [40, 40],
-                    iconAnchor: [20, 20],
-                    popupAnchor: [0, -20],
-                });
-
-                const destinationIcon = L.divIcon({
-                    className: 'bg-transparent border-0',
-                    html: `<div class="flex items-center justify-center w-10 h-10 bg-gray-500 rounded-full border-2 border-white shadow-md">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
-                    </div>`,
-                    iconSize: [40, 40],
-                    iconAnchor: [20, 20],
-                    popupAnchor: [0, -20],
-                });
-
-                L.marker(driverLocation, { icon: driverIcon }).addTo(map)
-                    .bindPopup('<div class="text-black font-medium text-center">Sua localização</div>');
-
-                L.marker(deliveryLocation, { icon: destinationIcon }).addTo(map)
-                    .bindPopup(`<div class="text-black font-medium text-center">Destino:<br/><span class="text-gray-600">${productName}</span></div>`);
-
-                const drawFallbackRoute = () => {
-                    L.polyline([driverLocation, deliveryLocation], { color: mapMode === 'normal' ? 'black' : 'white', weight: 3, dashArray: '8, 8' }).addTo(map);
-                    map.fitBounds(L.latLngBounds([driverLocation, deliveryLocation]), { padding: [50, 50] });
-                };
-
-                const fetchRoute = async () => {
-                    try {
-                        const startLon = driverLocation[1];
-                        const startLat = driverLocation[0];
-                        const endLon = deliveryLocation[1];
-                        const endLat = deliveryLocation[0];
-                        const response = await fetch(
-                            `https://router.project-osrm.org/route/v1/driving/${startLon},${startLat};${endLon},${endLat}?overview=full&geometries=geojson`
-                        );
-                        if (!response.ok) throw new Error("Falha na API");
-                        const data = await response.json();
-                        if (data.routes && data.routes.length > 0) {
-                            const route = data.routes[0];
-                            const coords = route.geometry.coordinates.map(c => [c[1], c[0]]);
-                            const distMeters = route.distance;
-                            const distStr = distMeters >= 1000 ? `${(distMeters / 1000).toFixed(1)} km` : `${Math.round(distMeters)} m`;
-                            const durationMins = Math.round(route.duration / 60);
-                            const timeStr = `${durationMins} min`;
-                            const midpoint = coords[Math.floor(coords.length / 2)];
-                            const borderColor = mapMode === 'normal' ? 'black' : 'white';
-                            const fillColor = mapMode === 'normal' ? '#9ca3af' : '#4b5563';
-                            L.polyline(coords, { color: borderColor, weight: 8, opacity: 1, lineCap: 'round', lineJoin: 'round' }).addTo(map);
-                            L.polyline(coords, { color: fillColor, weight: 4, opacity: 1, lineCap: 'round', lineJoin: 'round' }).addTo(map);
-                            const infoLabelIcon = L.divIcon({
-                                className: 'bg-transparent border-0',
-                                html: `<div class="bg-white border-2 border-black text-black font-bold text-xs py-1.5 px-3 rounded-full shadow-lg whitespace-nowrap flex items-center gap-2">
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
-                                  <span>${timeStr}</span>
-                                  <span class="text-gray-500 font-normal border-l border-gray-300 pl-2">${distStr}</span>
-                                </div>`,
-                                iconSize: [120, 30],
-                                iconAnchor: [60, 15],
-                            });
-                            L.marker(midpoint, { icon: infoLabelIcon, zIndexOffset: 1000 }).addTo(map);
-                            map.fitBounds(L.latLngBounds(coords), { padding: [50, 50] });
-                        } else {
-                            drawFallbackRoute();
-                        }
-                    } catch (error) {
-                        console.error("Erro ao buscar rota:", error);
-                        drawFallbackRoute();
-                    }
-                };
-                fetchRoute();
-            }, [driverLocation, deliveryLocation, productName, mapMode]);
-
-            return (
-                <div className="relative w-full h-full">
+      // ===================== TELA DASHBOARD (do primeiro código - lista de entregas) =====================
+      if (view === 'dashboard') {
+        return (
+          <div className="min-h-screen bg-gray-100">
+            <header className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-10">
+              <div className="flex items-center gap-2">
+                <div className="bg-black p-2 rounded-md text-white"><IconPackage /></div>
+                <h1 className="text-xl font-bold text-black">Entregas Disponíveis - Manaus</h1>
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-medium text-gray-600">Motoboy Teste</span>
+                <button className="text-gray-500 hover:text-black p-2 rounded-md hover:bg-gray-100" title="Sair">
+                  <IconLogOut />
+                </button>
+              </div>
+            </header>
+            <main className="p-6 max-w-4xl mx-auto">
+              <div className="grid gap-4">
+                {MOCK_DELIVERIES.map(delivery => (
+                  <div key={delivery.id} className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="bg-gray-100 text-black text-xs font-bold px-2 py-1 rounded">#{delivery.id}</span>
+                        <h3 className="font-bold text-lg text-black">{delivery.product}</h3>
+                      </div>
+                      <div className="flex items-center gap-4 text-sm text-gray-600">
+                        <div className="flex items-center gap-1"><IconMapPin /> {delivery.distance}</div>
+                        <div className="font-bold text-black">{delivery.payout}</div>
+                      </div>
+                      <p className="text-sm text-gray-500">{delivery.address}</p>
+                    </div>
                     <button
-                        onClick={() => setMapMode(prev => prev === 'normal' ? 'satellite' : 'normal')}
-                        className="absolute top-4 right-4 z-[400] bg-white text-black p-2 rounded-md shadow-md border border-gray-200 flex items-center gap-2 hover:bg-gray-100 transition-colors"
+                      onClick={() => acceptDelivery(delivery)}
+                      className="w-full sm:w-auto bg-black text-white px-6 py-3 rounded-md font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
                     >
-                        <IconLayers />
-                        <span className="text-sm font-bold">{mapMode === 'normal' ? 'Satélite' : 'Mapa'}</span>
+                      <IconCheck /> Aceitar Entrega
                     </button>
-                    <div ref={mapContainerRef} className="w-full h-full z-0"></div>
+                  </div>
+                ))}
+              </div>
+            </main>
+          </div>
+        );
+      }
+
+      // ===================== TELA DE CONTROLE COMPLETA (do segundo código - com mapa, tabs, chat, carteira, QR, etc) =====================
+      if (view === 'control' && activeDelivery) {
+        return (
+          <div className="flex flex-col h-screen bg-gray-50 text-gray-900 font-sans overflow-hidden">
+            {/* Header do controle */}
+            <header className="bg-black text-white p-4 flex justify-between items-center shrink-0 z-10 shadow-md">
+              <div className="flex items-center gap-2">
+                <IconNav />
+                <h1 className="font-bold text-lg tracking-tight">Control Web - {activeDelivery.id}</h1>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-mono text-gray-400">Motoboy: Teste</span>
+                <button onClick={resetToDashboard} className="text-sm bg-white/10 hover:bg-white/20 px-3 py-1 rounded-md">Voltar às entregas</button>
+              </div>
+            </header>
+
+            <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
+              {/* Mapa (do segundo código + ícone do primeiro) */}
+              <div className="h-[50vh] lg:h-full lg:w-[60%] relative flex-shrink-0 border-b lg:border-b-0 lg:border-r border-gray-200">
+                <DeliveryMap motoboyPos={motoboyPos} clientPos={activeDelivery.coords} productName={activeDelivery.product} />
+                
+                <div className="absolute top-4 left-4 z-[1000] bg-white/90 backdrop-blur-sm p-3 rounded-xl shadow-lg border border-gray-200 flex items-center gap-3">
+                  <div className="bg-black text-white p-2 rounded-lg"><IconMapPin /></div>
+                  <div>
+                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Distância restante</p>
+                    <p className="font-bold text-lg leading-none">{distance}m</p>
+                  </div>
                 </div>
-            );
-        }
 
-        function App() {
-            const [view, setView] = useState('dashboard');
-            const [user] = useState({ name: 'Motoboy Teste' });
-            const [activeDelivery, setActiveDelivery] = useState(null);
+                <button 
+                  onClick={handleSimulateMovement}
+                  disabled={statusIndex === 6}
+                  className="absolute bottom-6 right-4 z-[1000] bg-black hover:bg-gray-800 text-white px-4 py-3 rounded-full shadow-xl font-medium flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <IconNav /> Simular Movimento
+                </button>
+              </div>
 
-            const handleLogout = () => {
-                alert('Logout simulado (sistema em desenvolvimento - sem restrições de acesso)');
-            };
+              {/* Painel de controles (tabs) */}
+              <div className="flex-1 flex flex-col bg-white overflow-hidden">
+                <div className="flex border-b border-gray-200 shrink-0">
+                  <button onClick={() => setActiveTab("entrega")} className={`flex-1 py-4 text-sm font-medium border-b-2 transition-colors ${activeTab === "entrega" ? "border-black text-black" : "border-transparent text-gray-500 hover:text-gray-700"}`}>Entrega Atual</button>
+                  <button onClick={() => setActiveTab("chat")} className={`flex-1 py-4 text-sm font-medium border-b-2 transition-colors ${activeTab === "chat" ? "border-black text-black" : "border-transparent text-gray-500 hover:text-gray-700"}`}>Chat</button>
+                  <button onClick={() => setActiveTab("carteira")} className={`flex-1 py-4 text-sm font-medium border-b-2 transition-colors ${activeTab === "carteira" ? "border-black text-black" : "border-transparent text-gray-500 hover:text-gray-700"}`}>Carteira</button>
+                </div>
 
-            const acceptDelivery = (delivery) => {
-                // Chama a função de carregamento de corrida (usa o mock database)
-                carregarCorrida(delivery.id);
-                setActiveDelivery(delivery);
-                setView('delivery');
-            };
-
-            const finishDelivery = () => {
-                setActiveDelivery(null);
-                setView('dashboard');
-                alert('Entrega finalizada com sucesso!');
-            };
-
-            // Tela Dashboard (inicia direto aqui - sem login)
-            if (view === 'dashboard') {
-                return (
-                    <div className="min-h-screen bg-gray-100">
-                        <header className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-10">
-                            <div className="flex items-center gap-2">
-                                <div className="bg-black p-2 rounded-md text-white"><IconPackage /></div>
-                                <h1 className="text-xl font-bold text-black">Entregas Disponíveis</h1>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <span className="text-sm font-medium text-gray-600 hidden sm:inline-block">Olá, {user?.name}</span>
-                                <button onClick={handleLogout} className="text-gray-500 hover:text-black transition-colors p-2 rounded-md hover:bg-gray-100" title="Sair">
-                                    <IconLogOut />
-                                </button>
-                            </div>
-                        </header>
-                        <main className="p-6 max-w-4xl mx-auto">
-                            <div className="grid gap-4">
-                                {MOCK_DELIVERIES.map(delivery => (
-                                    <div key={delivery.id} className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                        <div className="space-y-2">
-                                            <div className="flex items-center gap-2">
-                                                <span className="bg-gray-100 text-black text-xs font-bold px-2 py-1 rounded">#{delivery.id}</span>
-                                                <h3 className="font-bold text-lg text-black">{delivery.product}</h3>
-                                            </div>
-                                            <div className="flex items-center gap-4 text-sm text-gray-600">
-                                                <div className="flex items-center gap-1"><IconMapPin /> {delivery.distance}</div>
-                                                <div className="font-bold text-black">{delivery.payout}</div>
-                                            </div>
-                                            <p className="text-sm text-gray-500">{delivery.address}</p>
-                                        </div>
-                                        <button onClick={() => acceptDelivery(delivery)} className="w-full sm:w-auto bg-black text-white px-6 py-3 rounded-md font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2">
-                                            <IconCheck /> Aceitar Entrega
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        </main>
-                    </div>
-                );
-            }
-
-            // Tela de Entrega em Andamento
-            if (view === 'delivery' && activeDelivery) {
-                // Usa coordenadas do MOCK_COORDS (garantia de precisão)
-                const deliveryCoords = MOCK_COORDS[activeDelivery.id] || [-3.035510, -59.982540];
-
-                return (
-                    <div className="h-[100dvh] flex flex-col bg-white">
-                        <header className="bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center z-10 shadow-sm">
-                            <div>
-                                <h1 className="text-lg font-bold text-black">Entrega em Andamento</h1>
-                                <p className="text-xs text-gray-500">Pedido #{activeDelivery.id} • {activeDelivery.product}</p>
-                            </div>
-                            <button onClick={() => setView('dashboard')} className="text-sm font-medium text-gray-500 hover:text-black">Voltar</button>
-                        </header>
-                        <div className="flex-1 relative bg-gray-100">
-                            <DeliveryMap
-                                driverLocation={DRIVER_START_LOCATION}
-                                deliveryLocation={deliveryCoords}
-                                productName={activeDelivery.product}
-                            />
-                        </div>
-                        <div className="bg-white border-t border-gray-200 p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-10 delivery-bottom-panel">
-                            <div className="max-w-md mx-auto space-y-4">
-                                <div className="flex justify-between items-center">
-                                    <div>
-                                        <p className="text-sm text-gray-500">Destino</p>
-                                        <p className="font-bold text-black">{activeDelivery.address}</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-sm text-gray-500">Ganhos</p>
-                                        <p className="font-bold text-black text-lg">{activeDelivery.payout}</p>
-                                    </div>
+                <div className="flex-1 overflow-y-auto p-4 lg:p-6 bg-gray-50">
+                  {/* TAB ENTREGA */}
+                  {activeTab === "entrega" && (
+                    <div className="space-y-6 max-w-md mx-auto">
+                      <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                        <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                          <IconCheckCircle className="w-5 h-5" /> Status do Pedido
+                        </h2>
+                        <div className="space-y-0 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
+                          {["No Carrinho", "Pago", "Motoboy Aceitou", "Em Rota", "Proximidade (2 min)", "Aguardando Handshake", "Finalizado"].map((step, idx) => {
+                            const isCompleted = idx <= statusIndex;
+                            const isCurrent = idx === statusIndex;
+                            return (
+                              <div key={step} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group pb-4 last:pb-0">
+                                <div className={`flex items-center justify-center w-4 h-4 rounded-full border-2 bg-white z-10 shrink-0 ${isCompleted ? "border-black bg-black" : "border-gray-300"} ${isCurrent ? "ring-4 ring-gray-100" : ""}`}>
+                                  {isCompleted && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
                                 </div>
-                                <button onClick={finishDelivery} className="w-full bg-black text-white py-3 rounded-md font-bold text-lg hover:bg-gray-800 transition-colors shadow-md">
-                                    Finalizar Entrega
-                                </button>
-                            </div>
+                                <div className={`w-[calc(100%-2.5rem)] md:w-[calc(50%-2.5rem)] p-3 rounded-xl border ${isCurrent ? "bg-black text-white border-black shadow-md" : isCompleted ? "bg-gray-50 border-gray-200 text-gray-700" : "bg-white border-gray-100 text-gray-400"}`}>
+                                  <p className="text-sm font-medium">{step}</p>
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
+                      </div>
+
+                      <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                        <h2 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                          <IconQrCode /> Handshake de Segurança
+                        </h2>
+                        <p className="text-sm text-gray-500 mb-4">QR Code liberado quando você estiver a menos de 10 metros.</p>
+                        
+                        {!showQR && statusIndex < 6 && (
+                          <button onClick={handleGenerateQR} disabled={distance > 10} className="w-full py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed bg-black text-white hover:bg-gray-800 active:scale-[0.98]">
+                            <IconQrCode /> Gerar QR Code
+                          </button>
+                        )}
+
+                        {showQR && (
+                          <div className="flex flex-col items-center p-4 border border-gray-200 rounded-xl bg-gray-50">
+                            <div className="bg-white p-3 rounded-lg shadow-sm mb-3">
+                              <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${trackingCode}`} alt="QR" width="150" height="150" />
+                            </div>
+                            <p className="font-mono font-bold text-lg tracking-widest">{trackingCode}</p>
+                            <p className="text-xs text-gray-500 mt-1 mb-4">Válido por 5 minutos</p>
+                            <button onClick={handleSimulateScan} className="w-full py-2.5 rounded-lg font-medium bg-gray-200 hover:bg-gray-300 text-gray-800 transition-colors text-sm">
+                              Simular Scan do Cliente
+                            </button>
+                          </div>
+                        )}
+
+                        {statusIndex === 6 && (
+                          <div className="p-4 bg-gray-100 rounded-xl text-center">
+                            <div className="flex justify-center mb-2 text-black"><IconCheckCircle className="w-8 h-8" /></div>
+                            <p className="font-bold text-gray-900">Entrega Finalizada</p>
+                            <button onClick={resetToDashboard} className="mt-3 text-sm text-gray-500 underline">Voltar para novas entregas</button>
+                          </div>
+                        )}
+                      </div>
+
+                      <button onClick={finishDelivery} className="w-full bg-black text-white py-3 rounded-md font-bold text-lg hover:bg-gray-800 transition-colors shadow-md mt-4">
+                        Finalizar Entrega
+                      </button>
                     </div>
-                );
-            }
+                  )}
 
-            return null;
-        }
+                  {/* TAB CHAT */}
+                  {activeTab === "chat" && (
+                    <div className="flex flex-col h-full max-w-md mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                      <div className="p-4 border-b border-gray-100 bg-gray-50 flex items-center gap-2">
+                        <IconMessage />
+                        <h2 className="font-bold text-gray-900">Chat do Pedido #{activeDelivery.id}</h2>
+                      </div>
+                      <div className="flex-1 p-4 overflow-y-auto space-y-4">
+                        {messages.map((msg) => {
+                          const isMe = msg.sender === "Motoboy";
+                          const isAdm = msg.sender === "ADM";
+                          return (
+                            <div key={msg.id} className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
+                              <span className="text-[10px] uppercase font-bold text-gray-400 mb-1 ml-1">{msg.sender}</span>
+                              <div className={`px-4 py-2 rounded-2xl max-w-[85%] text-sm ${isMe ? "bg-black text-white rounded-tr-sm" : isAdm ? "bg-gray-200 text-gray-900 rounded-tl-sm font-medium" : "bg-gray-100 text-gray-800 rounded-tl-sm border border-gray-200"}`}>
+                                {msg.text}
+                              </div>
+                              <span className="text-[10px] text-gray-400 mt-1 mr-1">{msg.time}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <form onSubmit={handleSendMessage} className="p-3 border-t border-gray-100 flex gap-2 bg-white">
+                        <input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)} placeholder="Digite uma mensagem..." className="flex-1 bg-gray-100 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/20" />
+                        <button type="submit" disabled={!chatInput.trim()} className="bg-black text-white p-2 rounded-full disabled:opacity-50 transition-transform active:scale-95">
+                          <IconSend />
+                        </button>
+                      </form>
+                    </div>
+                  )}
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
+                  {/* TAB CARTEIRA */}
+                  {activeTab === "carteira" && (
+                    <div className="space-y-6 max-w-md mx-auto">
+                      <div className="bg-black text-white p-6 rounded-3xl shadow-lg relative overflow-hidden">
+                        <h2 className="text-gray-400 font-medium text-sm mb-1 flex items-center gap-2"><IconWallet /> Saldo Disponível</h2>
+                        <p className="text-4xl font-bold tracking-tight">R$ {walletBalance.toFixed(2).replace('.', ',')}</p>
+                        <button onClick={handleWithdraw} disabled={walletBalance <= 0 || withdrawing} className="mt-6 w-full bg-white text-black py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all hover:bg-gray-100 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
+                          {withdrawing ? "Processando..." : "Sacar via Pix"} {!withdrawing && <IconArrowRight />}
+                        </button>
+                      </div>
+                      <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                        <h3 className="font-bold text-gray-900 mb-2">Resgatar Comissão</h3>
+                        <p className="text-sm text-gray-500 mb-4">Insira o código da entrega finalizada</p>
+                        <div className="flex gap-2">
+                          <input type="text" value={walletInput} onChange={(e) => setWalletInput(e.target.value.toUpperCase())} placeholder="Ex: MN02041430" className="flex-1 border border-gray-300 rounded-xl px-4 py-2 font-mono uppercase focus:outline-none focus:border-black focus:ring-1 focus:ring-black" />
+                          <button onClick={handleRedeem} disabled={!walletInput.trim()} className="bg-black text-white px-5 py-2 rounded-xl font-medium disabled:opacity-50 transition-transform active:scale-95">Resgatar</button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Popup de comissão */}
+            {showCommissionPopup && (
+              <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[2000] flex items-center justify-center p-4">
+                <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl animate-zoom-in">
+                  <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <IconCheckCircle className="w-8 h-8 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-center text-gray-900 mb-2">Entrega Concluída!</h2>
+                  <p className="text-center text-gray-500 mb-6">Copie o código abaixo para resgatar na carteira.</p>
+                  <div onClick={handleCopyCode} className="bg-gray-100 p-4 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-gray-200 transition-colors group border border-gray-200 border-dashed">
+                    <span className="font-mono font-bold text-xl tracking-widest text-black">{commissionCode}</span>
+                    <div className="bg-white p-2 rounded-lg shadow-sm group-hover:shadow transition-all">
+                      {copied ? <IconCheck /> : <IconCopy />}
+                    </div>
+                  </div>
+                  <button onClick={() => { setShowCommissionPopup(false); setActiveTab("carteira"); setWalletInput(commissionCode); }} className="w-full mt-6 bg-black text-white py-3.5 rounded-xl font-bold transition-transform active:scale-95">
+                    Ir para Carteira
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      return null;
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
 </body>
 </html>
