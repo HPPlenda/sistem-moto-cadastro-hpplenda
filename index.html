@@ -46,7 +46,7 @@
         ];
         const DRIVER_START_LOCATION = [-3.078, -59.995]; // Av. Des. João Machado, 9 - Alvorada 2, Manaus - AM, 69043-000
 
-        // Map Component (mantido 100% igual ao original)
+        // Map Component (mantido 100% igual ao original, apenas correções solicitadas no Leaflet)
         function DeliveryMap({ driverLocation, deliveryLocation, productName }) {
             const mapContainerRef = useRef(null);
             const mapInstanceRef = useRef(null);
@@ -59,6 +59,14 @@
                         attributionControl: false
                     });
                     mapInstanceRef.current.setView(DRIVER_START_LOCATION, 13);
+
+                    // 1. Implemente map.invalidateSize() logo após a inicialização
+                    // 3. Adicione um pequeno delay (setTimeout) para garantir que o container DOM esteja visível
+                    setTimeout(() => {
+                        if (mapInstanceRef.current) {
+                            mapInstanceRef.current.invalidateSize();
+                        }
+                    }, 100);
                 }
                 return () => {
                     if (mapInstanceRef.current) {
