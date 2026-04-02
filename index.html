@@ -38,13 +38,13 @@
         const IconLogOut = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>;
         const IconUser = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
 
-        // Mock Data (mantido exatamente como no original)
+        // Mock Data ATUALIZADO (apenas endereços, IDs com MO e coordenadas de Manaus)
         const MOCK_DELIVERIES = [
-            { id: '1042', product: 'Documentos Confidenciais', distance: '3.2 km', payout: 'R$ 12,50', address: 'Av. Paulista, 1000', coords: [-23.564, -46.652] },
-            { id: '1043', product: 'Peças de Computador', distance: '5.8 km', payout: 'R$ 18,00', address: 'Rua Santa Ifigênia, 250', coords: [-23.538, -46.636] },
-            { id: '1044', product: 'Roupas de Loja', distance: '2.1 km', payout: 'R$ 9,00', address: 'Rua Oscar Freire, 800', coords: [-23.561, -46.669] },
+            { id: 'MO1042', product: 'Documentos Confidenciais', distance: '3.2 km', payout: 'R$ 12,50', address: 'R. Esperança, 81 - Cidade Nova, Manaus - AM, 69097-182', coords: [-3.102, -60.012] },
+            { id: 'MO1043', product: 'Peças de Computador', distance: '5.8 km', payout: 'R$ 18,00', address: 'Av. Atroaris, 930 - Cj Cidade Nova I, Manaus - AM, 69090-625', coords: [-3.092, -60.018] },
+            { id: 'MO1044', product: 'Roupas de Loja', distance: '2.1 km', payout: 'R$ 9,00', address: 'Beco São Lucas, 105 - Compensa, Manaus - AM, 69035-000', coords: [-3.128, -60.065] },
         ];
-        const DRIVER_START_LOCATION = [-23.5505, -46.6333];
+        const DRIVER_START_LOCATION = [-3.078, -59.995]; // R. 23, 8 - Planalto, Manaus - AM, 69044-700
 
         // Map Component (mantido 100% igual ao original)
         function DeliveryMap({ driverLocation, deliveryLocation, productName }) {
