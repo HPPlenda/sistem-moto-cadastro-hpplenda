@@ -182,7 +182,7 @@
             border-radius: 0 999px 999px 0;
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 3px; /* DISTÂNCIA EXATAMENTE 3PX ENTRE FOTO E TEXTO CONFORME SOLICITADO */
             cursor: pointer;
             transition: all 0.2s;
             color: var(--black);
@@ -207,12 +207,13 @@
             border: 2px solid var(--black);
             box-shadow: none;
         }
-        /* TEXTO DA ABA LATERAL EM UMA LINHA SÓ E MENOR PARA CABER PERFEITAMENTE */
+        /* TEXTO DA ABA LATERAL EM UMA LINHA SÓ E MENOR PARA CABER PERFEITAMENTE + RESPONSIVO */
         .user-profile > div:last-of-type {
             font-size: 13px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            line-height: 1;
         }
         body.dark .user-profile > div:last-of-type,
         body.dim .user-profile > div:last-of-type {
@@ -353,6 +354,16 @@
             }
             .header .mode-btn {
                 display: none;
+            }
+
+            /* === NOVO: RESPONSIVIDADE DO BOTÃO ONLINE/OFFLINE (Home) === */
+            /* Diminui fonte e padding para evitar vazamento do texto em telas menores */
+            .status-toggle {
+                font-size: 17px;
+                padding: 16px 20px;
+            }
+            #statusLabel {
+                font-size: 17px;
             }
         }
         @media (min-width: 862px) {
@@ -683,7 +694,7 @@
             border-color: var(--gray-300);
         }
 
-        /* Toggle Online/Offline - grande e claro */
+        /* Toggle Online/Offline - grande e claro + SEM QUEBRA DE LINHA + RESPONSIVO */
         .status-toggle {
             width: 100%;
             padding: 20px 24px;
@@ -695,6 +706,7 @@
             justify-content: center;
             gap: 12px;
             transition: all 0.3s;
+            white-space: nowrap;
         }
         .status-toggle.online {
             background-color: var(--green);
@@ -704,8 +716,11 @@
             background-color: var(--red);
             color: #fff;
         }
+        #statusLabel {
+            white-space: nowrap;
+        }
 
-        /* Cards de resumo para Ganhos e Histórico */
+        /* Cards de resumo para Ganhos e Histórico - VALORES SEM QUEBRA DE LINHA + RESPONSIVO */
         .summary-card {
             background-color: var(--white);
             border: 2px solid var(--gray-300);
@@ -717,6 +732,15 @@
         body.dim .summary-card {
             background-color: transparent;
             border-color: var(--gray-300);
+        }
+        .summary-card h2 {
+            white-space: nowrap;
+            font-size: 32px;
+        }
+        @media (max-width: 861px) {
+            .summary-card h2 {
+                font-size: 22px; /* reduzido ainda mais para evitar vazamento do texto em telas menores */
+            }
         }
 
         /* Modal de Nova Chamada */
@@ -748,14 +772,16 @@
         }
 
         /* ==================== NOVO: ESTILO EXCLUSIVO PARA BOTÃO FLUTUANTE DE CHAT (Pedido Ativo) ==================== */
+        /* Alterado conforme solicitado: sempre preto (var(--black)) + fundo transparente em TODOS os modos */
+        /* O var(--black) muda automaticamente com o tema (branco no dark/dim) */
         .chat-float-btn {
-            background-color: var(--green);
-            color: #fff;
-            border: none;
+            background-color: transparent;
+            border: 2px solid var(--black);
+            color: var(--black);
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            box-shadow: 0 4px 15px rgba(16,185,129,0.4);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -765,12 +791,7 @@
         }
         .chat-float-btn:hover {
             transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(16,185,129,0.5);
-        }
-        body.dark .chat-float-btn,
-        body.dim .chat-float-btn {
-            background-color: var(--green);
-            box-shadow: 0 4px 15px rgba(16,185,129,0.6);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
         .chat-float-btn svg {
             width: 32px;
@@ -921,8 +942,8 @@
                         <div id="routeMap" class="leaflet-map-container" style="height: 320px;"></div>
                     </div>
 
-                    <!-- Botão flutuante de Chat com SVG (apenas nesta seção, muda de cor conforme tema) -->
-                    <button onclick="abrirChatRapido()" class="chat-float-btn" style="position: fixed; bottom: 90px; right: 20px;">
+                    <!-- Botão flutuante de Chat TRANSPARENTE + DRAGGABLE + ícone preto/branco conforme tema -->
+                    <button id="chatFloatBtn" onclick="abrirChatRapido()" class="chat-float-btn" style="position: fixed; bottom: 90px; right: 20px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                     </button>
 
@@ -968,14 +989,14 @@
                                 <strong>1,8 km</strong><br>
                                 <small style="color: var(--gray-500);">14:22 • Loja do João → Maria</small>
                             </div>
-                            <div style="text-align: right; color: var(--green); font-weight: 700;">+ R$ 8,00</div>
+                            <div style="text-align: right; color: var(--green); font-weight: 700; white-space: nowrap;">+ R$ 8,00</div>
                         </div>
                         <div style="padding: 16px; background: var(--gray-100); border-radius: 10px; display: flex; justify-content: space-between;">
                             <div>
                                 <strong>4,2 km</strong><br>
                                 <small style="color: var(--gray-500);">13:05 • Supermercado → Pedro</small>
                             </div>
-                            <div style="text-align: right; color: var(--green); font-weight: 700;">+ R$ 12,00</div>
+                            <div style="text-align: right; color: var(--green); font-weight: 700; white-space: nowrap;">+ R$ 12,00</div>
                         </div>
                     </div>
 
@@ -1082,31 +1103,10 @@
                             <label for="profileEmail">E-mail</label>
                             <input type="email" id="profileEmail" class="form-control" placeholder="ex: seu@gmail.com">
                         </div>
-                        <!-- Tipo de Documento -->
+                        <!-- CPF (único campo de documento - removido Tipo de Documento e PJ) -->
                         <div class="form-group">
-                            <label for="tipoPessoa">Tipo de Documento</label>
-                            <select id="tipoPessoa" class="form-control">
-                                <option value="PF">Pessoa Física (CPF)</option>
-                                <option value="PJ">Pessoa Jurídica (CNPJ)</option>
-                            </select>
-                        </div>
-                        <!-- PF Section -->
-                        <div id="pfSection">
-                            <div class="form-group">
-                                <label for="cpfInput">CPF</label>
-                                <input type="text" id="cpfInput" class="form-control">
-                            </div>
-                        </div>
-                        <!-- PJ Section -->
-                        <div id="pjSection" style="display: none;">
-                            <div class="form-group">
-                                <label for="razaoSocialInput">Razão Social</label>
-                                <input type="text" id="razaoSocialInput" class="form-control" placeholder="Nome da Empresa">
-                            </div>
-                            <div class="form-group">
-                                <label for="cnpjInput">CNPJ</label>
-                                <input type="text" id="cnpjInput" class="form-control" placeholder="00.000.000/0000-00">
-                            </div>
+                            <label for="cpfInput">CPF</label>
+                            <input type="text" id="cpfInput" class="form-control">
                         </div>
                         <!-- Telefone -->
                         <div class="form-group">
@@ -1173,10 +1173,7 @@
             foto: '',
             nome: '',
             email: '',
-            tipo: 'PF',
             cpf: '',
-            razaoSocial: '',
-            cnpj: '',
             telefone: '',
             placa: '',
             cnh: ''
@@ -1199,12 +1196,7 @@
         const profileImagePreview = document.getElementById('profileImagePreview');
         const profileNomeInput = document.getElementById('profileNome');
         const profileEmailInput = document.getElementById('profileEmail');
-        const tipoPessoaSelect = document.getElementById('tipoPessoa');
-        const pfSection = document.getElementById('pfSection');
-        const pjSection = document.getElementById('pjSection');
         const cpfInput = document.getElementById('cpfInput');
-        const razaoSocialInput = document.getElementById('razaoSocialInput');
-        const cnpjInput = document.getElementById('cnpjInput');
         const telefoneInput = document.getElementById('telefoneInput');
         const placaInput = document.getElementById('placaInput');
         const cnhInput = document.getElementById('cnhInput');
@@ -1214,6 +1206,7 @@
         const statusIcon = document.getElementById('statusIcon');
         const statusLabel = document.getElementById('statusLabel');
         const novaChamadaModal = document.getElementById('novaChamadaModal');
+        const chatFloatBtn = document.getElementById('chatFloatBtn');
 
         // ==================== FUNÇÕES AUXILIARES ====================
         const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString('pt-BR');
@@ -1253,7 +1246,7 @@
             updatePhotoButtons();
         }
 
-        // ==================== MÁSCARAS (CPF, CNPJ, TELEFONE, PLACA, CNH) ====================
+        // ==================== MÁSCARAS (CPF, TELEFONE, PLACA, CNH) ====================
         telefoneInput.addEventListener('input', () => {
             let val = telefoneInput.value.replace(/\D/g, '').slice(0, 11);
             let formatted = '';
@@ -1271,15 +1264,6 @@
             if (val.length > 9) formatted = formatted.slice(0,11) + '-' + val.slice(9);
             cpfInput.value = formatted;
         });
-        cnpjInput.addEventListener('input', () => {
-            let val = cnpjInput.value.replace(/\D/g, '').slice(0, 14);
-            let formatted = val;
-            if (val.length > 2) formatted = val.slice(0,2) + '.' + val.slice(2);
-            if (val.length > 5) formatted = formatted.slice(0,6) + '.' + val.slice(5);
-            if (val.length > 8) formatted = formatted.slice(0,10) + '/' + val.slice(8);
-            if (val.length > 12) formatted = formatted.slice(0,15) + '-' + val.slice(12);
-            cnpjInput.value = formatted;
-        });
         // Máscara simples para placa (maiúscula, só letras e números)
         placaInput.addEventListener('input', () => {
             let val = placaInput.value.replace(/[^A-Z0-9]/gi, '').toUpperCase().slice(0, 8);
@@ -1291,12 +1275,11 @@
             cnhInput.value = val;
         });
 
-        // ==================== VALIDAÇÃO DO FORMULÁRIO DE PERFIL ====================
+        // ==================== VALIDAÇÃO DO FORMULÁRIO DE PERFIL (agora só com CPF) ====================
         function isValidProfile() {
             const nome = profileNomeInput.value.trim();
             const email = profileEmailInput.value.trim().toLowerCase();
             const telefone = telefoneInput.value.trim();
-            const tipo = tipoPessoaSelect.value;
             const placa = placaInput.value.trim();
             const cnh = cnhInput.value.trim();
             const words = nome.split(/\s+/).filter(w => w.length > 0);
@@ -1306,45 +1289,22 @@
             const emailValid = emailRegex.test(email) && domainValid;
             const telDigits = telefone.replace(/\D/g, '').length;
             const telValid = telDigits === 11;
-            let docValid = false;
-            if (tipo === 'PF') {
-                const cpfDigits = cpfInput.value.replace(/\D/g, '').length;
-                docValid = cpfDigits === 11;
-            } else {
-                const razaoValid = razaoSocialInput.value.trim().length > 3;
-                const cnpjDigits = cnpjInput.value.replace(/\D/g, '').length;
-                docValid = razaoValid && cnpjDigits === 14;
-            }
+            const cpfDigits = cpfInput.value.replace(/\D/g, '').length;
+            const cpfValid = cpfDigits === 11;
             const placaValid = placa.length >= 5;
             const cnhDigits = cnh.replace(/\D/g, '').length;
             const cnhValid = cnhDigits === 11;
-            return nomeValid && emailValid && telValid && docValid && placaValid && cnhValid;
+            return nomeValid && emailValid && telValid && cpfValid && placaValid && cnhValid;
         }
         function checkAndEnableButton() {
             updateProfileBtn.disabled = !isValidProfile();
         }
 
-        // ==================== TOGGLE PF / PJ ====================
-        function toggleDocSections() {
-            const tipo = tipoPessoaSelect.value;
-            pfSection.style.display = tipo === 'PF' ? 'block' : 'none';
-            pjSection.style.display = tipo === 'PJ' ? 'block' : 'none';
-            checkAndEnableButton();
-        }
-        tipoPessoaSelect.addEventListener('change', toggleDocSections);
-
         // ==================== CARREGAR PERFIL NO FORMULÁRIO ====================
         function loadProfileForm() {
             profileNomeInput.value = userProfile.nome || '';
             profileEmailInput.value = userProfile.email || '';
-            tipoPessoaSelect.value = userProfile.tipo || 'PF';
-            toggleDocSections();
-            if (userProfile.tipo === 'PF') {
-                cpfInput.value = userProfile.cpf || '';
-            } else {
-                razaoSocialInput.value = userProfile.razaoSocial || '';
-                cnpjInput.value = userProfile.cnpj || '';
-            }
+            cpfInput.value = userProfile.cpf || '';
             telefoneInput.value = userProfile.telefone || '';
             placaInput.value = userProfile.placa || '';
             cnhInput.value = userProfile.cnh || '';
@@ -1376,16 +1336,7 @@
             userProfile.foto = currentProfileBase64 || userProfile.foto;
             userProfile.nome = profileNomeInput.value.trim();
             userProfile.email = profileEmailInput.value.trim();
-            userProfile.tipo = tipoPessoaSelect.value;
-            if (userProfile.tipo === 'PF') {
-                userProfile.cpf = cpfInput.value.trim();
-                userProfile.razaoSocial = '';
-                userProfile.cnpj = '';
-            } else {
-                userProfile.razaoSocial = razaoSocialInput.value.trim();
-                userProfile.cnpj = cnpjInput.value.trim();
-                userProfile.cpf = '';
-            }
+            userProfile.cpf = cpfInput.value.trim();
             userProfile.telefone = telefoneInput.value.trim();
             userProfile.placa = placaInput.value.trim();
             userProfile.cnh = cnhInput.value.trim();
@@ -1436,6 +1387,16 @@
                 if (target === 'home') {
                     setTimeout(initHomeMap, 300);
                 }
+
+                // Torna o botão de chat DRAGGABLE quando abre Pedido Ativo
+                if (target === 'pedidoAtivo' && chatFloatBtn) {
+                    setTimeout(() => {
+                        if (!chatFloatBtn.dataset.draggable) {
+                            makeDraggable(chatFloatBtn);
+                            chatFloatBtn.dataset.draggable = 'true';
+                        }
+                    }, 300);
+                }
             });
         });
 
@@ -1463,7 +1424,7 @@
         sidebarOverlay.addEventListener('click', closeMobileSidebar);
 
         // ==================== LISTENERS DE VALIDAÇÃO DO PERFIL ====================
-        [profileNomeInput, profileEmailInput, cpfInput, razaoSocialInput, cnpjInput, telefoneInput, placaInput, cnhInput].forEach(el => {
+        [profileNomeInput, profileEmailInput, cpfInput, telefoneInput, placaInput, cnhInput].forEach(el => {
             el.addEventListener('input', checkAndEnableButton);
         });
 
@@ -1508,14 +1469,21 @@
         }
         statusToggleBtn.addEventListener('click', toggleOnlineStatus);
 
-        // ==================== NOVO: MAPA LEAFLET HOME ====================
+        // ==================== NOVO: MAPA LEAFLET HOME (corrigido zoom e visibilidade) ====================
         function initHomeMap() {
-            if (mapInstance) return;
+            if (mapInstance) {
+                mapInstance.invalidateSize();
+                return;
+            }
             const mapEl = document.getElementById('map');
             mapInstance = L.map(mapEl, {
                 zoomControl: true,
-                attributionControl: false
-            }).setView([-3.119, -60.021], 14); // Manaus como centro inicial
+                attributionControl: false,
+                zoomSnap: 0.5,
+                zoomDelta: 0.5,
+                minZoom: 10,
+                maxZoom: 19
+            }).setView([-3.119, -60.021], 14);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap'
@@ -1540,12 +1508,16 @@
                     }
                 }, () => {}, { enableHighAccuracy: true });
             }
+
+            // Garantia extra de renderização correta após carregamento
+            setTimeout(() => {
+                if (mapInstance) mapInstance.invalidateSize();
+            }, 300);
         }
 
         // ==================== NOVA CHAMADA (modal + timer) ====================
         let timerInterval = null;
         function simularNovaChamada() {
-            // Dados mock
             document.getElementById('distLoja').textContent = '1,8 km';
             document.getElementById('distCliente').textContent = '4,3 km';
             document.getElementById('valorEstimado').textContent = 'R$ 14,50';
@@ -1561,7 +1533,7 @@
                 timerEl.textContent = timeLeft + 's';
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
-                    rejeitarCorrida(true); // auto-rejeitar
+                    rejeitarCorrida(true);
                 }
             }, 1000);
         }
@@ -1570,7 +1542,6 @@
             clearInterval(timerInterval);
             novaChamadaModal.style.display = 'none';
             alert('Corrida ACEITA! Redirecionando para Pedido Ativo...');
-            // Muda automaticamente para a aba Pedido Ativo
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.querySelectorAll('.user-profile').forEach(n => n.classList.remove('active'));
             const pedidoBtn = document.querySelector('.nav-item[data-target="pedidoAtivo"]');
@@ -1589,15 +1560,9 @@
             }
         }
 
-        function hideNovaChamada() {
-            // função auxiliar para botão rejeitar
-            rejeitarCorrida();
-        }
-
         // ==================== BOTÃO CHAT RÁPIDO (Pedido Ativo) ====================
         function abrirChatRapido() {
             alert('Chat tripartido aberto (PME + Cliente + Você)\n\n(Implementação completa do chat já existe fora deste arquivo)');
-            // Aqui você pode redirecionar para a aba chat se quiser
         }
 
         // ==================== SUPORTE DO CHAT ====================
@@ -1608,13 +1573,74 @@
         // ==================== SCAN QR CODE (simulado) ====================
         function iniciarScanQR() {
             alert('Câmera aberta (Web API do WebView)\n\nQR Code lido com sucesso! Corrida finalizada e baixa registrada no mapa.');
-            // Aqui você pode adicionar lógica real de navigator.mediaDevices.getUserMedia + ZXing ou similar
+        }
+
+        // ==================== FUNÇÃO PARA TORNAR O BOTÃO DE CHAT DRAGGABLE (movimentável) ====================
+        function makeDraggable(el) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+            function dragMouseDown(e) {
+                e = e || window.event;
+                if (e.type === 'touchstart') e = e.touches[0];
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+                document.ontouchend = closeDragElement;
+                document.ontouchmove = elementDrag;
+            }
+
+            function elementDrag(e) {
+                e = e || window.event;
+                if (e.type === 'touchmove') e = e.touches[0];
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                el.style.top = (el.offsetTop - pos2) + "px";
+                el.style.left = (el.offsetLeft - pos1) + "px";
+                el.style.bottom = 'auto';
+                el.style.right = 'auto';
+            }
+
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+                document.ontouchend = null;
+                document.ontouchmove = null;
+            }
+
+            // Suporte mouse + touch
+            el.onmousedown = dragMouseDown;
+            el.ontouchstart = dragMouseDown;
+        }
+
+        // ==================== CORREÇÃO GLOBAL DE ZOOM NO MAPA (resize + invalidate) ====================
+        function fixMapOnResize() {
+            window.addEventListener('resize', () => {
+                setTimeout(() => {
+                    if (mapInstance) mapInstance.invalidateSize();
+                }, 150);
+            });
         }
 
         // ==================== INICIALIZAÇÃO ====================
         const init = () => {
             const savedProfile = localStorage.getItem('userProfile');
-            if (savedProfile) userProfile = JSON.parse(savedProfile);
+            if (savedProfile) {
+                const parsed = JSON.parse(savedProfile);
+                userProfile = {
+                    foto: parsed.foto || '',
+                    nome: parsed.nome || '',
+                    email: parsed.email || '',
+                    cpf: parsed.cpf || '',
+                    telefone: parsed.telefone || '',
+                    placa: parsed.placa || '',
+                    cnh: parsed.cnh || ''
+                };
+            }
             updateSidebarAvatar();
             loadProfileForm();
             aplicarModo();
@@ -1629,6 +1655,9 @@
 
             // Define ícone inicial offline
             statusIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle></svg>`;
+
+            // Ativa correção de zoom no mapa
+            fixMapOnResize();
         };
 
         init();
