@@ -9,10 +9,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
+   
     <!-- Leaflet CSS (OpenStreetMap) - adicionado para o mapa interativo do app -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
     <style>
         /* Reset e Variáveis */
         :root {
@@ -355,15 +354,14 @@
             .header .mode-btn {
                 display: none;
             }
-
             /* === NOVO: RESPONSIVIDADE DO BOTÃO ONLINE/OFFLINE (Home) === */
             /* Diminui fonte e padding para evitar vazamento do texto em telas menores */
             .status-toggle {
-                font-size: 17px;
-                padding: 16px 20px;
+                font-size: 15px;
+                padding: 14px 18px;
             }
             #statusLabel {
-                font-size: 17px;
+                font-size: 15px;
             }
         }
         @media (min-width: 862px) {
@@ -680,7 +678,6 @@
                 display: block;
             }
         }
-
         /* ==================== NOVOS ESTILOS PARA AS NOVAS ABAS (adicionados sem mexer em nada antigo) ==================== */
         /* Mapa Leaflet - adapta borda ao tema */
         .leaflet-map-container {
@@ -693,7 +690,6 @@
         body.dim .leaflet-map-container {
             border-color: var(--gray-300);
         }
-
         /* Toggle Online/Offline - grande e claro + SEM QUEBRA DE LINHA + RESPONSIVO */
         .status-toggle {
             width: 100%;
@@ -719,7 +715,6 @@
         #statusLabel {
             white-space: nowrap;
         }
-
         /* Cards de resumo para Ganhos e Histórico - VALORES SEM QUEBRA DE LINHA + RESPONSIVO */
         .summary-card {
             background-color: var(--white);
@@ -739,10 +734,9 @@
         }
         @media (max-width: 861px) {
             .summary-card h2 {
-                font-size: 22px; /* reduzido ainda mais para evitar vazamento do texto em telas menores */
+                font-size: 22px !important; /* garantido que o preço NUNCA vaze ou suma da visão do usuário em telas menores */
             }
         }
-
         /* Modal de Nova Chamada */
         .nova-chamada-modal {
             position: fixed;
@@ -770,7 +764,6 @@
             background-color: var(--white);
             color: var(--black);
         }
-
         /* ==================== NOVO: ESTILO EXCLUSIVO PARA BOTÃO FLUTUANTE DE CHAT (Pedido Ativo) ==================== */
         /* Alterado conforme solicitado: sempre preto (var(--black)) + fundo transparente em TODOS os modos */
         /* O var(--black) muda automaticamente com o tema (branco no dark/dim) */
@@ -797,7 +790,6 @@
             width: 32px;
             height: 32px;
         }
-
         /* ==================== AJUSTE EXCLUSIVO PARA INPUTS DA ABA PERFIL (sem bordas arredondadas) ==================== */
         #detalhesConta .form-control {
             border-radius: 4px;
@@ -823,32 +815,27 @@
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 Home
             </button>
-
             <!-- === ABA 2: PEDIDO ATIVO === -->
             <button class="nav-item" data-target="pedidoAtivo">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
                 Pedido Ativo
             </button>
-
             <!-- === ABA 3: GANHOS E EXTRATO === -->
             <button class="nav-item" data-target="ganhos">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                 Ganhos e Extrato
             </button>
-
             <!-- === ABA 4: HISTÓRICO DE CORRIDAS === -->
             <button class="nav-item" data-target="historico">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                 Histórico
             </button>
-
             <!-- === ABA 5: CENTRAL DE MENSAGENS (Chat) === -->
             <button class="nav-item" data-target="chat">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                 Central de Mensagens
             </button>
         </nav>
-
         <!-- ABA PERFIL E CONFIGURAÇÕES (mantida no rodapé - sexta aba) -->
         <div class="user-profile" id="userProfileLink">
             <div id="sidebarAvatar" style="width: 40px; height: 40px; background-color: var(--gray-200); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--gray-300); flex-shrink: 0; overflow: hidden;">
@@ -857,7 +844,6 @@
             <div>Perfil e Configurações</div>
         </div>
     </aside>
-
     <main class="main-content">
         <div class="mobile-header">
             <div class="logo-mobile">
@@ -877,10 +863,8 @@
                 </button>
             </div>
         </div>
-
         <!-- OVERLAY PARA FECHAR A SIDEBAR -->
         <div id="sidebarOverlay" class="sidebar-overlay"></div>
-
         <!-- ==================== ABA 1: HOME ==================== -->
         <section id="home" class="view-section active">
             <div class="header">
@@ -891,7 +875,6 @@
                 <img src="img2.svg" alt="Moto System" class="moto-system desktop-moto">
                 <button class="mode-btn"></button>
             </div>
-
             <!-- Toggle Online/Offline -->
             <button id="statusToggleBtn" class="status-toggle offline">
                 <span id="statusIcon">
@@ -899,18 +882,15 @@
                 </span>
                 <span id="statusLabel">Offline • Toque para ficar Online</span>
             </button>
-
             <!-- Mapa Interativo Leaflet (tela cheia no mobile) -->
             <div class="leaflet-map-container" style="height: calc(100vh - 280px); margin-top: 24px;">
                 <div id="map" style="height: 100%; width: 100%;"></div>
             </div>
-
             <!-- Botão de teste para simular nova chamada (você pode remover depois) -->
             <button onclick="simularNovaChamada()" style="margin-top: 16px; width: 100%; padding: 14px; font-size: 15px; background-color: var(--gray-200); color: var(--black); border: none; border-radius: 8px;">
                 Simular Nova Chamada (para teste)
             </button>
         </section>
-
         <!-- ==================== ABA 2: PEDIDO ATIVO (A ROTA) ==================== -->
         <section id="pedidoAtivo" class="view-section">
             <div class="header">
@@ -935,18 +915,15 @@
                         <label>Cliente</label>
                         <div style="padding: 14px 20px; background: var(--gray-100); border-radius: 10px;">Maria Silva - Rua das Flores, 234</div>
                     </div>
-
                     <!-- Mapa da Rota (Leaflet pronto para você inicializar) -->
                     <div style="margin-top: 24px;">
                         <label style="display: block; margin-bottom: 8px;">Rota em tempo real</label>
                         <div id="routeMap" class="leaflet-map-container" style="height: 320px;"></div>
                     </div>
-
                     <!-- Botão flutuante de Chat TRANSPARENTE + DRAGGABLE + ícone preto/branco conforme tema -->
                     <button id="chatFloatBtn" onclick="abrirChatRapido()" class="chat-float-btn" style="position: fixed; bottom: 90px; right: 20px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                     </button>
-
                     <!-- Validação de Entrega (QR Code) - centralizado e sem emoji -->
                     <div style="margin-top: 40px; text-align: center;">
                         <button onclick="iniciarScanQR()" class="btn-primary" style="padding: 16px 40px; font-size: 17px; margin: 0 auto; display: block;">
@@ -957,7 +934,6 @@
                 </div>
             </div>
         </section>
-
         <!-- ==================== ABA 3: GANHOS E EXTRATO ==================== -->
         <section id="ganhos" class="view-section">
             <div class="header">
@@ -980,7 +956,6 @@
                             <h2 style="font-size: 32px; font-weight: 800;">R$ 687,50</h2>
                         </div>
                     </div>
-
                     <!-- Detalhamento por distância -->
                     <h3 style="margin-bottom: 16px;">Corridas concluídas</h3>
                     <div style="display: flex; flex-direction: column; gap: 12px;">
@@ -999,7 +974,6 @@
                             <div style="text-align: right; color: var(--green); font-weight: 700; white-space: nowrap;">+ R$ 12,00</div>
                         </div>
                     </div>
-
                     <div style="margin-top: 40px; text-align: center;">
                         <button class="btn-primary" style="width: auto; padding: 14px 48px; margin: 0 auto; display: block;">Solicitar Saque / Repasse</button>
                         <p style="font-size: 13px; margin-top: 12px; color: var(--gray-500);">Próximo repasse: 08/04/2026</p>
@@ -1007,7 +981,6 @@
                 </div>
             </div>
         </section>
-
         <!-- ==================== ABA 4: HISTÓRICO DE CORRIDAS ==================== -->
         <section id="historico" class="view-section">
             <div class="header">
@@ -1044,7 +1017,6 @@
                 </div>
             </div>
         </section>
-
         <!-- ==================== ABA 5: CENTRAL DE MENSAGENS ==================== -->
         <section id="chat" class="view-section">
             <div class="header">
@@ -1070,7 +1042,6 @@
                 </div>
             </div>
         </section>
-
         <!-- ==================== ABA 6: PERFIL E CONFIGURAÇÕES (mantida e renomeada) ==================== -->
         <section id="detalhesConta" class="view-section">
             <div class="header">
@@ -1133,12 +1104,11 @@
             </div>
         </section>
     </main>
-
     <!-- MODAL NOVA CHAMADA (pop-up sobre o mapa) -->
     <div id="novaChamadaModal" class="nova-chamada-modal">
         <div class="nova-chamada-content">
             <h2 style="margin-bottom: 20px; text-align: center;">Nova Corrida Disponível</h2>
-            
+           
             <div style="display: flex; flex-direction: column; gap: 16px;">
                 <div>
                     <strong>Distância até a loja (coleta)</strong><br>
@@ -1153,7 +1123,6 @@
                     <span id="valorEstimado" style="font-size: 26px; color: var(--green); font-weight: 800;">R$ 14,50</span>
                 </div>
             </div>
-
             <div style="margin-top: 32px; display: flex; gap: 12px;">
                 <button id="aceitarBtn" onclick="aceitarCorrida()" class="btn-primary" style="flex: 1; padding: 18px; font-size: 18px;">
                     Aceitar <span id="timer">30s</span>
@@ -1165,7 +1134,6 @@
             <p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--gray-500);">A corrida expira automaticamente em 30 segundos</p>
         </div>
     </div>
-
     <script>
         // Leaflet JS (carregado via CDN)
         // ==================== DADOS INICIAIS (zerados) ====================
@@ -1183,7 +1151,6 @@
         let currentTimer = null;
         let mapInstance = null;
         let routeMapInstance = null;
-
         // ==================== ELEMENTOS DOM ====================
         const hamburger = document.getElementById('hamburger');
         const sidebarEl = document.getElementById('sidebar');
@@ -1207,10 +1174,8 @@
         const statusLabel = document.getElementById('statusLabel');
         const novaChamadaModal = document.getElementById('novaChamadaModal');
         const chatFloatBtn = document.getElementById('chatFloatBtn');
-
         // ==================== FUNÇÕES AUXILIARES ====================
         const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString('pt-BR');
-
         // ==================== NOVO: UPLOAD E PREVIEW DA FOTO DO PERFIL + CONTROLE DE BOTÕES ====================
         function updatePhotoButtons() {
             const hasPhoto = !!(currentProfileBase64 || userProfile.foto);
@@ -1245,7 +1210,6 @@
                 </div>`;
             updatePhotoButtons();
         }
-
         // ==================== MÁSCARAS (CPF, TELEFONE, PLACA, CNH) ====================
         telefoneInput.addEventListener('input', () => {
             let val = telefoneInput.value.replace(/\D/g, '').slice(0, 11);
@@ -1274,7 +1238,6 @@
             let val = cnhInput.value.replace(/\D/g, '').slice(0, 11);
             cnhInput.value = val;
         });
-
         // ==================== VALIDAÇÃO DO FORMULÁRIO DE PERFIL (agora só com CPF) ====================
         function isValidProfile() {
             const nome = profileNomeInput.value.trim();
@@ -1299,7 +1262,6 @@
         function checkAndEnableButton() {
             updateProfileBtn.disabled = !isValidProfile();
         }
-
         // ==================== CARREGAR PERFIL NO FORMULÁRIO ====================
         function loadProfileForm() {
             profileNomeInput.value = userProfile.nome || '';
@@ -1325,7 +1287,6 @@
             updatePhotoButtons();
             checkAndEnableButton();
         }
-
         // ==================== SALVAR PERFIL + REDIRECIONAMENTO PARA HOME ====================
         function saveProfile(e) {
             e.preventDefault();
@@ -1353,7 +1314,6 @@
             const mainContentEl = document.querySelector('.main-content');
             if (mainContentEl) mainContentEl.scrollTop = 0;
         }
-
         // ==================== ATUALIZAR FOTO NO SIDEBAR ====================
         function updateSidebarAvatar() {
             if (userProfile.foto) {
@@ -1362,7 +1322,6 @@
                 sidebarAvatar.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
             }
         }
-
         // ==================== FECHAR SIDEBAR NO MOBILE ====================
         const closeMobileSidebar = () => {
             if (sidebarEl.classList.contains('open')) {
@@ -1371,7 +1330,6 @@
                 sidebarOverlay.classList.remove('active');
             }
         };
-
         // ==================== NAVEGAÇÃO (funciona para todas as novas abas) ====================
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', () => {
@@ -1382,12 +1340,10 @@
                 document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
                 document.getElementById(target).classList.add('active');
                 if (window.innerWidth < 862) closeMobileSidebar();
-
                 // Inicializa mapa da Home quando necessário
                 if (target === 'home') {
                     setTimeout(initHomeMap, 300);
                 }
-
                 // Torna o botão de chat DRAGGABLE quando abre Pedido Ativo
                 if (target === 'pedidoAtivo' && chatFloatBtn) {
                     setTimeout(() => {
@@ -1399,7 +1355,6 @@
                 }
             });
         });
-
         // ==================== CLIQUE NA ABA PERFIL E CONFIGURAÇÕES ====================
         userProfileLink.addEventListener('click', () => {
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -1409,7 +1364,6 @@
             loadProfileForm();
             if (window.innerWidth < 862) closeMobileSidebar();
         });
-
         // ==================== HAMBURGER + OVERLAY ====================
         hamburger.addEventListener('click', () => {
             const open = sidebarEl.classList.toggle('open');
@@ -1422,12 +1376,10 @@
             }
         });
         sidebarOverlay.addEventListener('click', closeMobileSidebar);
-
         // ==================== LISTENERS DE VALIDAÇÃO DO PERFIL ====================
         [profileNomeInput, profileEmailInput, cpfInput, telefoneInput, placaInput, cnhInput].forEach(el => {
             el.addEventListener('input', checkAndEnableButton);
         });
-
         // ==================== FUNCIONALIDADE COMPLETA DO BOTÃO LIGHT / DARK / DIM ====================
         const modes = [
             { name: "light", iconColor: "#000000", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>` },
@@ -1451,7 +1403,6 @@
                 aplicarModo();
             });
         });
-
         // ==================== NOVO: TOGGLE ONLINE / OFFLINE COM SVG ====================
         function toggleOnlineStatus() {
             isOnline = !isOnline;
@@ -1468,7 +1419,6 @@
             }
         }
         statusToggleBtn.addEventListener('click', toggleOnlineStatus);
-
         // ==================== NOVO: MAPA LEAFLET HOME (corrigido zoom e visibilidade) ====================
         function initHomeMap() {
             if (mapInstance) {
@@ -1484,17 +1434,14 @@
                 minZoom: 10,
                 maxZoom: 19
             }).setView([-3.119, -60.021], 14);
-
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap'
             }).addTo(mapInstance);
-
             // Localização em tempo real do motoboy
             if (navigator.geolocation) {
                 navigator.geolocation.watchPosition((position) => {
                     const { latitude, longitude } = position.coords;
                     mapInstance.setView([latitude, longitude], 16);
-
                     if (window.motoboyMarker) {
                         window.motoboyMarker.setLatLng([latitude, longitude]);
                     } else {
@@ -1508,13 +1455,11 @@
                     }
                 }, () => {}, { enableHighAccuracy: true });
             }
-
             // Garantia extra de renderização correta após carregamento
             setTimeout(() => {
                 if (mapInstance) mapInstance.invalidateSize();
             }, 300);
         }
-
         // ==================== NOVA CHAMADA (modal + timer) ====================
         let timerInterval = null;
         function simularNovaChamada() {
@@ -1522,11 +1467,9 @@
             document.getElementById('distCliente').textContent = '4,3 km';
             document.getElementById('valorEstimado').textContent = 'R$ 14,50';
             novaChamadaModal.style.display = 'flex';
-
             let timeLeft = 30;
             const timerEl = document.getElementById('timer');
             timerEl.textContent = timeLeft + 's';
-
             if (timerInterval) clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 timeLeft--;
@@ -1537,7 +1480,6 @@
                 }
             }, 1000);
         }
-
         function aceitarCorrida() {
             clearInterval(timerInterval);
             novaChamadaModal.style.display = 'none';
@@ -1549,7 +1491,6 @@
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.getElementById('pedidoAtivo').classList.add('active');
         }
-
         function rejeitarCorrida(auto = false) {
             clearInterval(timerInterval);
             novaChamadaModal.style.display = 'none';
@@ -1559,26 +1500,21 @@
                 alert('Corrida rejeitada.');
             }
         }
-
         // ==================== BOTÃO CHAT RÁPIDO (Pedido Ativo) ====================
         function abrirChatRapido() {
             alert('Chat tripartido aberto (PME + Cliente + Você)\n\n(Implementação completa do chat já existe fora deste arquivo)');
         }
-
         // ==================== SUPORTE DO CHAT ====================
         function abrirChatSuporte() {
             alert('Canal de Suporte da Plataforma aberto.\n\nFale diretamente com o ADM do Moto System.');
         }
-
         // ==================== SCAN QR CODE (simulado) ====================
         function iniciarScanQR() {
             alert('Câmera aberta (Web API do WebView)\n\nQR Code lido com sucesso! Corrida finalizada e baixa registrada no mapa.');
         }
-
         // ==================== FUNÇÃO PARA TORNAR O BOTÃO DE CHAT DRAGGABLE (movimentável) ====================
         function makeDraggable(el) {
             let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-
             function dragMouseDown(e) {
                 e = e || window.event;
                 if (e.type === 'touchstart') e = e.touches[0];
@@ -1590,7 +1526,6 @@
                 document.ontouchend = closeDragElement;
                 document.ontouchmove = elementDrag;
             }
-
             function elementDrag(e) {
                 e = e || window.event;
                 if (e.type === 'touchmove') e = e.touches[0];
@@ -1604,19 +1539,16 @@
                 el.style.bottom = 'auto';
                 el.style.right = 'auto';
             }
-
             function closeDragElement() {
                 document.onmouseup = null;
                 document.onmousemove = null;
                 document.ontouchend = null;
                 document.ontouchmove = null;
             }
-
             // Suporte mouse + touch
             el.onmousedown = dragMouseDown;
             el.ontouchstart = dragMouseDown;
         }
-
         // ==================== CORREÇÃO GLOBAL DE ZOOM NO MAPA (resize + invalidate) ====================
         function fixMapOnResize() {
             window.addEventListener('resize', () => {
@@ -1625,7 +1557,6 @@
                 }, 150);
             });
         }
-
         // ==================== INICIALIZAÇÃO ====================
         const init = () => {
             const savedProfile = localStorage.getItem('userProfile');
@@ -1644,28 +1575,21 @@
             updateSidebarAvatar();
             loadProfileForm();
             aplicarModo();
-
             // Home sempre ativa no início
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             const homeItem = document.querySelector('.nav-item[data-target="home"]');
             if (homeItem) homeItem.classList.add('active');
-
             // Inicia o mapa da Home
             setTimeout(initHomeMap, 600);
-
             // Define ícone inicial offline
             statusIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle></svg>`;
-
             // Ativa correção de zoom no mapa
             fixMapOnResize();
         };
-
         init();
     </script>
-
     <!-- Leaflet JS (carregado depois do HTML) -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <!-- SCRIPT DO SERVICE WORKER (mantido) -->
     <script>
         if ('serviceWorker' in navigator) {
