@@ -4,11 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#000000">
-    <title>Stock Control - CRM</title>
+    <title>Moto System</title>
     <link rel="icon" href="favicon_stockcontrol.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS (OpenStreetMap) - adicionado para o mapa interativo do app -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
     <style>
         /* Reset e Variáveis */
         :root {
@@ -665,10 +669,87 @@
                 display: block;
             }
         }
+
+        /* ==================== NOVOS ESTILOS PARA AS NOVAS ABAS (adicionados sem mexer em nada antigo) ==================== */
+        /* Mapa Leaflet - adapta borda ao tema */
+        .leaflet-map-container {
+            border: 2px solid var(--gray-300);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        body.dark .leaflet-map-container,
+        body.dim .leaflet-map-container {
+            border-color: var(--gray-300);
+        }
+
+        /* Toggle Online/Offline - grande e claro */
+        .status-toggle {
+            width: 100%;
+            padding: 20px 24px;
+            font-size: 20px;
+            font-weight: 700;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.3s;
+        }
+        .status-toggle.online {
+            background-color: var(--green);
+            color: #fff;
+        }
+        .status-toggle.offline {
+            background-color: var(--red);
+            color: #fff;
+        }
+
+        /* Cards de resumo para Ganhos e Histórico */
+        .summary-card {
+            background-color: var(--white);
+            border: 2px solid var(--gray-300);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        body.dark .summary-card,
+        body.dim .summary-card {
+            background-color: transparent;
+            border-color: var(--gray-300);
+        }
+
+        /* Modal de Nova Chamada */
+        .nova-chamada-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.65);
+            z-index: 5000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .nova-chamada-content {
+            background-color: var(--white);
+            color: var(--black);
+            max-width: 420px;
+            width: 90%;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        body.dark .nova-chamada-content,
+        body.dim .nova-chamada-content {
+            background-color: var(--white);
+            color: var(--black);
+        }
     </style>
 </head>
 <body>
-    <!-- CONTEÚDO DO SISTEMA (apenas Dashboard + Detalhes da Conta) -->
+    <!-- CONTEÚDO DO SISTEMA (apenas as abas solicitadas) -->
     <aside id="sidebar" class="sidebar">
         <div class="logo-container">
             <div style="position: relative; display: inline-block;">
@@ -676,26 +757,51 @@
                 <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;"></div>
             </div>
         </div>
-
-        <!-- NOVO: img2.svg centralizada na sidebar mobile acima do botão Dashboard -->
+        <!-- NOVO: img2.svg centralizada na sidebar mobile acima do botão Home -->
         <div class="sidebar-moto-mobile">
             <img src="img2.svg" alt="Moto System">
         </div>
-
         <nav class="nav-menu" id="navMenu">
-            <button class="nav-item active" data-target="dashboard">
+            <!-- === ABA 1: HOME (substituiu Dashboard) === -->
+            <button class="nav-item active" data-target="home">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                Dashboard
+                Home
+            </button>
+
+            <!-- === ABA 2: PEDIDO ATIVO === -->
+            <button class="nav-item" data-target="pedidoAtivo">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                Pedido Ativo
+            </button>
+
+            <!-- === ABA 3: GANHOS E EXTRATO === -->
+            <button class="nav-item" data-target="ganhos">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                Ganhos e Extrato
+            </button>
+
+            <!-- === ABA 4: HISTÓRICO DE CORRIDAS === -->
+            <button class="nav-item" data-target="historico">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                Histórico
+            </button>
+
+            <!-- === ABA 5: CENTRAL DE MENSAGENS (Chat) === -->
+            <button class="nav-item" data-target="chat">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                Central de Mensagens
             </button>
         </nav>
-        <!-- ABA DETALHES DA CONTA - FIXA NO CANTO INFERIOR ESQUERDO -->
+
+        <!-- ABA PERFIL E CONFIGURAÇÕES (mantida no rodapé - sexta aba) -->
         <div class="user-profile" id="userProfileLink">
             <div id="sidebarAvatar" style="width: 40px; height: 40px; background-color: var(--gray-200); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--gray-300); flex-shrink: 0; overflow: hidden;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
             </div>
-            <div>Detalhes da Conta</div>
+            <div>Perfil e Configurações</div>
         </div>
     </aside>
+
     <main class="main-content">
         <div class="mobile-header">
             <div class="logo-mobile">
@@ -715,27 +821,204 @@
                 </button>
             </div>
         </div>
+
         <!-- OVERLAY PARA FECHAR A SIDEBAR -->
         <div id="sidebarOverlay" class="sidebar-overlay"></div>
-        <!-- DASHBOARD -->
-        <section id="dashboard" class="view-section active">
+
+        <!-- ==================== ABA 1: HOME ==================== -->
+        <section id="home" class="view-section active">
             <div class="header">
                 <div>
-                    <h1>Dashboard</h1>
-                    <p>Visão geral do seu negócio.</p>
+                    <h1>Home</h1>
+                    <p>Status e localização em tempo real.</p>
                 </div>
-                <!-- img2.svg centralizada na área branca (exatamente onde você marcou de azul) -->
                 <img src="img2.svg" alt="Moto System" class="moto-system desktop-moto">
                 <button class="mode-btn"></button>
             </div>
-            <!-- Área completamente vazia para você criar o novo sistema -->
+
+            <!-- Toggle Online/Offline -->
+            <button id="statusToggleBtn" class="status-toggle offline">
+                <span id="statusIcon">⚪</span>
+                <span id="statusLabel">Offline • Toque para ficar Online</span>
+            </button>
+
+            <!-- Mapa Interativo Leaflet (tela cheia no mobile) -->
+            <div class="leaflet-map-container" style="height: calc(100vh - 280px); margin-top: 24px;">
+                <div id="map" style="height: 100%; width: 100%;"></div>
+            </div>
+
+            <!-- Botão de teste para simular nova chamada (você pode remover depois) -->
+            <button onclick="simularNovaChamada()" style="margin-top: 16px; width: 100%; padding: 14px; font-size: 15px; background-color: var(--gray-200); color: var(--black); border: none; border-radius: 8px;">
+                🔴 Simular Nova Chamada (para teste)
+            </button>
         </section>
-        <!-- DETALHES DA CONTA (zerado de informações, layout e instruções intactos) -->
+
+        <!-- ==================== ABA 2: PEDIDO ATIVO (A ROTA) ==================== -->
+        <section id="pedidoAtivo" class="view-section">
+            <div class="header">
+                <div>
+                    <h1>Pedido Ativo</h1>
+                    <p>A Rota em execução</p>
+                </div>
+                <button class="mode-btn"></button>
+            </div>
+            <div class="card">
+                <div class="config-section">
+                    <h2 style="margin-bottom: 16px;">Detalhes do Pedido</h2>
+                    <div class="form-group">
+                        <label>Nº do Pedido</label>
+                        <div style="padding: 14px 20px; background: var(--gray-100); border-radius: 10px; font-weight: 600;">#MOT-87421</div>
+                    </div>
+                    <div class="form-group">
+                        <label>PME / Loja</label>
+                        <div style="padding: 14px 20px; background: var(--gray-100); border-radius: 10px;">Loja do João - Manaus</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Cliente</label>
+                        <div style="padding: 14px 20px; background: var(--gray-100); border-radius: 10px;">Maria Silva - Rua das Flores, 234</div>
+                    </div>
+
+                    <!-- Mapa da Rota (Leaflet pronto para você inicializar) -->
+                    <div style="margin-top: 24px;">
+                        <label style="display: block; margin-bottom: 8px;">Rota em tempo real</label>
+                        <div id="routeMap" class="leaflet-map-container" style="height: 320px;"></div>
+                    </div>
+
+                    <!-- Botão flutuante de Chat (acesso rápido) -->
+                    <button onclick="abrirChatRapido()" style="position: fixed; bottom: 90px; right: 20px; background: var(--green); color: #fff; border: none; width: 60px; height: 60px; border-radius: 50%; box-shadow: 0 4px 15px rgba(16,185,129,0.4); font-size: 28px; z-index: 4000;">
+                        💬
+                    </button>
+
+                    <!-- Validação de Entrega (QR Code) -->
+                    <div style="margin-top: 40px; text-align: center;">
+                        <button onclick="iniciarScanQR()" class="btn-primary" style="padding: 16px 40px; font-size: 17px;">
+                            📷 Escanear QR Code do Cliente
+                        </button>
+                        <p style="font-size: 13px; color: var(--gray-500); margin-top: 12px;">Valide a entrega e finalize a corrida</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== ABA 3: GANHOS E EXTRATO ==================== -->
+        <section id="ganhos" class="view-section">
+            <div class="header">
+                <div>
+                    <h1>Ganhos e Extrato</h1>
+                    <p>Carteira • Repasses</p>
+                </div>
+                <button class="mode-btn"></button>
+            </div>
+            <div class="card">
+                <div class="config-section">
+                    <!-- Resumo Diário / Semanal -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px;">
+                        <div class="summary-card">
+                            <p style="font-size: 13px; color: var(--gray-500);">Hoje</p>
+                            <h2 style="font-size: 32px; font-weight: 800;">R$ 142,00</h2>
+                        </div>
+                        <div class="summary-card">
+                            <p style="font-size: 13px; color: var(--gray-500);">Esta semana</p>
+                            <h2 style="font-size: 32px; font-weight: 800;">R$ 687,50</h2>
+                        </div>
+                    </div>
+
+                    <!-- Detalhamento por distância -->
+                    <h3 style="margin-bottom: 16px;">Corridas concluídas</h3>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <div style="padding: 16px; background: var(--gray-100); border-radius: 10px; display: flex; justify-content: space-between;">
+                            <div>
+                                <strong>1,8 km</strong><br>
+                                <small style="color: var(--gray-500);">14:22 • Loja do João → Maria</small>
+                            </div>
+                            <div style="text-align: right; color: var(--green); font-weight: 700;">+ R$ 8,00</div>
+                        </div>
+                        <div style="padding: 16px; background: var(--gray-100); border-radius: 10px; display: flex; justify-content: space-between;">
+                            <div>
+                                <strong>4,2 km</strong><br>
+                                <small style="color: var(--gray-500);">13:05 • Supermercado → Pedro</small>
+                            </div>
+                            <div style="text-align: right; color: var(--green); font-weight: 700;">+ R$ 12,00</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 40px; text-align: center;">
+                        <button class="btn-primary" style="width: auto; padding: 14px 48px;">Solicitar Saque / Repasse</button>
+                        <p style="font-size: 13px; margin-top: 12px; color: var(--gray-500);">Próximo repasse: 08/04/2026</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== ABA 4: HISTÓRICO DE CORRIDAS ==================== -->
+        <section id="historico" class="view-section">
+            <div class="header">
+                <div>
+                    <h1>Histórico de Corridas</h1>
+                    <p>Entregas passadas</p>
+                </div>
+                <button class="mode-btn"></button>
+            </div>
+            <div class="card">
+                <div class="config-section">
+                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 16px;">
+                        <li style="padding: 16px; background: var(--gray-100); border-radius: 10px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>03/04/2026 • 14:45</strong><br>
+                                Loja do João → Maria Silva
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="background: var(--green); color: #fff; padding: 4px 12px; border-radius: 9999px; font-size: 13px;">Entregue</span><br>
+                                <small>R$ 9,50 • QR validado</small>
+                            </div>
+                        </li>
+                        <li style="padding: 16px; background: var(--gray-100); border-radius: 10px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>02/04/2026 • 11:20</strong><br>
+                                Supermercado → Carlos Santos
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="background: var(--green); color: #fff; padding: 4px 12px; border-radius: 9999px; font-size: 13px;">Entregue</span><br>
+                                <small>R$ 15,00 • Localização: -3.12, -60.02</small>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== ABA 5: CENTRAL DE MENSAGENS ==================== -->
+        <section id="chat" class="view-section">
+            <div class="header">
+                <div>
+                    <h1>Central de Mensagens</h1>
+                    <p>Conversas com PMEs e clientes</p>
+                </div>
+                <button class="mode-btn"></button>
+            </div>
+            <div class="card">
+                <div class="config-section">
+                    <div style="padding: 16px; background: var(--gray-100); border-radius: 10px; margin-bottom: 12px;">
+                        <strong>Loja do João</strong><br>
+                        <small style="color: var(--gray-500);">Última: “Cheguei na loja, qual o pacote?” • 5 min atrás</small>
+                    </div>
+                    <div style="padding: 16px; background: var(--gray-100); border-radius: 10px; margin-bottom: 12px;">
+                        <strong>Maria Silva (cliente)</strong><br>
+                        <small style="color: var(--gray-500);">“O portão está aberto” • 27 min atrás</small>
+                    </div>
+                    <div style="margin-top: 32px; text-align: center;">
+                        <button onclick="abrirChatSuporte()" class="btn-primary">Falar com Suporte da Plataforma</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== ABA 6: PERFIL E CONFIGURAÇÕES (mantida e renomeada) ==================== -->
         <section id="detalhesConta" class="view-section">
             <div class="header">
                 <div>
-                    <h1>Detalhes da Conta</h1>
-                    <p>Atualize suas informações pessoais e de perfil.</p>
+                    <h1>Perfil e Configurações</h1>
+                    <p>Seus dados, moto e permissões do app.</p>
                 </div>
                 <button class="mode-btn"></button>
             </div>
@@ -803,7 +1086,41 @@
             </div>
         </section>
     </main>
+
+    <!-- MODAL NOVA CHAMADA (pop-up sobre o mapa) -->
+    <div id="novaChamadaModal" class="nova-chamada-modal">
+        <div class="nova-chamada-content">
+            <h2 style="margin-bottom: 20px; text-align: center;">🚀 Nova Corrida Disponível</h2>
+            
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div>
+                    <strong>Distância até a loja (coleta)</strong><br>
+                    <span id="distLoja" style="font-size: 22px; font-weight: 700;">1,8 km</span>
+                </div>
+                <div>
+                    <strong>Distância loja → cliente</strong><br>
+                    <span id="distCliente" style="font-size: 22px; font-weight: 700;">4,3 km</span>
+                </div>
+                <div>
+                    <strong>Valor estimado da corrida</strong><br>
+                    <span id="valorEstimado" style="font-size: 26px; color: var(--green); font-weight: 800;">R$ 14,50</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 32px; display: flex; gap: 12px;">
+                <button id="aceitarBtn" onclick="aceitarCorrida()" class="btn-primary" style="flex: 1; padding: 18px; font-size: 18px;">
+                    Aceitar <span id="timer">30s</span>
+                </button>
+                <button onclick="rejeitarCorrida()" style="flex: 1; padding: 18px; font-size: 18px; background: transparent; border: 2px solid var(--black); color: var(--black); border-radius: 9999px;">
+                    Rejeitar
+                </button>
+            </div>
+            <p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--gray-500);">A corrida expira automaticamente em 30 segundos</p>
+        </div>
+    </div>
+
     <script>
+        // Leaflet JS (carregado via CDN)
         // ==================== DADOS INICIAIS (zerados) ====================
         let userProfile = {
             foto: '',
@@ -816,6 +1133,11 @@
             telefone: ''
         };
         let currentProfileBase64 = '';
+        let isOnline = false;
+        let currentTimer = null;
+        let mapInstance = null;
+        let routeMapInstance = null;
+
         // ==================== ELEMENTOS DOM ====================
         const hamburger = document.getElementById('hamburger');
         const sidebarEl = document.getElementById('sidebar');
@@ -837,8 +1159,14 @@
         const telefoneInput = document.getElementById('telefoneInput');
         const updateProfileBtn = document.getElementById('updateProfileBtn');
         const deleteProfilePhotoBtn = document.getElementById('deleteProfilePhotoBtn');
+        const statusToggleBtn = document.getElementById('statusToggleBtn');
+        const statusIcon = document.getElementById('statusIcon');
+        const statusLabel = document.getElementById('statusLabel');
+        const novaChamadaModal = document.getElementById('novaChamadaModal');
+
         // ==================== FUNÇÕES AUXILIARES ====================
         const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString('pt-BR');
+
         // ==================== NOVO: UPLOAD E PREVIEW DA FOTO DO PERFIL + CONTROLE DE BOTÕES ====================
         function updatePhotoButtons() {
             const hasPhoto = !!(currentProfileBase64 || userProfile.foto);
@@ -866,6 +1194,7 @@
             profileImagePreview.innerHTML = '';
             updatePhotoButtons();
         }
+
         // ==================== MÁSCARAS (CPF, CNPJ, TELEFONE) ====================
         telefoneInput.addEventListener('input', () => {
             let val = telefoneInput.value.replace(/\D/g, '').slice(0, 11);
@@ -893,6 +1222,7 @@
             if (val.length > 12) formatted = formatted.slice(0,15) + '-' + val.slice(12);
             cnpjInput.value = formatted;
         });
+
         // ==================== VALIDAÇÃO DO FORMULÁRIO DE PERFIL ====================
         function isValidProfile() {
             const nome = profileNomeInput.value.trim();
@@ -920,6 +1250,7 @@
         function checkAndEnableButton() {
             updateProfileBtn.disabled = !isValidProfile();
         }
+
         // ==================== TOGGLE PF / PJ ====================
         function toggleDocSections() {
             const tipo = tipoPessoaSelect.value;
@@ -928,6 +1259,7 @@
             checkAndEnableButton();
         }
         tipoPessoaSelect.addEventListener('change', toggleDocSections);
+
         // ==================== CARREGAR PERFIL NO FORMULÁRIO ====================
         function loadProfileForm() {
             profileNomeInput.value = userProfile.nome || '';
@@ -951,7 +1283,8 @@
             updatePhotoButtons();
             checkAndEnableButton();
         }
-        // ==================== SALVAR PERFIL + REDIRECIONAMENTO PARA DASHBOARD ====================
+
+        // ==================== SALVAR PERFIL + REDIRECIONAMENTO PARA HOME ====================
         function saveProfile(e) {
             e.preventDefault();
             if (!isValidProfile()) {
@@ -975,17 +1308,17 @@
             localStorage.setItem('userProfile', JSON.stringify(userProfile));
             updateSidebarAvatar();
             alert('Informações atualizadas com sucesso!');
-            // REDIRECIONA AUTOMATICAMENTE PARA DASHBOARD
+            // REDIRECIONA AUTOMATICAMENTE PARA HOME
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.querySelectorAll('.user-profile').forEach(n => n.classList.remove('active'));
-            const dashboardItem = document.querySelector('.nav-item[data-target="dashboard"]');
-            if (dashboardItem) dashboardItem.classList.add('active');
+            const homeItem = document.querySelector('.nav-item[data-target="home"]');
+            if (homeItem) homeItem.classList.add('active');
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-            document.getElementById('dashboard').classList.add('active');
-            // Garante que a dashboard fique no topo da página
+            document.getElementById('home').classList.add('active');
             const mainContentEl = document.querySelector('.main-content');
             if (mainContentEl) mainContentEl.scrollTop = 0;
         }
+
         // ==================== ATUALIZAR FOTO NO SIDEBAR ====================
         function updateSidebarAvatar() {
             if (userProfile.foto) {
@@ -994,6 +1327,7 @@
                 sidebarAvatar.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
             }
         }
+
         // ==================== FECHAR SIDEBAR NO MOBILE ====================
         const closeMobileSidebar = () => {
             if (sidebarEl.classList.contains('open')) {
@@ -1002,7 +1336,8 @@
                 sidebarOverlay.classList.remove('active');
             }
         };
-        // ==================== NAVEGAÇÃO ====================
+
+        // ==================== NAVEGAÇÃO (funciona para todas as novas abas) ====================
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', () => {
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -1012,9 +1347,15 @@
                 document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
                 document.getElementById(target).classList.add('active');
                 if (window.innerWidth < 862) closeMobileSidebar();
+
+                // Inicializa mapa da Home quando necessário
+                if (target === 'home') {
+                    setTimeout(initHomeMap, 300);
+                }
             });
         });
-        // ==================== CLIQUE NA ABA DETALHES DA CONTA ====================
+
+        // ==================== CLIQUE NA ABA PERFIL E CONFIGURAÇÕES ====================
         userProfileLink.addEventListener('click', () => {
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             userProfileLink.classList.add('active');
@@ -1023,6 +1364,7 @@
             loadProfileForm();
             if (window.innerWidth < 862) closeMobileSidebar();
         });
+
         // ==================== HAMBURGER + OVERLAY ====================
         hamburger.addEventListener('click', () => {
             const open = sidebarEl.classList.toggle('open');
@@ -1035,10 +1377,12 @@
             }
         });
         sidebarOverlay.addEventListener('click', closeMobileSidebar);
+
         // ==================== LISTENERS DE VALIDAÇÃO DO PERFIL ====================
         [profileNomeInput, profileEmailInput, cpfInput, razaoSocialInput, cnpjInput, telefoneInput].forEach(el => {
             el.addEventListener('input', checkAndEnableButton);
         });
+
         // ==================== FUNCIONALIDADE COMPLETA DO BOTÃO LIGHT / DARK / DIM ====================
         const modes = [
             { name: "light", iconColor: "#000000", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>` },
@@ -1062,6 +1406,127 @@
                 aplicarModo();
             });
         });
+
+        // ==================== NOVO: TOGGLE ONLINE / OFFLINE ====================
+        function toggleOnlineStatus() {
+            isOnline = !isOnline;
+            if (isOnline) {
+                statusToggleBtn.classList.remove('offline');
+                statusToggleBtn.classList.add('online');
+                statusIcon.innerHTML = '🟢';
+                statusLabel.textContent = 'Online • Recebendo chamadas';
+            } else {
+                statusToggleBtn.classList.remove('online');
+                statusToggleBtn.classList.add('offline');
+                statusIcon.innerHTML = '⚪';
+                statusLabel.textContent = 'Offline • Toque para ficar Online';
+            }
+        }
+        statusToggleBtn.addEventListener('click', toggleOnlineStatus);
+
+        // ==================== NOVO: MAPA LEAFLET HOME ====================
+        function initHomeMap() {
+            if (mapInstance) return;
+            const mapEl = document.getElementById('map');
+            mapInstance = L.map(mapEl, {
+                zoomControl: true,
+                attributionControl: false
+            }).setView([-3.119, -60.021], 14); // Manaus como centro inicial
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap'
+            }).addTo(mapInstance);
+
+            // Localização em tempo real do motoboy
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition((position) => {
+                    const { latitude, longitude } = position.coords;
+                    mapInstance.setView([latitude, longitude], 16);
+
+                    if (window.motoboyMarker) {
+                        window.motoboyMarker.setLatLng([latitude, longitude]);
+                    } else {
+                        window.motoboyMarker = L.marker([latitude, longitude], {
+                            icon: L.divIcon({
+                                className: 'custom-marker',
+                                html: `<div style="background:#10b981;width:28px;height:28px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 4px #10b981;"></div>`,
+                                iconSize: [28, 28]
+                            })
+                        }).addTo(mapInstance).bindPopup('Você está aqui');
+                    }
+                }, () => {}, { enableHighAccuracy: true });
+            }
+        }
+
+        // ==================== NOVA CHAMADA (modal + timer) ====================
+        let timerInterval = null;
+        function simularNovaChamada() {
+            // Dados mock
+            document.getElementById('distLoja').textContent = '1,8 km';
+            document.getElementById('distCliente').textContent = '4,3 km';
+            document.getElementById('valorEstimado').textContent = 'R$ 14,50';
+            novaChamadaModal.style.display = 'flex';
+
+            let timeLeft = 30;
+            const timerEl = document.getElementById('timer');
+            timerEl.textContent = timeLeft + 's';
+
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerEl.textContent = timeLeft + 's';
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    rejeitarCorrida(true); // auto-rejeitar
+                }
+            }, 1000);
+        }
+
+        function aceitarCorrida() {
+            clearInterval(timerInterval);
+            novaChamadaModal.style.display = 'none';
+            alert('✅ Corrida ACEITA! Redirecionando para Pedido Ativo...');
+            // Muda automaticamente para a aba Pedido Ativo
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.user-profile').forEach(n => n.classList.remove('active'));
+            const pedidoBtn = document.querySelector('.nav-item[data-target="pedidoAtivo"]');
+            if (pedidoBtn) pedidoBtn.classList.add('active');
+            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('pedidoAtivo').classList.add('active');
+        }
+
+        function rejeitarCorrida(auto = false) {
+            clearInterval(timerInterval);
+            novaChamadaModal.style.display = 'none';
+            if (auto) {
+                alert('⏰ Tempo esgotado. Corrida rejeitada automaticamente.');
+            } else {
+                alert('Corrida rejeitada.');
+            }
+        }
+
+        function hideNovaChamada() {
+            // função auxiliar para botão rejeitar
+            rejeitarCorrida();
+        }
+
+        // ==================== BOTÃO CHAT RÁPIDO (Pedido Ativo) ====================
+        function abrirChatRapido() {
+            alert('💬 Chat tripartido aberto (PME + Cliente + Você)\n\n(Implementação completa do chat já existe fora deste arquivo)');
+            // Aqui você pode redirecionar para a aba chat se quiser
+        }
+
+        // ==================== SUPORTE DO CHAT ====================
+        function abrirChatSuporte() {
+            alert('📞 Canal de Suporte da Plataforma aberto.\n\nFale diretamente com o ADM do Moto System.');
+        }
+
+        // ==================== SCAN QR CODE (simulado) ====================
+        function iniciarScanQR() {
+            alert('📷 Câmera aberta (Web API do WebView)\n\nQR Code lido com sucesso! Corrida finalizada e baixa registrada no mapa.');
+            // Aqui você pode adicionar lógica real de navigator.mediaDevices.getUserMedia + ZXing ou similar
+        }
+
         // ==================== INICIALIZAÇÃO ====================
         const init = () => {
             const savedProfile = localStorage.getItem('userProfile');
@@ -1069,13 +1534,22 @@
             updateSidebarAvatar();
             loadProfileForm();
             aplicarModo();
-            // Dashboard sempre ativa no início
+
+            // Home sempre ativa no início
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            const dashboardItem = document.querySelector('.nav-item[data-target="dashboard"]');
-            if (dashboardItem) dashboardItem.classList.add('active');
+            const homeItem = document.querySelector('.nav-item[data-target="home"]');
+            if (homeItem) homeItem.classList.add('active');
+
+            // Inicia o mapa da Home
+            setTimeout(initHomeMap, 600);
         };
+
         init();
     </script>
+
+    <!-- Leaflet JS (carregado depois do HTML) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <!-- SCRIPT DO SERVICE WORKER (mantido) -->
     <script>
         if ('serviceWorker' in navigator) {
