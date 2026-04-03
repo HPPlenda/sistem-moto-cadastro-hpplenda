@@ -746,6 +746,41 @@
             background-color: var(--white);
             color: var(--black);
         }
+
+        /* ==================== NOVO: ESTILO EXCLUSIVO PARA BOTÃO FLUTUANTE DE CHAT (Pedido Ativo) ==================== */
+        .chat-float-btn {
+            background-color: var(--green);
+            color: #fff;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(16,185,129,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 4000;
+        }
+        .chat-float-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(16,185,129,0.5);
+        }
+        body.dark .chat-float-btn,
+        body.dim .chat-float-btn {
+            background-color: var(--green);
+            box-shadow: 0 4px 15px rgba(16,185,129,0.6);
+        }
+        .chat-float-btn svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        /* ==================== AJUSTE EXCLUSIVO PARA INPUTS DA ABA PERFIL (sem bordas arredondadas) ==================== */
+        #detalhesConta .form-control {
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -838,7 +873,9 @@
 
             <!-- Toggle Online/Offline -->
             <button id="statusToggleBtn" class="status-toggle offline">
-                <span id="statusIcon">⚪</span>
+                <span id="statusIcon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle></svg>
+                </span>
                 <span id="statusLabel">Offline • Toque para ficar Online</span>
             </button>
 
@@ -849,7 +886,7 @@
 
             <!-- Botão de teste para simular nova chamada (você pode remover depois) -->
             <button onclick="simularNovaChamada()" style="margin-top: 16px; width: 100%; padding: 14px; font-size: 15px; background-color: var(--gray-200); color: var(--black); border: none; border-radius: 8px;">
-                🔴 Simular Nova Chamada (para teste)
+                Simular Nova Chamada (para teste)
             </button>
         </section>
 
@@ -884,15 +921,15 @@
                         <div id="routeMap" class="leaflet-map-container" style="height: 320px;"></div>
                     </div>
 
-                    <!-- Botão flutuante de Chat (acesso rápido) -->
-                    <button onclick="abrirChatRapido()" style="position: fixed; bottom: 90px; right: 20px; background: var(--green); color: #fff; border: none; width: 60px; height: 60px; border-radius: 50%; box-shadow: 0 4px 15px rgba(16,185,129,0.4); font-size: 28px; z-index: 4000;">
-                        💬
+                    <!-- Botão flutuante de Chat com SVG (apenas nesta seção, muda de cor conforme tema) -->
+                    <button onclick="abrirChatRapido()" class="chat-float-btn" style="position: fixed; bottom: 90px; right: 20px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                     </button>
 
-                    <!-- Validação de Entrega (QR Code) -->
+                    <!-- Validação de Entrega (QR Code) - centralizado e sem emoji -->
                     <div style="margin-top: 40px; text-align: center;">
-                        <button onclick="iniciarScanQR()" class="btn-primary" style="padding: 16px 40px; font-size: 17px;">
-                            📷 Escanear QR Code do Cliente
+                        <button onclick="iniciarScanQR()" class="btn-primary" style="padding: 16px 40px; font-size: 17px; margin: 0 auto; display: block;">
+                            Escanear QR Code do Cliente
                         </button>
                         <p style="font-size: 13px; color: var(--gray-500); margin-top: 12px;">Valide a entrega e finalize a corrida</p>
                     </div>
@@ -943,7 +980,7 @@
                     </div>
 
                     <div style="margin-top: 40px; text-align: center;">
-                        <button class="btn-primary" style="width: auto; padding: 14px 48px;">Solicitar Saque / Repasse</button>
+                        <button class="btn-primary" style="width: auto; padding: 14px 48px; margin: 0 auto; display: block;">Solicitar Saque / Repasse</button>
                         <p style="font-size: 13px; margin-top: 12px; color: var(--gray-500);">Próximo repasse: 08/04/2026</p>
                     </div>
                 </div>
@@ -1007,7 +1044,7 @@
                         <small style="color: var(--gray-500);">“O portão está aberto” • 27 min atrás</small>
                     </div>
                     <div style="margin-top: 32px; text-align: center;">
-                        <button onclick="abrirChatSuporte()" class="btn-primary">Falar com Suporte da Plataforma</button>
+                        <button onclick="abrirChatSuporte()" class="btn-primary" style="width: auto; padding: 14px 48px; margin: 0 auto; display: block;">Falar com Suporte da Plataforma</button>
                     </div>
                 </div>
             </div>
@@ -1077,6 +1114,16 @@
                             <input type="tel" id="telefoneInput" class="form-control">
                             <small style="color: var(--gray-500); font-size: 12px; display: block; margin-top: 6px;">De preferência, informe um número que possua WhatsApp para facilitar o contato.</small>
                         </div>
+                        <!-- NOVO: Placa da Moto -->
+                        <div class="form-group">
+                            <label for="placaInput">Placa da Moto</label>
+                            <input type="text" id="placaInput" class="form-control" placeholder="ABC-1D23" maxlength="8">
+                        </div>
+                        <!-- NOVO: CNH do Motoboy -->
+                        <div class="form-group">
+                            <label for="cnhInput">CNH do Motoboy</label>
+                            <input type="text" id="cnhInput" class="form-control" placeholder="00000000000" maxlength="11">
+                        </div>
                         <!-- Botão centralizado -->
                         <div style="margin-top: 40px; text-align: center;">
                             <button type="submit" id="updateProfileBtn" class="btn-primary" style="width: auto; padding: 14px 40px; font-size: 16px;" disabled>Atualizar Informações</button>
@@ -1090,7 +1137,7 @@
     <!-- MODAL NOVA CHAMADA (pop-up sobre o mapa) -->
     <div id="novaChamadaModal" class="nova-chamada-modal">
         <div class="nova-chamada-content">
-            <h2 style="margin-bottom: 20px; text-align: center;">🚀 Nova Corrida Disponível</h2>
+            <h2 style="margin-bottom: 20px; text-align: center;">Nova Corrida Disponível</h2>
             
             <div style="display: flex; flex-direction: column; gap: 16px;">
                 <div>
@@ -1130,7 +1177,9 @@
             cpf: '',
             razaoSocial: '',
             cnpj: '',
-            telefone: ''
+            telefone: '',
+            placa: '',
+            cnh: ''
         };
         let currentProfileBase64 = '';
         let isOnline = false;
@@ -1157,6 +1206,8 @@
         const razaoSocialInput = document.getElementById('razaoSocialInput');
         const cnpjInput = document.getElementById('cnpjInput');
         const telefoneInput = document.getElementById('telefoneInput');
+        const placaInput = document.getElementById('placaInput');
+        const cnhInput = document.getElementById('cnhInput');
         const updateProfileBtn = document.getElementById('updateProfileBtn');
         const deleteProfilePhotoBtn = document.getElementById('deleteProfilePhotoBtn');
         const statusToggleBtn = document.getElementById('statusToggleBtn');
@@ -1191,11 +1242,18 @@
         function deleteProfilePhoto() {
             currentProfileBase64 = '';
             userProfile.foto = '';
-            profileImagePreview.innerHTML = '';
+            profileImagePreview.innerHTML = `
+                <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color: var(--gray-500);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                </div>`;
             updatePhotoButtons();
         }
 
-        // ==================== MÁSCARAS (CPF, CNPJ, TELEFONE) ====================
+        // ==================== MÁSCARAS (CPF, CNPJ, TELEFONE, PLACA, CNH) ====================
         telefoneInput.addEventListener('input', () => {
             let val = telefoneInput.value.replace(/\D/g, '').slice(0, 11);
             let formatted = '';
@@ -1222,6 +1280,16 @@
             if (val.length > 12) formatted = formatted.slice(0,15) + '-' + val.slice(12);
             cnpjInput.value = formatted;
         });
+        // Máscara simples para placa (maiúscula, só letras e números)
+        placaInput.addEventListener('input', () => {
+            let val = placaInput.value.replace(/[^A-Z0-9]/gi, '').toUpperCase().slice(0, 8);
+            placaInput.value = val;
+        });
+        // Máscara para CNH (apenas números, 11 dígitos)
+        cnhInput.addEventListener('input', () => {
+            let val = cnhInput.value.replace(/\D/g, '').slice(0, 11);
+            cnhInput.value = val;
+        });
 
         // ==================== VALIDAÇÃO DO FORMULÁRIO DE PERFIL ====================
         function isValidProfile() {
@@ -1229,6 +1297,8 @@
             const email = profileEmailInput.value.trim().toLowerCase();
             const telefone = telefoneInput.value.trim();
             const tipo = tipoPessoaSelect.value;
+            const placa = placaInput.value.trim();
+            const cnh = cnhInput.value.trim();
             const words = nome.split(/\s+/).filter(w => w.length > 0);
             const nomeValid = words.length >= 2 && !/^\d+$/.test(nome);
             const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
@@ -1245,7 +1315,10 @@
                 const cnpjDigits = cnpjInput.value.replace(/\D/g, '').length;
                 docValid = razaoValid && cnpjDigits === 14;
             }
-            return nomeValid && emailValid && telValid && docValid;
+            const placaValid = placa.length >= 5;
+            const cnhDigits = cnh.replace(/\D/g, '').length;
+            const cnhValid = cnhDigits === 11;
+            return nomeValid && emailValid && telValid && docValid && placaValid && cnhValid;
         }
         function checkAndEnableButton() {
             updateProfileBtn.disabled = !isValidProfile();
@@ -1273,12 +1346,21 @@
                 cnpjInput.value = userProfile.cnpj || '';
             }
             telefoneInput.value = userProfile.telefone || '';
+            placaInput.value = userProfile.placa || '';
+            cnhInput.value = userProfile.cnh || '';
             if (userProfile.foto) {
                 currentProfileBase64 = userProfile.foto;
                 profileImagePreview.innerHTML = `<img src="${userProfile.foto}" style="width:100%; height:100%; object-fit:cover;">`;
             } else {
-                profileImagePreview.innerHTML = '';
                 currentProfileBase64 = '';
+                profileImagePreview.innerHTML = `
+                    <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color: var(--gray-500);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                    </div>`;
             }
             updatePhotoButtons();
             checkAndEnableButton();
@@ -1305,6 +1387,8 @@
                 userProfile.cpf = '';
             }
             userProfile.telefone = telefoneInput.value.trim();
+            userProfile.placa = placaInput.value.trim();
+            userProfile.cnh = cnhInput.value.trim();
             localStorage.setItem('userProfile', JSON.stringify(userProfile));
             updateSidebarAvatar();
             alert('Informações atualizadas com sucesso!');
@@ -1379,7 +1463,7 @@
         sidebarOverlay.addEventListener('click', closeMobileSidebar);
 
         // ==================== LISTENERS DE VALIDAÇÃO DO PERFIL ====================
-        [profileNomeInput, profileEmailInput, cpfInput, razaoSocialInput, cnpjInput, telefoneInput].forEach(el => {
+        [profileNomeInput, profileEmailInput, cpfInput, razaoSocialInput, cnpjInput, telefoneInput, placaInput, cnhInput].forEach(el => {
             el.addEventListener('input', checkAndEnableButton);
         });
 
@@ -1407,18 +1491,18 @@
             });
         });
 
-        // ==================== NOVO: TOGGLE ONLINE / OFFLINE ====================
+        // ==================== NOVO: TOGGLE ONLINE / OFFLINE COM SVG ====================
         function toggleOnlineStatus() {
             isOnline = !isOnline;
             if (isOnline) {
                 statusToggleBtn.classList.remove('offline');
                 statusToggleBtn.classList.add('online');
-                statusIcon.innerHTML = '🟢';
+                statusIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle></svg>`;
                 statusLabel.textContent = 'Online • Recebendo chamadas';
             } else {
                 statusToggleBtn.classList.remove('online');
                 statusToggleBtn.classList.add('offline');
-                statusIcon.innerHTML = '⚪';
+                statusIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle></svg>`;
                 statusLabel.textContent = 'Offline • Toque para ficar Online';
             }
         }
@@ -1485,7 +1569,7 @@
         function aceitarCorrida() {
             clearInterval(timerInterval);
             novaChamadaModal.style.display = 'none';
-            alert('✅ Corrida ACEITA! Redirecionando para Pedido Ativo...');
+            alert('Corrida ACEITA! Redirecionando para Pedido Ativo...');
             // Muda automaticamente para a aba Pedido Ativo
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.querySelectorAll('.user-profile').forEach(n => n.classList.remove('active'));
@@ -1499,7 +1583,7 @@
             clearInterval(timerInterval);
             novaChamadaModal.style.display = 'none';
             if (auto) {
-                alert('⏰ Tempo esgotado. Corrida rejeitada automaticamente.');
+                alert('Tempo esgotado. Corrida rejeitada automaticamente.');
             } else {
                 alert('Corrida rejeitada.');
             }
@@ -1512,18 +1596,18 @@
 
         // ==================== BOTÃO CHAT RÁPIDO (Pedido Ativo) ====================
         function abrirChatRapido() {
-            alert('💬 Chat tripartido aberto (PME + Cliente + Você)\n\n(Implementação completa do chat já existe fora deste arquivo)');
+            alert('Chat tripartido aberto (PME + Cliente + Você)\n\n(Implementação completa do chat já existe fora deste arquivo)');
             // Aqui você pode redirecionar para a aba chat se quiser
         }
 
         // ==================== SUPORTE DO CHAT ====================
         function abrirChatSuporte() {
-            alert('📞 Canal de Suporte da Plataforma aberto.\n\nFale diretamente com o ADM do Moto System.');
+            alert('Canal de Suporte da Plataforma aberto.\n\nFale diretamente com o ADM do Moto System.');
         }
 
         // ==================== SCAN QR CODE (simulado) ====================
         function iniciarScanQR() {
-            alert('📷 Câmera aberta (Web API do WebView)\n\nQR Code lido com sucesso! Corrida finalizada e baixa registrada no mapa.');
+            alert('Câmera aberta (Web API do WebView)\n\nQR Code lido com sucesso! Corrida finalizada e baixa registrada no mapa.');
             // Aqui você pode adicionar lógica real de navigator.mediaDevices.getUserMedia + ZXing ou similar
         }
 
@@ -1542,6 +1626,9 @@
 
             // Inicia o mapa da Home
             setTimeout(initHomeMap, 600);
+
+            // Define ícone inicial offline
+            statusIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle></svg>`;
         };
 
         init();
