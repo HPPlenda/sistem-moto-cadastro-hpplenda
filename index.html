@@ -744,14 +744,14 @@
         body.dark .map-layer-toggle,
         body.dark .map-expand-toggle {
             background-color: #6b7280;
-            color: var(--white);
+            color: #ffffff;
             border: none;
         }
         /* Dim (cinza): branco fundo + ícone/fonte preto */
         body.dim .map-layer-toggle,
         body.dim .map-expand-toggle {
-            background-color: var(--white);
-            color: var(--black);
+            background-color: #ffffff;
+            color: #000000;
             border: 1px solid var(--gray-300);
         }
         /* ESTADO EXPANDIDO DO MAPA (agora cobre 100% da aba Home abaixo do header, sem cobrir a barra superior) */
@@ -1210,7 +1210,7 @@
     <div id="novaChamadaModal" class="nova-chamada-modal">
         <div class="nova-chamada-content">
             <h2 style="margin-bottom: 20px; text-align: center;">Nova Corrida Disponível</h2>
-       
+      
             <div style="display: flex; flex-direction: column; gap: 16px;">
                 <div>
                     <strong>Distância até a loja (coleta)</strong><br>
@@ -1571,7 +1571,7 @@
             const expandBtn = document.getElementById('mapExpandToggle');
             const expandIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M15 3h6v6"></path><path d="M9 21H3v-6"></path><path d="M21 3l-7 7"></path><path d="M3 21l7-7"></path></svg>`;
             const contractIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M15 21H9v-6"></path><path d="M9 3h6v6"></path><path d="M3 9l7 7"></path><path d="M21 15l-7-7"></path></svg>`;
-          
+         
             let isMapExpanded = false;
             expandBtn.innerHTML = expandIconSVG;
             expandBtn.addEventListener('click', () => {
@@ -1579,7 +1579,7 @@
                 const container = document.querySelector('.leaflet-map-container');
                 const statusToggle = document.getElementById('statusToggleBtn');
                 const homeSection = document.getElementById('home');
-              
+             
                 if (isMapExpanded) {
                     container.classList.add('expanded');
                     expandBtn.innerHTML = contractIconSVG;
@@ -1595,7 +1595,6 @@
                     statusToggle.style.transform = 'translateX(-50%)';
                     statusToggle.style.zIndex = '1001';
                     statusToggle.style.width = 'calc(100% - 40px)';
-
                     // === POSICIONAMENTO EXATO NO MOBILE (conforme pedido) ===
                     const isMobile = window.innerWidth <= 861;
                     if (isMobile) {
@@ -1603,7 +1602,6 @@
                     } else {
                         statusToggle.style.top = '70px';
                     }
-
                     // Reposiciona os botões do mapa 5px abaixo do botão Online/Offline (apenas mobile)
                     setTimeout(() => {
                         const expandB = document.getElementById('mapExpandToggle');
@@ -1619,7 +1617,6 @@
                             layerB.style.top = '12px';
                         }
                     }, 80);
-
                 } else {
                     container.classList.remove('expanded');
                     expandBtn.innerHTML = expandIconSVG;
@@ -1638,7 +1635,6 @@
                     statusToggle.style.transform = '';
                     statusToggle.style.zIndex = '';
                     statusToggle.style.width = '';
-
                     // Reset dos botões do mapa para posição original
                     const expandB = document.getElementById('mapExpandToggle');
                     const layerB = document.getElementById('mapLayerToggle');
