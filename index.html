@@ -866,8 +866,6 @@
             color: var(--black);
         }
         /* ==================== NOVO: ESTILO EXCLUSIVO PARA BOTÃO FLUTUANTE DE CHAT (Pedido Ativo) ==================== */
-        /* Alterado conforme solicitado: sempre preto (var(--black)) + fundo transparente em TODOS os modos */
-        /* O var(--black) muda automaticamente com o tema (branco no dark/dim) */
         .chat-float-btn {
             background-color: transparent;
             border: 2px solid var(--black);
@@ -895,18 +893,23 @@
             width: 32px;
             height: 32px;
         }
+        /* NOVO: Estilo exclusivo para modo DIM (fundo sólido preto + sombra branca) */
+        body.dim .chat-float-btn {
+            background-color: #000000 !important;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.5) !important;
+            color: #ffffff !important;
+        }
         /* ==================== AJUSTE EXCLUSIVO PARA INPUTS DA ABA PERFIL (sem bordas arredondadas) ==================== */
         #detalhesConta .form-control {
             border-radius: 4px;
         }
-
         /* ==================== NOVO: HINT "ESSE BOTÃO É ARRASTÁVEL" (Pedido Ativo) ==================== */
         .draggable-hint {
             position: fixed;
             background-color: rgba(0, 0, 0, 0.92);
             color: #ffffff;
             font-family: 'Poppins', sans-serif;
-            font-size: 12px;
+            font-size: 5.4px; /* 55% menor que os 12px originais */
             font-style: italic;
             padding: 6px 14px;
             border-radius: 9999px;
@@ -1240,7 +1243,7 @@
     <div id="novaChamadaModal" class="nova-chamada-modal">
         <div class="nova-chamada-content">
             <h2 style="margin-bottom: 20px; text-align: center;">Nova Corrida Disponível</h2>
-  
+ 
             <div style="display: flex; flex-direction: column; gap: 16px;">
                 <div>
                     <strong>Distância até a loja (coleta)</strong><br>
@@ -1285,6 +1288,9 @@
         let routeMapInstance = null;
         let originalStatusParent = null;
         let originalStatusNextSibling = null;
+        // ==================== NOVO: CONTADOR DO HINT (só 4 exibições por entrada na aba Pedido Ativo) ====================
+        let hintShowCount = 0;
+        const MAX_HINT_SHOWS = 4;
         // ==================== ELEMENTOS DOM ====================
         const hamburger = document.getElementById('hamburger');
         const sidebarEl = document.getElementById('sidebar');
@@ -1464,6 +1470,8 @@
                 sidebarEl.classList.remove('open');
                 hamburger.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>`;
                 sidebarOverlay.classList.remove('active');
+                // Garante que o botão de chat volte ao z-index normal quando sidebar fecha
+                if (chatFloatBtn) chatFloatBtn.style.zIndex = '4000';
             }
         };
         // ==================== NAVEGAÇÃO (funciona para todas as novas abas) ====================
@@ -1504,9 +1512,12 @@
             if (open) {
                 hamburger.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
                 sidebarOverlay.classList.add('active');
+                // Quando sidebar abre, botão de chat fica atrás (z-index menor que sidebar 3100)
+                if (chatFloatBtn) chatFloatBtn.style.zIndex = '2000';
             } else {
                 hamburger.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>`;
                 sidebarOverlay.classList.remove('active');
+                if (chatFloatBtn) chatFloatBtn.style.zIndex = '4000';
             }
         });
         sidebarOverlay.addEventListener('click', closeMobileSidebar);
@@ -1600,7 +1611,7 @@
             // ==================== ÍCONES DO BOTÃO DE EXPANSÃO (agora Font Awesome conforme solicitado) ====================
             const expandIcon = `<i class="fa-solid fa-expand"></i>`;
             const contractIcon = `<i class="fa-solid fa-compress"></i>`;
-     
+    
             let isMapExpanded = false;
             const expandBtn = document.getElementById('mapExpandToggle');
             expandBtn.innerHTML = expandIcon;
@@ -1609,7 +1620,7 @@
                 const container = document.querySelector('.leaflet-map-container');
                 const statusToggle = document.getElementById('statusToggleBtn');
                 const homeSection = document.getElementById('home');
-         
+        
                 if (isMapExpanded) {
                     container.classList.add('expanded');
                     expandBtn.innerHTML = contractIcon;
@@ -1784,6 +1795,7 @@
                 el.style.top = `${initialTop}px`;
                 el.style.bottom = 'auto';
                 el.style.right = 'auto';
+                el.style.transition = 'none'; // drag imediato (sem transição durante o movimento)
                 if (e.type === 'touchstart') {
                     document.addEventListener('touchmove', onMove, { passive: false });
                     document.addEventListener('touchend', onEnd, { passive: false });
@@ -1807,10 +1819,12 @@
                     e.stopImmediatePropagation();
                     currentLeft = initialLeft + deltaX;
                     currentTop = initialTop + deltaY;
+                    // === NUNCA ULTRAPASSAR A BARRA SUPERIOR (mobile-header ~60px + margem) ===
+                    const minTop = 75;
                     const maxLeft = window.innerWidth - el.offsetWidth - 20;
                     const maxTop = window.innerHeight - el.offsetHeight - 20;
                     currentLeft = Math.max(20, Math.min(currentLeft, maxLeft));
-                    currentTop = Math.max(20, Math.min(currentTop, maxTop));
+                    currentTop = Math.max(minTop, Math.min(currentTop, maxTop));
                     el.style.left = `${currentLeft}px`;
                     el.style.top = `${currentTop}px`;
                 }
@@ -1820,11 +1834,20 @@
                 document.removeEventListener('mouseup', onEnd);
                 document.removeEventListener('touchmove', onMove);
                 document.removeEventListener('touchend', onEnd);
-                if (!hasMoved) {
-                    abrirChatRapido();
+                // === DELAY DE 0.2 SEGUNDOS APÓS O USUÁRIO SOLTAR O BOTÃO (conforme pedido) ===
+                if (isDragging) {
+                    setTimeout(() => {
+                        el.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                        isDragging = false;
+                        hasMoved = false;
+                    }, 200);
+                } else {
+                    if (!hasMoved) {
+                        abrirChatRapido();
+                    }
+                    isDragging = false;
+                    hasMoved = false;
                 }
-                isDragging = false;
-                hasMoved = false;
             }
             el.addEventListener('mousedown', onStart, { passive: false });
             el.addEventListener('touchstart', onStart, { passive: false });
@@ -1833,39 +1856,47 @@
         let hintInterval = null;
         function showDraggableHint() {
             if (!chatFloatBtn || !draggableHint || !document.getElementById('pedidoAtivo').classList.contains('active')) return;
-            
+            if (hintShowCount >= MAX_HINT_SHOWS) return;
+           
             const btnRect = chatFloatBtn.getBoundingClientRect();
-            
+           
             // Posição centralizada abaixo do botão
             let left = btnRect.left + (btnRect.width / 2);
             let top = btnRect.bottom + 14;
-            
+           
             // Se ficar cortado na parte inferior da tela, mostra acima do botão
             if (top + 50 > window.innerHeight) {
                 top = btnRect.top - 42;
             }
-            
+           
             // Garante que nunca saia das laterais da tela
             const hintWidth = draggableHint.offsetWidth || 140;
             left = Math.max(20, Math.min(left, window.innerWidth - hintWidth - 20));
-            
+           
             draggableHint.style.left = `${left}px`;
             draggableHint.style.top = `${top}px`;
             draggableHint.style.opacity = '1';
-            
+           
+            hintShowCount++; // incrementa contador (máximo 4)
+           
             // Some automaticamente após 3 segundos com transição suave
             setTimeout(() => {
                 draggableHint.style.opacity = '0';
             }, 3000);
         }
-        
+       
         function startDraggableHintInterval() {
+            hintShowCount = 0; // RESETA O CONTADOR toda vez que o usuário entra na aba Pedido Ativo
             if (hintInterval) clearInterval(hintInterval);
             // Primeira aparição rápida ao abrir a aba
-            setTimeout(showDraggableHint, 800);
-            // Depois a cada 20 segundos
+            setTimeout(() => {
+                if (hintShowCount < MAX_HINT_SHOWS) {
+                    showDraggableHint();
+                }
+            }, 800);
+            // Depois a cada 20 segundos (só até 4 exibições)
             hintInterval = setInterval(() => {
-                if (document.getElementById('pedidoAtivo').classList.contains('active')) {
+                if (document.getElementById('pedidoAtivo').classList.contains('active') && hintShowCount < MAX_HINT_SHOWS) {
                     showDraggableHint();
                 }
             }, 20000);
