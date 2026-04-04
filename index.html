@@ -805,6 +805,15 @@
         #statusLabel {
             white-space: nowrap;
         }
+        /* ==================== ALINHAMENTO PERFEITO DA BOLINHA (ÍCONE) COM O TEXTO NO BOTÃO ONLINE/OFFLINE ==================== */
+        .status-toggle #statusIcon {
+            display: flex;
+            align-items: center;
+            height: 24px;
+        }
+        .status-toggle #statusIcon svg {
+            vertical-align: middle;
+        }
         /* Cards de resumo para Ganhos e Histórico - VALORES SEM QUEBRA DE LINHA + RESPONSIVO */
         .summary-card {
             background-color: var(--white);
@@ -1201,7 +1210,7 @@
     <div id="novaChamadaModal" class="nova-chamada-modal">
         <div class="nova-chamada-content">
             <h2 style="margin-bottom: 20px; text-align: center;">Nova Corrida Disponível</h2>
-        
+       
             <div style="display: flex; flex-direction: column; gap: 16px;">
                 <div>
                     <strong>Distância até a loja (coleta)</strong><br>
@@ -1561,7 +1570,7 @@
             const expandBtn = document.getElementById('mapExpandToggle');
             const expandIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M15 3h6v6"></path><path d="M9 21H3v-6"></path><path d="M21 3l-7 7"></path><path d="M3 21l7-7"></path></svg>`;
             const contractIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M15 21H9v-6"></path><path d="M9 3h6v6"></path><path d="M3 9l7 7"></path><path d="M21 15l-7-7"></path></svg>`;
-           
+          
             let isMapExpanded = false;
             expandBtn.innerHTML = expandIconSVG;
             expandBtn.addEventListener('click', () => {
@@ -1569,7 +1578,7 @@
                 const container = document.querySelector('.leaflet-map-container');
                 const statusToggle = document.getElementById('statusToggleBtn');
                 const homeSection = document.getElementById('home');
-               
+              
                 if (isMapExpanded) {
                     container.classList.add('expanded');
                     expandBtn.innerHTML = contractIconSVG;
@@ -1581,11 +1590,35 @@
                     }
                     container.appendChild(statusToggle);
                     statusToggle.style.position = 'absolute';
-                    statusToggle.style.top = '70px';
                     statusToggle.style.left = '50%';
                     statusToggle.style.transform = 'translateX(-50%)';
                     statusToggle.style.zIndex = '1001';
                     statusToggle.style.width = 'calc(100% - 40px)';
+
+                    // === POSICIONAMENTO EXATO NO MOBILE (conforme pedido) ===
+                    const isMobile = window.innerWidth <= 861;
+                    if (isMobile) {
+                        statusToggle.style.top = '75px'; // 4px abaixo da barra superior mobile
+                    } else {
+                        statusToggle.style.top = '70px';
+                    }
+
+                    // Reposiciona os botões do mapa 5px abaixo do botão Online/Offline (apenas mobile)
+                    setTimeout(() => {
+                        const expandB = document.getElementById('mapExpandToggle');
+                        const layerB = document.getElementById('mapLayerToggle');
+                        if (isMobile) {
+                            const containerRect = container.getBoundingClientRect();
+                            const statusRect = statusToggle.getBoundingClientRect();
+                            const relativeBottom = (statusRect.bottom - containerRect.top) + 5;
+                            expandB.style.top = `${relativeBottom}px`;
+                            layerB.style.top = `${relativeBottom}px`;
+                        } else {
+                            expandB.style.top = '12px';
+                            layerB.style.top = '12px';
+                        }
+                    }, 80);
+
                 } else {
                     container.classList.remove('expanded');
                     expandBtn.innerHTML = expandIconSVG;
@@ -1604,6 +1637,12 @@
                     statusToggle.style.transform = '';
                     statusToggle.style.zIndex = '';
                     statusToggle.style.width = '';
+
+                    // Reset dos botões do mapa para posição original
+                    const expandB = document.getElementById('mapExpandToggle');
+                    const layerB = document.getElementById('mapLayerToggle');
+                    expandB.style.top = '12px';
+                    layerB.style.top = '12px';
                 }
                 if (mapInstance) {
                     setTimeout(() => {
