@@ -882,6 +882,10 @@
             cursor: pointer;
             transition: all 0.3s ease;
             z-index: 4000;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
         .chat-float-btn:hover {
             transform: scale(1.1);
@@ -1025,7 +1029,7 @@
                         <div id="routeMap" class="leaflet-map-container" style="height: 320px;"></div>
                     </div>
                     <!-- Botão flutuante de Chat - agora com long press de 0.3s para mover (não fixo) -->
-                    <button id="chatFloatBtn" onclick="abrirChatRapido()" class="chat-float-btn" style="position: fixed; bottom: 90px; right: 20px;">
+                    <button id="chatFloatBtn" class="chat-float-btn" style="position: fixed; bottom: 90px; right: 20px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                     </button>
                     <!-- Validação de Entrega (QR Code) - centralizado e sem emoji -->
@@ -1212,7 +1216,7 @@
     <div id="novaChamadaModal" class="nova-chamada-modal">
         <div class="nova-chamada-content">
             <h2 style="margin-bottom: 20px; text-align: center;">Nova Corrida Disponível</h2>
-    
+   
             <div style="display: flex; flex-direction: column; gap: 16px;">
                 <div>
                     <strong>Distância até a loja (coleta)</strong><br>
@@ -1453,10 +1457,7 @@
                 // Torna o botão de chat DRAGGABLE (com long press) quando abre Pedido Ativo
                 if (target === 'pedidoAtivo' && chatFloatBtn) {
                     setTimeout(() => {
-                        if (!chatFloatBtn.dataset.draggable) {
-                            makeDraggable(chatFloatBtn);
-                            chatFloatBtn.dataset.draggable = 'true';
-                        }
+                        makeDraggable(chatFloatBtn);
                     }, 300);
                 }
             });
@@ -1572,7 +1573,7 @@
             // ==================== ÍCONES DO BOTÃO DE EXPANSÃO (agora Font Awesome conforme solicitado) ====================
             const expandIcon = `<i class="fa-solid fa-expand"></i>`;
             const contractIcon = `<i class="fa-solid fa-compress"></i>`;
-       
+      
             let isMapExpanded = false;
             const expandBtn = document.getElementById('mapExpandToggle');
             expandBtn.innerHTML = expandIcon;
@@ -1581,7 +1582,7 @@
                 const container = document.querySelector('.leaflet-map-container');
                 const statusToggle = document.getElementById('statusToggleBtn');
                 const homeSection = document.getElementById('home');
-           
+          
                 if (isMapExpanded) {
                     container.classList.add('expanded');
                     expandBtn.innerHTML = contractIcon;
@@ -1725,79 +1726,111 @@
             alert('Câmera aberta (Web API do WebView)\n\nQR Code lido com sucesso! Corrida finalizada e baixa registrada no mapa.');
         }
         // ==================== FUNÇÃO PARA TORNAR O BOTÃO DE CHAT DRAGGABLE COM LONG PRESS (0.3s) ====================
+        // VERSÃO TOTALMENTE REESCRITA E OTIMIZADA PARA MOBILE + LEAFLET (sem alterar nada fora desta função)
         function makeDraggable(el) {
-            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-            let longPressTimeout = null;
-            let isLongPressed = false;
+            // Proteção: inicializa apenas uma vez por carregamento da página
+            if (el.dataset.draggableInitialized === 'true') return;
+            el.dataset.draggableInitialized = 'true';
+
+            let isDragging = false;
             let hasMoved = false;
-            function resetDrag() {
-                document.onmouseup = null;
-                document.onmousemove = null;
-                document.ontouchend = null;
-                document.ontouchmove = null;
+            let startX = 0, startY = 0;
+            let initialLeft = 0, initialTop = 0;
+            let currentLeft = 0, currentTop = 0;
+
+            const MIN_MOVE_THRESHOLD = 12; // pixels - evita drag acidental em tap rápido
+
+            function getCoords(e) {
+                if (e.touches && e.touches.length > 0) {
+                    return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                }
+                return { x: e.clientX, y: e.clientY };
             }
-            function elementDrag(e) {
-                if (!isLongPressed) return;
-                e = e || window.event;
-                if (e.type === 'touchmove') e = e.touches[0];
-                e.preventDefault();
-                pos1 = pos3 - e.clientX;
-                pos2 = pos4 - e.clientY;
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                let newTop = el.offsetTop - pos2;
-                let newLeft = el.offsetLeft - pos1;
-                // Limitação apenas dentro da aba Pedido Ativo (viewport bounds)
-                newTop = Math.max(60, Math.min(newTop, window.innerHeight - el.offsetHeight - 20));
-                newLeft = Math.max(20, Math.min(newLeft, window.innerWidth - el.offsetWidth - 20));
-                el.style.top = newTop + "px";
-                el.style.left = newLeft + "px";
+
+            function onStart(e) {
+                if (e.type === 'mousedown' && e.button !== 0) return;
+
+                const coords = getCoords(e);
+                startX = coords.x;
+                startY = coords.y;
+
+                hasMoved = false;
+                isDragging = false;
+
+                // Converte posição inicial (bottom/right) para left/top para permitir drag
+                const rect = el.getBoundingClientRect();
+                initialLeft = rect.left;
+                initialTop = rect.top;
+
+                el.style.position = 'fixed';
+                el.style.left = `${initialLeft}px`;
+                el.style.top = `${initialTop}px`;
                 el.style.bottom = 'auto';
                 el.style.right = 'auto';
-                hasMoved = true;
-            }
-            function closeDragElement() {
-                resetDrag();
-                isLongPressed = false;
-                hasMoved = false;
-            }
-            function dragMouseDown(e) {
-                if (!isLongPressed) return;
-                e = e || window.event;
-                if (e.type === 'touchstart') e = e.touches[0];
+
+                // Adiciona listeners globais
+                if (e.type === 'touchstart') {
+                    document.addEventListener('touchmove', onMove, { passive: false });
+                    document.addEventListener('touchend', onEnd, { passive: false });
+                } else {
+                    document.addEventListener('mousemove', onMove);
+                    document.addEventListener('mouseup', onEnd);
+                }
+
+                // Previne conflito com Leaflet (mapa captura touch)
                 e.preventDefault();
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                document.onmouseup = closeDragElement;
-                document.onmousemove = elementDrag;
-                document.ontouchend = closeDragElement;
-                document.ontouchmove = elementDrag;
+                e.stopImmediatePropagation();
             }
-            // Long press handlers
-            function onLongPressStart(e) {
+
+            function onMove(e) {
+                const coords = getCoords(e);
+                const deltaX = coords.x - startX;
+                const deltaY = coords.y - startY;
+
+                if (Math.abs(deltaX) > MIN_MOVE_THRESHOLD || Math.abs(deltaY) > MIN_MOVE_THRESHOLD) {
+                    hasMoved = true;
+                    isDragging = true;
+                }
+
+                if (isDragging) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation(); // essencial para Leaflet não roubar o evento
+
+                    currentLeft = initialLeft + deltaX;
+                    currentTop = initialTop + deltaY;
+
+                    // Limites seguros (20px das bordas da tela - respeita safe-area visual)
+                    const maxLeft = window.innerWidth - el.offsetWidth - 20;
+                    const maxTop = window.innerHeight - el.offsetHeight - 20;
+
+                    currentLeft = Math.max(20, Math.min(currentLeft, maxLeft));
+                    currentTop = Math.max(20, Math.min(currentTop, maxTop));
+
+                    el.style.left = `${currentLeft}px`;
+                    el.style.top = `${currentTop}px`;
+                }
+            }
+
+            function onEnd(e) {
+                // Remove listeners globais
+                document.removeEventListener('mousemove', onMove);
+                document.removeEventListener('mouseup', onEnd);
+                document.removeEventListener('touchmove', onMove);
+                document.removeEventListener('touchend', onEnd);
+
+                if (!hasMoved) {
+                    // Toque rápido = abre chat (sem drag)
+                    abrirChatRapido();
+                }
+
+                // Reset flags
+                isDragging = false;
                 hasMoved = false;
-                isLongPressed = false;
-                clearTimeout(longPressTimeout);
-                longPressTimeout = setTimeout(() => {
-                    isLongPressed = true;
-                    dragMouseDown(e);
-                }, 300);
             }
-            function onPointerEnd() {
-                clearTimeout(longPressTimeout);
-                resetDrag();
-                isLongPressed = false;
-            }
-            function onPointerMoveEarly() {
-                clearTimeout(longPressTimeout);
-            }
-            // Attach events
-            el.onmousedown = onLongPressStart;
-            el.ontouchstart = onLongPressStart;
-            el.onmouseup = onPointerEnd;
-            el.ontouchend = onPointerEnd;
-            el.onmousemove = onPointerMoveEarly;
-            el.ontouchmove = onPointerMoveEarly;
+
+            // Registra os eventos de início (mouse + touch)
+            el.addEventListener('mousedown', onStart, { passive: false });
+            el.addEventListener('touchstart', onStart, { passive: false });
         }
         // ==================== CORREÇÃO GLOBAL DE ZOOM NO MAPA (resize + invalidate) ====================
         function fixMapOnResize() {
