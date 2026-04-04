@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-   
+  
     <!-- Leaflet CSS (OpenStreetMap) - adicionado para o mapa interativo do app -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
@@ -220,6 +220,12 @@
             overflow: visible;
             text-overflow: unset;
             white-space: nowrap;
+        }
+        /* ==================== MOBILE SIDEBAR - CORREÇÃO DE CORTE DO TEXTO "PERFIL E CONFIGURAÇÕES" ==================== */
+        @media (max-width: 861px) {
+            .user-profile > div:last-of-type {
+                font-size: 12px;
+            }
         }
         /* Main Content */
         .main-content {
@@ -524,12 +530,12 @@
             color: var(--white);
             border: none;
         }
-        /* Dark: cinza fundo + branco texto */
+        /* Dark: cinza fundo + branco texto (AGORA IGUAL AOS BOTÕES DA ABA PERFIL) */
         body.dark .btn-primary,
         body.dark .custom-upload-btn,
         body.dark .btn-secondary {
             background-color: #6b7280;
-            color: var(--white);
+            color: var(--black);
             border: none;
         }
         /* Dim (cinza): preto fundo + branco texto */
@@ -685,12 +691,40 @@
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            position: relative;
         }
         body.dark .leaflet-map-container,
         body.dim .leaflet-map-container {
             border-color: var(--gray-300);
         }
-        /* Toggle Online/Offline - grande e claro + SEM QUEBRA DE LINHA + RESPONSIVO */
+        /* BOTÃO DE MUDANÇA DE MODO DO MAPA (dentro do mapa, superior direito) */
+        .map-layer-toggle {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 1000;
+            background-color: var(--white);
+            color: var(--black);
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        body.dark .map-layer-toggle,
+        body.dim .map-layer-toggle {
+            background-color: #6b7280;
+            color: var(--white);
+            border-color: #6b7280;
+        }
+        /* Toggle Online/Offline - grande e claro + SEM QUEBRA DE LINHA + RESPONSIVO + SEM BORDA + TRANSITION 0.4s */
         .status-toggle {
             width: 100%;
             padding: 20px 24px;
@@ -701,8 +735,9 @@
             align-items: center;
             justify-content: center;
             gap: 12px;
-            transition: all 0.3s;
+            transition: all 0.4s ease;
             white-space: nowrap;
+            border: none;
         }
         .status-toggle.online {
             background-color: var(--green);
@@ -882,9 +917,10 @@
                 </span>
                 <span id="statusLabel">Offline • Toque para ficar Online</span>
             </button>
-            <!-- Mapa Interativo Leaflet (tela cheia no mobile) -->
-            <div class="leaflet-map-container" style="height: calc(100vh - 280px); margin-top: 24px;">
+            <!-- Mapa Interativo Leaflet (sem controles de zoom + botão de satélite no canto superior direito) -->
+            <div class="leaflet-map-container" style="height: calc(100vh - 280px); margin-top: 24px; position: relative;">
                 <div id="map" style="height: 100%; width: 100%;"></div>
+                <button id="mapLayerToggle" class="map-layer-toggle">🗺️ Mapa</button>
             </div>
             <!-- Botão de teste para simular nova chamada (você pode remover depois) -->
             <button onclick="simularNovaChamada()" style="margin-top: 16px; width: 100%; padding: 14px; font-size: 15px; background-color: var(--gray-200); color: var(--black); border: none; border-radius: 8px;">
@@ -920,7 +956,7 @@
                         <label style="display: block; margin-bottom: 8px;">Rota em tempo real</label>
                         <div id="routeMap" class="leaflet-map-container" style="height: 320px;"></div>
                     </div>
-                    <!-- Botão flutuante de Chat TRANSPARENTE + DRAGGABLE + ícone preto/branco conforme tema -->
+                    <!-- Botão flutuante de Chat - agora com long press de 0.3s para mover (não fixo) -->
                     <button id="chatFloatBtn" onclick="abrirChatRapido()" class="chat-float-btn" style="position: fixed; bottom: 90px; right: 20px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                     </button>
@@ -1108,7 +1144,7 @@
     <div id="novaChamadaModal" class="nova-chamada-modal">
         <div class="nova-chamada-content">
             <h2 style="margin-bottom: 20px; text-align: center;">Nova Corrida Disponível</h2>
-           
+          
             <div style="display: flex; flex-direction: column; gap: 16px;">
                 <div>
                     <strong>Distância até a loja (coleta)</strong><br>
@@ -1344,7 +1380,7 @@
                 if (target === 'home') {
                     setTimeout(initHomeMap, 300);
                 }
-                // Torna o botão de chat DRAGGABLE quando abre Pedido Ativo
+                // Torna o botão de chat DRAGGABLE (com long press) quando abre Pedido Ativo
                 if (target === 'pedidoAtivo' && chatFloatBtn) {
                     setTimeout(() => {
                         if (!chatFloatBtn.dataset.draggable) {
@@ -1419,7 +1455,7 @@
             }
         }
         statusToggleBtn.addEventListener('click', toggleOnlineStatus);
-        // ==================== NOVO: MAPA LEAFLET HOME (corrigido zoom e visibilidade) ====================
+        // ==================== MAPA LEAFLET HOME (sem zoom + botão satélite) ====================
         function initHomeMap() {
             if (mapInstance) {
                 mapInstance.invalidateSize();
@@ -1427,16 +1463,42 @@
             }
             const mapEl = document.getElementById('map');
             mapInstance = L.map(mapEl, {
-                zoomControl: true,
+                zoomControl: false,
                 attributionControl: false,
                 zoomSnap: 0.5,
                 zoomDelta: 0.5,
                 minZoom: 10,
                 maxZoom: 19
             }).setView([-3.119, -60.021], 14);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+
+            // Camadas do mapa
+            const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap'
-            }).addTo(mapInstance);
+            });
+            const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '© Esri'
+            });
+
+            streetLayer.addTo(mapInstance);
+
+            // Botão de troca de modo (dentro do mapa)
+            const toggleBtn = document.getElementById('mapLayerToggle');
+            let isSatellite = false;
+
+            toggleBtn.addEventListener('click', () => {
+                if (isSatellite) {
+                    mapInstance.removeLayer(satelliteLayer);
+                    streetLayer.addTo(mapInstance);
+                    toggleBtn.innerHTML = '🗺️ Mapa';
+                    isSatellite = false;
+                } else {
+                    mapInstance.removeLayer(streetLayer);
+                    satelliteLayer.addTo(mapInstance);
+                    toggleBtn.innerHTML = '📡 Satélite';
+                    isSatellite = true;
+                }
+            });
+
             // Localização em tempo real do motoboy
             if (navigator.geolocation) {
                 navigator.geolocation.watchPosition((position) => {
@@ -1512,10 +1574,52 @@
         function iniciarScanQR() {
             alert('Câmera aberta (Web API do WebView)\n\nQR Code lido com sucesso! Corrida finalizada e baixa registrada no mapa.');
         }
-        // ==================== FUNÇÃO PARA TORNAR O BOTÃO DE CHAT DRAGGABLE (movimentável) ====================
+        // ==================== FUNÇÃO PARA TORNAR O BOTÃO DE CHAT DRAGGABLE COM LONG PRESS (0.3s) ====================
         function makeDraggable(el) {
             let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            let longPressTimeout = null;
+            let isLongPressed = false;
+            let hasMoved = false;
+
+            function resetDrag() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+                document.ontouchend = null;
+                document.ontouchmove = null;
+            }
+
+            function elementDrag(e) {
+                if (!isLongPressed) return;
+                e = e || window.event;
+                if (e.type === 'touchmove') e = e.touches[0];
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+
+                let newTop = el.offsetTop - pos2;
+                let newLeft = el.offsetLeft - pos1;
+
+                // Limitação apenas dentro da aba Pedido Ativo (viewport bounds)
+                newTop = Math.max(60, Math.min(newTop, window.innerHeight - el.offsetHeight - 20));
+                newLeft = Math.max(20, Math.min(newLeft, window.innerWidth - el.offsetWidth - 20));
+
+                el.style.top = newTop + "px";
+                el.style.left = newLeft + "px";
+                el.style.bottom = 'auto';
+                el.style.right = 'auto';
+                hasMoved = true;
+            }
+
+            function closeDragElement() {
+                resetDrag();
+                isLongPressed = false;
+                hasMoved = false;
+            }
+
             function dragMouseDown(e) {
+                if (!isLongPressed) return;
                 e = e || window.event;
                 if (e.type === 'touchstart') e = e.touches[0];
                 e.preventDefault();
@@ -1526,28 +1630,35 @@
                 document.ontouchend = closeDragElement;
                 document.ontouchmove = elementDrag;
             }
-            function elementDrag(e) {
-                e = e || window.event;
-                if (e.type === 'touchmove') e = e.touches[0];
-                e.preventDefault();
-                pos1 = pos3 - e.clientX;
-                pos2 = pos4 - e.clientY;
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                el.style.top = (el.offsetTop - pos2) + "px";
-                el.style.left = (el.offsetLeft - pos1) + "px";
-                el.style.bottom = 'auto';
-                el.style.right = 'auto';
+
+            // Long press handlers
+            function onLongPressStart(e) {
+                hasMoved = false;
+                isLongPressed = false;
+                clearTimeout(longPressTimeout);
+                longPressTimeout = setTimeout(() => {
+                    isLongPressed = true;
+                    dragMouseDown(e);
+                }, 300);
             }
-            function closeDragElement() {
-                document.onmouseup = null;
-                document.onmousemove = null;
-                document.ontouchend = null;
-                document.ontouchmove = null;
+
+            function onPointerEnd() {
+                clearTimeout(longPressTimeout);
+                resetDrag();
+                isLongPressed = false;
             }
-            // Suporte mouse + touch
-            el.onmousedown = dragMouseDown;
-            el.ontouchstart = dragMouseDown;
+
+            function onPointerMoveEarly() {
+                clearTimeout(longPressTimeout);
+            }
+
+            // Attach events
+            el.onmousedown = onLongPressStart;
+            el.ontouchstart = onLongPressStart;
+            el.onmouseup = onPointerEnd;
+            el.ontouchend = onPointerEnd;
+            el.onmousemove = onPointerMoveEarly;
+            el.ontouchmove = onPointerMoveEarly;
         }
         // ==================== CORREÇÃO GLOBAL DE ZOOM NO MAPA (resize + invalidate) ====================
         function fixMapOnResize() {
