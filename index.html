@@ -180,7 +180,7 @@
             border-radius: 0 999px 999px 0;
             display: flex;
             align-items: center;
-            gap: 3px; /* DISTÂNCIA EXATAMENTE 3PX ENTRE FOTO E TEXTO CONFORME SOLICITADO */
+            gap: 16px; /* ALTERADO PARA 16PX (igual aos itens do menu) para alinhamento vertical perfeito do ícone */
             cursor: pointer;
             transition: all 0.2s;
             color: var(--black);
@@ -205,25 +205,25 @@
             border: 2px solid var(--black);
             box-shadow: none;
         }
-        /* TEXTO DA ABA LATERAL EM UMA LINHA SÓ E MENOR PARA CABER PERFEITAMENTE + RESPONSIVO */
+        /* TEXTO DA ABA LATERAL - MESMO TAMANHO DAS OUTRAS ABAS + QUEBRA DE LINHA */
         .user-profile > div:last-of-type {
-            font-size: 13px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            line-height: 1;
+            font-size: 16px;
+            white-space: normal;
+            overflow: visible;
+            text-overflow: unset;
+            line-height: 1.3;
         }
         body.dark .user-profile > div:last-of-type,
         body.dim .user-profile > div:last-of-type {
-            font-size: 12.5px;
+            font-size: 16px;
             overflow: visible;
             text-overflow: unset;
-            white-space: nowrap;
+            white-space: normal;
         }
         /* ==================== MOBILE SIDEBAR - CORREÇÃO DE CORTE DO TEXTO "PERFIL E CONFIGURAÇÕES" ==================== */
         @media (max-width: 861px) {
             .user-profile > div:last-of-type {
-                font-size: 12px;
+                font-size: 15px;
             }
         }
         /* Main Content */
@@ -718,7 +718,7 @@
             transition: all 0.2s ease;
             white-space: nowrap;
         }
-        /* BOTÃO DE EXPANSÃO DO MAPA (canto superior esquerdo) */
+        /* BOTÃO DE EXPANSÃO DO MAPA (canto superior esquerdo) - ÍCONES ATUALIZADOS */
         .map-expand-toggle {
             position: absolute;
             top: 12px;
@@ -937,7 +937,7 @@
         </nav>
         <!-- ABA PERFIL E CONFIGURAÇÕES (mantida no rodapé - sexta aba) -->
         <div class="user-profile" id="userProfileLink">
-            <div id="sidebarAvatar" style="width: 40px; height: 40px; background-color: var(--gray-200); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--gray-300); flex-shrink: 0; overflow: hidden;">
+            <div id="sidebarAvatar" style="width: 24px; height: 24px; background-color: var(--gray-200); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--gray-300); flex-shrink: 0; overflow: hidden;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
             </div>
             <div>Perfil e Configurações</div>
@@ -1210,7 +1210,7 @@
     <div id="novaChamadaModal" class="nova-chamada-modal">
         <div class="nova-chamada-content">
             <h2 style="margin-bottom: 20px; text-align: center;">Nova Corrida Disponível</h2>
-      
+     
             <div style="display: flex; flex-direction: column; gap: 16px;">
                 <div>
                     <strong>Distância até a loja (coleta)</strong><br>
@@ -1536,7 +1536,7 @@
                 zoomSnap: 0.5,
                 zoomDelta: 0.5,
                 minZoom: 10,
-                maxZoom: 19
+                maxZoom: 18, // ALTERADO PARA 18 - evita tela branca ao aproximar demais (os tiles do OpenStreetMap e Esri World Imagery não existem em zoom >18 em algumas regiões)
             }).setView([-3.119, -60.021], 14);
             // Camadas do mapa
             const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -1567,11 +1567,13 @@
                     isSatellite = true;
                 }
             });
-            // ==================== NOVO: BOTÃO DE EXPANSÃO DO MAPA ====================
+            // ==================== NOVO: BOTÃO DE EXPANSÃO DO MAPA (ícones atualizados conforme imagens anexadas - setas opostas) ====================
             const expandBtn = document.getElementById('mapExpandToggle');
-            const expandIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M15 3h6v6"></path><path d="M9 21H3v-6"></path><path d="M21 3l-7 7"></path><path d="M3 21l7-7"></path></svg>`;
-            const contractIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M15 21H9v-6"></path><path d="M9 3h6v6"></path><path d="M3 9l7 7"></path><path d="M21 15l-7-7"></path></svg>`;
-         
+            // Ícone de EXPANDIR (semelhante às imagens anexadas - setas diagonais para fora)
+            const expandIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M15 3h6v6"></path><path d="M9 21H3v-6"></path><path d="M21 3l-7 7"></path><path d="M3 21l7-7"></path></svg>`;
+            // Ícone de RECOLHER (oposto exato ao expandir - setas contrárias conforme solicitado)
+            const contractIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M15 21H9v-6"></path><path d="M9 3h6v6"></path><path d="M3 9l7 7"></path><path d="M21 15l-7-7"></path></svg>`;
+        
             let isMapExpanded = false;
             expandBtn.innerHTML = expandIconSVG;
             expandBtn.addEventListener('click', () => {
@@ -1579,7 +1581,7 @@
                 const container = document.querySelector('.leaflet-map-container');
                 const statusToggle = document.getElementById('statusToggleBtn');
                 const homeSection = document.getElementById('home');
-             
+            
                 if (isMapExpanded) {
                     container.classList.add('expanded');
                     expandBtn.innerHTML = contractIconSVG;
