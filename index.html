@@ -899,6 +899,27 @@
         #detalhesConta .form-control {
             border-radius: 4px;
         }
+
+        /* ==================== NOVO: HINT "ESSE BOTÃO É ARRASTÁVEL" (Pedido Ativo) ==================== */
+        .draggable-hint {
+            position: fixed;
+            background-color: rgba(0, 0, 0, 0.92);
+            color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 12px;
+            font-style: italic;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 4500;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
+            text-align: center;
+            line-height: 1.2;
+            max-width: 180px;
+        }
     </style>
 </head>
 <body>
@@ -943,7 +964,8 @@
         </nav>
         <!-- ABA PERFIL E CONFIGURAÇÕES (mantida no rodapé - sexta aba) -->
         <div class="user-profile" id="userProfileLink">
-            <div id="sidebarAvatar" style="width: 24px; height: 24px; background-color: var(--gray-200); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--gray-300); flex-shrink: 0; overflow: hidden;">
+            <!-- ÍCONE DO USUÁRIO AUMENTADO EM 40% (24px → 33.6px) - NADA MAIS FOI ALTERADO -->
+            <div id="sidebarAvatar" style="width: 33.6px; height: 33.6px; background-color: var(--gray-200); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--gray-300); flex-shrink: 0; overflow: hidden;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
             </div>
             <div>Perfil e Configurações</div>
@@ -1032,6 +1054,8 @@
                     <button id="chatFloatBtn" class="chat-float-btn" style="position: fixed; bottom: 90px; right: 20px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                     </button>
+                    <!-- NOVO: HINT "ESSE BOTÃO É ARRASTÁVEL" - aparece a cada 20s abaixo do botão (sempre visível, nunca cortado) -->
+                    <div id="draggableHint" class="draggable-hint">esse botão é arrastável</div>
                     <!-- Validação de Entrega (QR Code) - centralizado e sem emoji -->
                     <div style="margin-top: 40px; text-align: center;">
                         <button onclick="iniciarScanQR()" class="btn-primary" style="padding: 16px 40px; font-size: 17px; margin: 0 auto; display: block;">
@@ -1216,7 +1240,7 @@
     <div id="novaChamadaModal" class="nova-chamada-modal">
         <div class="nova-chamada-content">
             <h2 style="margin-bottom: 20px; text-align: center;">Nova Corrida Disponível</h2>
-   
+  
             <div style="display: flex; flex-direction: column; gap: 16px;">
                 <div>
                     <strong>Distância até a loja (coleta)</strong><br>
@@ -1284,6 +1308,8 @@
         const statusLabel = document.getElementById('statusLabel');
         const novaChamadaModal = document.getElementById('novaChamadaModal');
         const chatFloatBtn = document.getElementById('chatFloatBtn');
+        // NOVO: Elemento do hint do botão flutuante (Pedido Ativo)
+        const draggableHint = document.getElementById('draggableHint');
         // ==================== FUNÇÕES AUXILIARES ====================
         const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString('pt-BR');
         // ==================== NOVO: UPLOAD E PREVIEW DA FOTO DO PERFIL + CONTROLE DE BOTÕES ====================
@@ -1429,7 +1455,7 @@
             if (userProfile.foto) {
                 sidebarAvatar.innerHTML = `<img src="${userProfile.foto}" alt="Foto do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
             } else {
-                sidebarAvatar.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
+                sidebarAvatar.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="33.6" height="33.6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
             }
         }
         // ==================== FECHAR SIDEBAR NO MOBILE ====================
@@ -1454,10 +1480,11 @@
                 if (target === 'home') {
                     setTimeout(initHomeMap, 300);
                 }
-                // Torna o botão de chat DRAGGABLE (com long press) quando abre Pedido Ativo
+                // Torna o botão de chat DRAGGABLE (com long press) quando abre Pedido Ativo + inicia hint a cada 20s
                 if (target === 'pedidoAtivo' && chatFloatBtn) {
                     setTimeout(() => {
                         makeDraggable(chatFloatBtn);
+                        startDraggableHintInterval();
                     }, 300);
                 }
             });
@@ -1539,7 +1566,7 @@
                 zoomSnap: 0.5,
                 zoomDelta: 0.5,
                 minZoom: 10,
-                maxZoom: 18, // ALTERADO PARA 18 - evita tela branca ao aproximar demais (os tiles do OpenStreetMap e Esri World Imagery não existem em zoom >18 em algumas regiões)
+                maxZoom: 18,
             }).setView([-3.119, -60.021], 14);
             // Camadas do mapa
             const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -1573,7 +1600,7 @@
             // ==================== ÍCONES DO BOTÃO DE EXPANSÃO (agora Font Awesome conforme solicitado) ====================
             const expandIcon = `<i class="fa-solid fa-expand"></i>`;
             const contractIcon = `<i class="fa-solid fa-compress"></i>`;
-      
+     
             let isMapExpanded = false;
             const expandBtn = document.getElementById('mapExpandToggle');
             expandBtn.innerHTML = expandIcon;
@@ -1582,7 +1609,7 @@
                 const container = document.querySelector('.leaflet-map-container');
                 const statusToggle = document.getElementById('statusToggleBtn');
                 const homeSection = document.getElementById('home');
-          
+         
                 if (isMapExpanded) {
                     container.classList.add('expanded');
                     expandBtn.innerHTML = contractIcon;
@@ -1728,47 +1755,35 @@
         // ==================== FUNÇÃO PARA TORNAR O BOTÃO DE CHAT DRAGGABLE COM LONG PRESS (0.3s) ====================
         // VERSÃO TOTALMENTE REESCRITA E OTIMIZADA PARA MOBILE + LEAFLET (sem alterar nada fora desta função)
         function makeDraggable(el) {
-            // Proteção: inicializa apenas uma vez por carregamento da página
             if (el.dataset.draggableInitialized === 'true') return;
             el.dataset.draggableInitialized = 'true';
-
             let isDragging = false;
             let hasMoved = false;
             let startX = 0, startY = 0;
             let initialLeft = 0, initialTop = 0;
             let currentLeft = 0, currentTop = 0;
-
-            const MIN_MOVE_THRESHOLD = 12; // pixels - evita drag acidental em tap rápido
-
+            const MIN_MOVE_THRESHOLD = 12;
             function getCoords(e) {
                 if (e.touches && e.touches.length > 0) {
                     return { x: e.touches[0].clientX, y: e.touches[0].clientY };
                 }
                 return { x: e.clientX, y: e.clientY };
             }
-
             function onStart(e) {
                 if (e.type === 'mousedown' && e.button !== 0) return;
-
                 const coords = getCoords(e);
                 startX = coords.x;
                 startY = coords.y;
-
                 hasMoved = false;
                 isDragging = false;
-
-                // Converte posição inicial (bottom/right) para left/top para permitir drag
                 const rect = el.getBoundingClientRect();
                 initialLeft = rect.left;
                 initialTop = rect.top;
-
                 el.style.position = 'fixed';
                 el.style.left = `${initialLeft}px`;
                 el.style.top = `${initialTop}px`;
                 el.style.bottom = 'auto';
                 el.style.right = 'auto';
-
-                // Adiciona listeners globais
                 if (e.type === 'touchstart') {
                     document.addEventListener('touchmove', onMove, { passive: false });
                     document.addEventListener('touchend', onEnd, { passive: false });
@@ -1776,61 +1791,84 @@
                     document.addEventListener('mousemove', onMove);
                     document.addEventListener('mouseup', onEnd);
                 }
-
-                // Previne conflito com Leaflet (mapa captura touch)
                 e.preventDefault();
                 e.stopImmediatePropagation();
             }
-
             function onMove(e) {
                 const coords = getCoords(e);
                 const deltaX = coords.x - startX;
                 const deltaY = coords.y - startY;
-
                 if (Math.abs(deltaX) > MIN_MOVE_THRESHOLD || Math.abs(deltaY) > MIN_MOVE_THRESHOLD) {
                     hasMoved = true;
                     isDragging = true;
                 }
-
                 if (isDragging) {
                     e.preventDefault();
-                    e.stopImmediatePropagation(); // essencial para Leaflet não roubar o evento
-
+                    e.stopImmediatePropagation();
                     currentLeft = initialLeft + deltaX;
                     currentTop = initialTop + deltaY;
-
-                    // Limites seguros (20px das bordas da tela - respeita safe-area visual)
                     const maxLeft = window.innerWidth - el.offsetWidth - 20;
                     const maxTop = window.innerHeight - el.offsetHeight - 20;
-
                     currentLeft = Math.max(20, Math.min(currentLeft, maxLeft));
                     currentTop = Math.max(20, Math.min(currentTop, maxTop));
-
                     el.style.left = `${currentLeft}px`;
                     el.style.top = `${currentTop}px`;
                 }
             }
-
             function onEnd(e) {
-                // Remove listeners globais
                 document.removeEventListener('mousemove', onMove);
                 document.removeEventListener('mouseup', onEnd);
                 document.removeEventListener('touchmove', onMove);
                 document.removeEventListener('touchend', onEnd);
-
                 if (!hasMoved) {
-                    // Toque rápido = abre chat (sem drag)
                     abrirChatRapido();
                 }
-
-                // Reset flags
                 isDragging = false;
                 hasMoved = false;
             }
-
-            // Registra os eventos de início (mouse + touch)
             el.addEventListener('mousedown', onStart, { passive: false });
             el.addEventListener('touchstart', onStart, { passive: false });
+        }
+        // ==================== NOVO: HINT "ESSE BOTÃO É ARRASTÁVEL" (a cada 20 segundos, 3s de duração, sempre visível) ====================
+        let hintInterval = null;
+        function showDraggableHint() {
+            if (!chatFloatBtn || !draggableHint || !document.getElementById('pedidoAtivo').classList.contains('active')) return;
+            
+            const btnRect = chatFloatBtn.getBoundingClientRect();
+            
+            // Posição centralizada abaixo do botão
+            let left = btnRect.left + (btnRect.width / 2);
+            let top = btnRect.bottom + 14;
+            
+            // Se ficar cortado na parte inferior da tela, mostra acima do botão
+            if (top + 50 > window.innerHeight) {
+                top = btnRect.top - 42;
+            }
+            
+            // Garante que nunca saia das laterais da tela
+            const hintWidth = draggableHint.offsetWidth || 140;
+            left = Math.max(20, Math.min(left, window.innerWidth - hintWidth - 20));
+            
+            draggableHint.style.left = `${left}px`;
+            draggableHint.style.top = `${top}px`;
+            draggableHint.style.opacity = '1';
+            
+            // Some automaticamente após 3 segundos com transição suave
+            setTimeout(() => {
+                draggableHint.style.opacity = '0';
+            }, 3000);
+        }
+        
+        function startDraggableHintInterval() {
+            if (hintInterval) clearInterval(hintInterval);
+            // Primeira aparição rápida ao abrir a aba
+            setTimeout(showDraggableHint, 800);
+            // Depois a cada 20 segundos
+            hintInterval = setInterval(() => {
+                if (document.getElementById('pedidoAtivo').classList.contains('active')) {
+                    showDraggableHint();
+                }
+            }, 20000);
         }
         // ==================== CORREÇÃO GLOBAL DE ZOOM NO MAPA (resize + invalidate) ====================
         function fixMapOnResize() {
