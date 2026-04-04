@@ -719,13 +719,7 @@
             transition: all 0.2s ease;
             white-space: nowrap;
         }
-        body.dark .map-layer-toggle,
-        body.dim .map-layer-toggle {
-            background-color: #6b7280;
-            color: var(--white);
-            border-color: #6b7280;
-        }
-        /* NOVO: BOTÃO DE EXPANSÃO DO MAPA (canto superior esquerdo) */
+        /* BOTÃO DE EXPANSÃO DO MAPA (canto superior esquerdo) */
         .map-expand-toggle {
             position: absolute;
             top: 12px;
@@ -746,16 +740,25 @@
             transition: all 0.2s ease;
             white-space: nowrap;
         }
-        body.dark .map-expand-toggle,
-        body.dim .map-expand-toggle {
+        /* ESTILOS ESPECÍFICOS POR TEMA PARA OS BOTÕES DENTRO DO MAPA (Home) */
+        /* Dark: cinza fundo + ícone/fonte branco */
+        body.dark .map-layer-toggle,
+        body.dark .map-expand-toggle {
             background-color: #6b7280;
             color: var(--white);
             border-color: #6b7280;
         }
-        /* ESTADO EXPANDIDO DO MAPA (cobre 100% da área da aba Home, sem cobrir header ou sidebar) */
+        /* Dim (cinza): branco fundo + ícone/fonte preto (igual ao botão "Falar com Suporte da Plataforma") */
+        body.dim .map-layer-toggle,
+        body.dim .map-expand-toggle {
+            background-color: var(--white);
+            color: var(--black);
+            border-color: var(--gray-300);
+        }
+        /* ESTADO EXPANDIDO DO MAPA (agora cobre 100% da aba Home abaixo do header, sem cobrir a barra superior) */
         .leaflet-map-container.expanded {
-            height: calc(100vh - 160px) !important;
-            margin-top: 12px !important;
+            height: calc(100vh - 120px) !important;
+            margin-top: 0 !important;
         }
         /* Toggle Online/Offline - grande e claro + SEM QUEBRA DE LINHA + RESPONSIVO + SEM BORDA + TRANSITION 0.4s */
         .status-toggle {
@@ -1548,12 +1551,16 @@
             expandBtn.addEventListener('click', () => {
                 isMapExpanded = !isMapExpanded;
                 const container = document.querySelector('.leaflet-map-container');
+                const statusToggle = document.getElementById('statusToggleBtn');
+                
                 if (isMapExpanded) {
                     container.classList.add('expanded');
                     expandBtn.innerHTML = contractIconSVG;
+                    statusToggle.style.display = 'none'; /* oculta o status para o mapa cobrir 100% da aba Home */
                 } else {
                     container.classList.remove('expanded');
                     expandBtn.innerHTML = expandIconSVG;
+                    statusToggle.style.display = 'block'; /* restaura o status ao contrair */
                 }
                 if (mapInstance) {
                     setTimeout(() => {
