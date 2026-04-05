@@ -865,15 +865,15 @@
             background-color: var(--white);
             color: var(--black);
         }
-        /* ==================== NOVO: ESTILO EXCLUSIVO PARA BOTÃO FLUTUANTE DE CHAT (Pedido Ativo) ==================== */
+        /* ==================== NOVO: ESTILO EXCLUSIVO PARA BOTÃO FLUTUANTE DE CHAT (Pedido Ativo) - ATUALIZADO CONFORME SOLICITAÇÃO ==================== */
         .chat-float-btn {
-            background-color: transparent;
+            background-color: #ffffff;
             border: 2px solid var(--black);
             color: var(--black);
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -887,29 +887,37 @@
         }
         .chat-float-btn:hover {
             transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
         .chat-float-btn svg {
             width: 32px;
             height: 32px;
         }
-        /* NOVO: Estilo exclusivo para modo DIM (fundo sólido preto + sombra branca) */
-        body.dim .chat-float-btn {
+        /* Dark: fundo preto + sombra branca */
+        body.dark .chat-float-btn {
             background-color: #000000 !important;
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.5) !important;
             color: #ffffff !important;
+            border: 2px solid #ffffff !important;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.5) !important;
+        }
+        /* Dim (cinza): fundo cinza + sombra branca */
+        body.dim .chat-float-btn {
+            background-color: #6b7280 !important;
+            color: #ffffff !important;
+            border: none !important;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.5) !important;
         }
         /* ==================== AJUSTE EXCLUSIVO PARA INPUTS DA ABA PERFIL (sem bordas arredondadas) ==================== */
         #detalhesConta .form-control {
             border-radius: 4px;
         }
-        /* ==================== NOVO: HINT "ESSE BOTÃO É ARRASTÁVEL" (Pedido Ativo) ==================== */
+        /* ==================== NOVO: HINT "CHAT ARRASTÁVEL" (Pedido Ativo) ==================== */
         .draggable-hint {
             position: fixed;
             background-color: rgba(0, 0, 0, 0.92);
             color: #ffffff;
             font-family: 'Poppins', sans-serif;
-            font-size: 5.4px; /* 55% menor que os 12px originais */
+            font-size: 5.4px;
             font-style: italic;
             padding: 6px 14px;
             border-radius: 9999px;
@@ -1058,8 +1066,8 @@
                     <button id="chatFloatBtn" class="chat-float-btn" style="position: fixed; bottom: 90px; right: 20px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                     </button>
-                    <!-- NOVO: HINT "ESSE BOTÃO É ARRASTÁVEL" - aparece a cada 20s abaixo do botão (sempre visível, nunca cortado) -->
-                    <div id="draggableHint" class="draggable-hint">esse botão é arrastável</div>
+                    <!-- NOVO: HINT "CHAT ARRASTÁVEL" - aparece a cada 20s abaixo do botão (sempre visível, nunca cortado) -->
+                    <div id="draggableHint" class="draggable-hint">chat arrastável</div>
                     <!-- Validação de Entrega (QR Code) - centralizado e sem emoji -->
                     <div style="margin-top: 40px; text-align: center;">
                         <button onclick="iniciarScanQR()" class="btn-primary" style="padding: 16px 40px; font-size: 17px; margin: 0 auto; display: block;">
@@ -1514,6 +1522,8 @@
                 sidebarOverlay.classList.add('active');
                 // Quando sidebar abre, botão de chat fica atrás (z-index menor que sidebar 3100)
                 if (chatFloatBtn) chatFloatBtn.style.zIndex = '2000';
+                // Esconde hint para não aparecer sobre a sidebar
+                if (draggableHint) draggableHint.style.opacity = '0';
             } else {
                 hamburger.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>`;
                 sidebarOverlay.classList.remove('active');
@@ -1611,7 +1621,7 @@
             // ==================== ÍCONES DO BOTÃO DE EXPANSÃO (agora Font Awesome conforme solicitado) ====================
             const expandIcon = `<i class="fa-solid fa-expand"></i>`;
             const contractIcon = `<i class="fa-solid fa-compress"></i>`;
-   
+  
             let isMapExpanded = false;
             const expandBtn = document.getElementById('mapExpandToggle');
             expandBtn.innerHTML = expandIcon;
@@ -1620,7 +1630,7 @@
                 const container = document.querySelector('.leaflet-map-container');
                 const statusToggle = document.getElementById('statusToggleBtn');
                 const homeSection = document.getElementById('home');
-       
+      
                 if (isMapExpanded) {
                     container.classList.add('expanded');
                     expandBtn.innerHTML = contractIcon;
@@ -1741,6 +1751,13 @@
             if (pedidoBtn) pedidoBtn.classList.add('active');
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.getElementById('pedidoAtivo').classList.add('active');
+            // GARANTIA DE QUE O BOTÃO CHAT FIQUE ARRASTÁVEL AO ACEITAR CORRIDA (correção solicitada)
+            setTimeout(() => {
+                if (chatFloatBtn) {
+                    makeDraggable(chatFloatBtn);
+                    startDraggableHintInterval();
+                }
+            }, 300);
         }
         function rejeitarCorrida(auto = false) {
             clearInterval(timerInterval);
@@ -1763,34 +1780,33 @@
         function iniciarScanQR() {
             alert('Câmera aberta (Web API do WebView)\n\nQR Code lido com sucesso! Corrida finalizada e baixa registrada no mapa.');
         }
-
-        // ==================== NOVA FUNÇÃO HELPER - centraliza o hint abaixo do botão ====================
+        // ==================== NOVA FUNÇÃO HELPER - centraliza o hint abaixo do botão (distância reduzida em 60%) ====================
         function updateHintPosition() {
             if (!chatFloatBtn || !draggableHint) return;
             const btnRect = chatFloatBtn.getBoundingClientRect();
             let left = btnRect.left + (btnRect.width / 2);
-            let top = btnRect.bottom + 14;
+            let top = btnRect.bottom + 6; // distância reduzida em 60% (de 14px para ~6px)
             if (top + 50 > window.innerHeight) {
                 top = btnRect.top - 42;
             }
             draggableHint.style.left = `${left}px`;
             draggableHint.style.top = `${top}px`;
         }
-
         // ==================== HINT ATUALIZADA (sempre centralizado abaixo do botão) ====================
         function showDraggableHint() {
             if (!chatFloatBtn || !draggableHint || !document.getElementById('pedidoAtivo').classList.contains('active')) return;
             if (hintShowCount >= MAX_HINT_SHOWS) return;
-            
+            // NÃO exibe hint quando sidebar estiver aberta (evita aparecer sobre a barra lateral)
+            if (sidebarEl.classList.contains('open')) return;
+           
             updateHintPosition();
             draggableHint.style.opacity = '1';
             hintShowCount++;
-            
+           
             setTimeout(() => {
                 draggableHint.style.opacity = '0';
             }, 3000);
         }
-
         // ==================== FUNÇÃO PARA TORNAR O BOTÃO DE CHAT DRAGGABLE COM LONG PRESS (0.3s) ====================
         // VERSÃO TOTALMENTE REESCRITA E OTIMIZADA PARA MOBILE + LEAFLET (sem alterar nada fora desta função)
         function makeDraggable(el) {
@@ -1855,7 +1871,6 @@
                     currentTop = Math.max(minTop, Math.min(currentTop, maxTop));
                     el.style.left = `${currentLeft}px`;
                     el.style.top = `${currentTop}px`;
-
                     // === NOVA LÓGICA: O HINT ACOMPANHA O BOTÃO DURANTE O ARRASTO (se estiver visível) ===
                     if (draggableHint && draggableHint.style.opacity === '1') {
                         updateHintPosition();
@@ -1885,7 +1900,7 @@
             el.addEventListener('mousedown', onStart, { passive: false });
             el.addEventListener('touchstart', onStart, { passive: false });
         }
-        // ==================== NOVO: HINT "ESSE BOTÃO É ARRASTÁVEL" (a cada 20 segundos, 3s de duração, sempre visível) ====================
+        // ==================== NOVO: HINT "CHAT ARRASTÁVEL" (a cada 20 segundos, 3s de duração, sempre visível) ====================
         let hintInterval = null;
         function startDraggableHintInterval() {
             hintShowCount = 0; // RESETA O CONTADOR toda vez que o usuário entra na aba Pedido Ativo
@@ -1903,12 +1918,27 @@
                 }
             }, 20000);
         }
-        // ==================== CORREÇÃO GLOBAL DE ZOOM NO MAPA (resize + invalidate) ====================
+        // ==================== CORREÇÃO GLOBAL DE ZOOM NO MAPA (resize + invalidate) + RESET DO BOTÃO CHAT AO MUDAR ENTRE MOBILE/DESKTOP ====================
         function fixMapOnResize() {
+            let lastWidth = window.innerWidth;
             window.addEventListener('resize', () => {
+                const currentWidth = window.innerWidth;
+                // Reset do botão chat para posição inicial quando alternar entre mobile e desktop
+                if (document.getElementById('pedidoAtivo').classList.contains('active') && chatFloatBtn) {
+                    const crossedToMobile = (lastWidth > 861 && currentWidth <= 861);
+                    const crossedToDesktop = (lastWidth <= 861 && currentWidth > 861);
+                    if (crossedToMobile || crossedToDesktop) {
+                        chatFloatBtn.style.position = 'fixed';
+                        chatFloatBtn.style.bottom = '90px';
+                        chatFloatBtn.style.right = '20px';
+                        chatFloatBtn.style.left = 'auto';
+                        chatFloatBtn.style.top = 'auto';
+                    }
+                }
                 setTimeout(() => {
                     if (mapInstance) mapInstance.invalidateSize();
                 }, 150);
+                lastWidth = currentWidth;
             });
         }
         // ==================== INICIALIZAÇÃO ====================
@@ -1937,7 +1967,7 @@
             setTimeout(initHomeMap, 600);
             // Define ícone inicial offline
             statusIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle></svg>`;
-            // Ativa correção de zoom no mapa
+            // Ativa correção de zoom no mapa + reset do botão chat em resize
             fixMapOnResize();
         };
         init();
