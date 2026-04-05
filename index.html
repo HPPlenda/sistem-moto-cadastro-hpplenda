@@ -840,14 +840,17 @@
             color: #000000 !important;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
         }
-        /* ==================== MAPA LEAFLET - ESTILOS POR TEMA (mantido exatamente como estava) ==================== */
+        /* ==================== MAPA LEAFLET - ESTILOS POR TEMA ==================== */
         #map {
             transition: filter 0.4s ease;
         }
-        body.dark #map {
+        .leaflet-map-container.street-mode #map {
+            filter: none;
+        }
+        body.dark .leaflet-map-container.street-mode #map {
             filter: invert(0.92) hue-rotate(180deg) brightness(0.95) contrast(1.05);
         }
-        body.dim #map {
+        body.dim .leaflet-map-container.street-mode #map {
             filter: brightness(0.75) contrast(1.15) saturate(0.85);
         }
     </style>
@@ -913,7 +916,6 @@
             </div>
         </div>
         <div id="sidebarOverlay" class="sidebar-overlay"></div>
-
         <!-- ABA 1: HOME -->
         <section id="home" class="view-section active">
             <div class="header">
@@ -939,7 +941,6 @@
                 Simular Nova Chamada (para teste)
             </button>
         </section>
-
         <!-- ABA 2: PEDIDO ATIVO -->
         <section id="pedidoAtivo" class="view-section">
             <div class="header">
@@ -981,7 +982,6 @@
                 </div>
             </div>
         </section>
-
         <!-- ABA 3: GANHOS E EXTRATO -->
         <section id="ganhos" class="view-section">
             <div class="header">
@@ -1027,7 +1027,6 @@
                 </div>
             </div>
         </section>
-
         <!-- ABA 4: HISTÓRICO -->
         <section id="historico" class="view-section">
             <div class="header">
@@ -1064,7 +1063,6 @@
                 </div>
             </div>
         </section>
-
         <!-- ABA 5: CENTRAL DE MENSAGENS -->
         <section id="chat" class="view-section">
             <div class="header">
@@ -1090,7 +1088,6 @@
                 </div>
             </div>
         </section>
-
         <!-- ABA 6: PERFIL E CONFIGURAÇÕES -->
         <section id="detalhesConta" class="view-section">
             <div class="header">
@@ -1109,9 +1106,8 @@
                             <button type="button" id="customProfileUploadBtn" class="custom-upload-btn">
                                 Escolher foto
                             </button>
-                            <!-- ÁREA DA FOTO CLICÁVEL + ÍCONE CENTRALIZADO (SVG com tamanho ajustado para centralização perfeita) -->
+                            <!-- ÁREA DA FOTO CLICÁVEL (sem nenhum ícone padrão) -->
                             <div id="profileImagePreview" style="margin: 16px auto; width: 120px; height: 120px; border-radius: 50%; overflow: hidden; border: 3px solid var(--gray-200); background-color: var(--gray-100); display: flex; align-items: center; justify-content: center;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                             </div>
                             <button type="button" id="deleteProfilePhotoBtn" onclick="deleteProfilePhoto()">Excluir foto</button>
                         </div>
@@ -1148,7 +1144,6 @@
             </div>
         </section>
     </main>
-
     <!-- MODAL NOVA CHAMADA -->
     <div id="novaChamadaModal" class="nova-chamada-modal">
         <div class="nova-chamada-content">
@@ -1178,7 +1173,6 @@
             <p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--gray-500);">A corrida expira automaticamente em 30 segundos</p>
         </div>
     </div>
-
     <script>
         // ==================== DADOS INICIAIS ====================
         let userProfile = { foto: '', nome: '', email: '', cpf: '', telefone: '', placa: '', cnh: '' };
@@ -1189,7 +1183,6 @@
         let originalStatusNextSibling = null;
         let hintShowCount = 0;
         const MAX_HINT_SHOWS = 4;
-
         // ==================== ELEMENTOS DOM ====================
         const hamburger = document.getElementById('hamburger');
         const sidebarEl = document.getElementById('sidebar');
@@ -1214,18 +1207,14 @@
         const novaChamadaModal = document.getElementById('novaChamadaModal');
         const chatFloatBtn = document.getElementById('chatFloatBtn');
         const draggableHint = document.getElementById('draggableHint');
-
         // ==================== FUNÇÕES AUXILIARES ====================
         const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString('pt-BR');
-
         function updatePhotoButtons() {
             const hasPhoto = !!(currentProfileBase64 || userProfile.foto);
             customProfileUploadBtn.style.display = hasPhoto ? 'none' : 'block';
             deleteProfilePhotoBtn.style.display = hasPhoto ? 'block' : 'none';
         }
-
         customProfileUploadBtn.addEventListener('click', () => profileImagemInput.click());
-
         profileImagemInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file && (file.type === 'image/png' || file.type === 'image/jpeg')) {
@@ -1238,21 +1227,12 @@
                 reader.readAsDataURL(file);
             }
         });
-
-        // ==================== ÍCONE CENTRALIZADO (tamanho ajustado para ficar perfeitamente no centro) ====================
-        const defaultPreviewHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-            </svg>`;
-
         function deleteProfilePhoto() {
             currentProfileBase64 = '';
             userProfile.foto = '';
-            profileImagePreview.innerHTML = defaultPreviewHTML;
+            profileImagePreview.innerHTML = '';
             updatePhotoButtons();
         }
-
         // ==================== MÁSCARAS ====================
         telefoneInput.addEventListener('input', () => {
             let val = telefoneInput.value.replace(/\D/g, '').slice(0, 11);
@@ -1279,7 +1259,6 @@
             let val = cnhInput.value.replace(/\D/g, '').slice(0, 11);
             cnhInput.value = val;
         });
-
         // ==================== VALIDAÇÃO ====================
         function isValidProfile() {
             const nome = profileNomeInput.value.trim();
@@ -1304,7 +1283,6 @@
         function checkAndEnableButton() {
             updateProfileBtn.disabled = !isValidProfile();
         }
-
         function loadProfileForm() {
             profileNomeInput.value = userProfile.nome || '';
             profileEmailInput.value = userProfile.email || '';
@@ -1317,12 +1295,11 @@
                 profileImagePreview.innerHTML = `<img src="${userProfile.foto}" style="width:100%; height:100%; object-fit:cover;">`;
             } else {
                 currentProfileBase64 = '';
-                profileImagePreview.innerHTML = defaultPreviewHTML;
+                profileImagePreview.innerHTML = '';
             }
             updatePhotoButtons();
             checkAndEnableButton();
         }
-
         function saveProfile(e) {
             e.preventDefault();
             if (!isValidProfile()) {
@@ -1348,7 +1325,6 @@
             const mainContentEl = document.querySelector('.main-content');
             if (mainContentEl) mainContentEl.scrollTop = 0;
         }
-
         function updateSidebarAvatar() {
             if (userProfile.foto) {
                 sidebarAvatar.innerHTML = `<img src="${userProfile.foto}" alt="Foto do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
@@ -1356,7 +1332,6 @@
                 sidebarAvatar.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="33.6" height="33.6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
             }
         }
-
         // ==================== FECHAR SIDEBAR ====================
         const closeMobileSidebar = () => {
             if (sidebarEl.classList.contains('open')) {
@@ -1366,7 +1341,6 @@
                 if (chatFloatBtn) chatFloatBtn.style.zIndex = '4000';
             }
         };
-
         // ==================== NAVEGAÇÃO ====================
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', () => {
@@ -1386,7 +1360,6 @@
                 }
             });
         });
-
         userProfileLink.addEventListener('click', () => {
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             userProfileLink.classList.add('active');
@@ -1395,7 +1368,6 @@
             loadProfileForm();
             if (window.innerWidth < 862) closeMobileSidebar();
         });
-
         // ==================== HAMBURGER ====================
         hamburger.addEventListener('click', () => {
             const open = sidebarEl.classList.toggle('open');
@@ -1411,12 +1383,10 @@
             }
         });
         sidebarOverlay.addEventListener('click', closeMobileSidebar);
-
         // ==================== VALIDAÇÃO PERFIL ====================
         [profileNomeInput, profileEmailInput, cpfInput, telefoneInput, placaInput, cnhInput].forEach(el => {
             el.addEventListener('input', checkAndEnableButton);
         });
-
         // ==================== MODO LIGHT/DARK/DIM ====================
         const modes = [
             { name: "light", iconColor: "#000000", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>` },
@@ -1424,7 +1394,6 @@
             { name: "dim", iconColor: "#ffffff", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H6.5a5 5 0 0 1-1-9.9 5 5 0 0 1 9.78-1.78 5 5 0 0 1 3.72 8.68z"></path></svg>` }
         ];
         let currentIndex = 0;
-
         function aplicarModo() {
             const modo = modes[currentIndex];
             document.body.classList.remove('light', 'dark', 'dim');
@@ -1441,7 +1410,6 @@
                 aplicarModo();
             });
         });
-
         // ==================== TOGGLE ONLINE/OFFLINE ====================
         function toggleOnlineStatus() {
             isOnline = !isOnline;
@@ -1458,7 +1426,6 @@
             }
         }
         statusToggleBtn.addEventListener('click', toggleOnlineStatus);
-
         // ==================== MAPA HOME ====================
         function initHomeMap() {
             if (mapInstance) { mapInstance.invalidateSize(); return; }
@@ -1466,6 +1433,7 @@
             mapInstance = L.map(mapEl, { zoomControl: false, attributionControl: false, zoomSnap: 0.5, zoomDelta: 0.5, minZoom: 10, maxZoom: 18 }).setView([-3.119, -60.021], 14);
             const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' });
             const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: '© Esri' });
+            const mapContainer = document.querySelector('.leaflet-map-container');
             satelliteLayer.addTo(mapInstance);
             const mapIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>`;
             const satelliteIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 2L2 12l10 10 10-10z"></path><circle cx="12" cy="12" r="2"></circle></svg>`;
@@ -1483,6 +1451,12 @@
                     satelliteLayer.addTo(mapInstance);
                     toggleBtn.innerHTML = `${satelliteIconSVG} Satélite`;
                     isSatellite = true;
+                }
+                // Aplica filtro SOMENTE no modo Mapa (street)
+                if (isSatellite) {
+                    mapContainer.classList.remove('street-mode');
+                } else {
+                    mapContainer.classList.add('street-mode');
                 }
             });
             const expandIcon = `<i class="fa-solid fa-expand"></i>`;
@@ -1560,7 +1534,6 @@
             }
             setTimeout(() => { if (mapInstance) mapInstance.invalidateSize(); }, 300);
         }
-
         // ==================== NOVA CHAMADA ====================
         let timerInterval = null;
         function simularNovaChamada() {
@@ -1601,7 +1574,6 @@
             if (auto) alert('Tempo esgotado. Corrida rejeitada automaticamente.');
             else alert('Corrida rejeitada.');
         }
-
         function abrirChatRapido() {
             alert('Chat tripartido aberto (PME + Cliente + Você)\n\n(Implementação completa do chat já existe fora deste arquivo)');
         }
@@ -1611,7 +1583,6 @@
         function iniciarScanQR() {
             alert('Câmera aberta (Web API do WebView)\n\nQR Code lido com sucesso! Corrida finalizada e baixa registrada no mapa.');
         }
-
         // ==================== HINT POSITION ====================
         function updateHintPosition() {
             if (!chatFloatBtn || !draggableHint) return;
@@ -1622,7 +1593,6 @@
             draggableHint.style.left = `${left}px`;
             draggableHint.style.top = `${top}px`;
         }
-
         function showDraggableHint() {
             if (!chatFloatBtn || !draggableHint || !document.getElementById('pedidoAtivo').classList.contains('active')) return;
             if (hintShowCount >= MAX_HINT_SHOWS) return;
@@ -1632,7 +1602,6 @@
             hintShowCount++;
             setTimeout(() => { draggableHint.style.opacity = '0'; }, 3000);
         }
-
         // ==================== DRAGGABLE CHAT ====================
         function makeDraggable(el) {
             if (el.dataset.draggableInitialized === 'true') return;
@@ -1643,12 +1612,10 @@
             let initialLeft = 0, initialTop = 0;
             let currentLeft = 0, currentTop = 0;
             const MIN_MOVE_THRESHOLD = 12;
-
             function getCoords(e) {
                 if (e.touches && e.touches.length > 0) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
                 return { x: e.clientX, y: e.clientY };
             }
-
             function onStart(e) {
                 if (e.type === 'mousedown' && e.button !== 0) return;
                 const coords = getCoords(e);
@@ -1671,7 +1638,6 @@
                 }
                 e.preventDefault(); e.stopImmediatePropagation();
             }
-
             function onMove(e) {
                 const coords = getCoords(e);
                 const deltaX = coords.x - startX;
@@ -1696,7 +1662,6 @@
                     if (draggableHint && draggableHint.style.opacity === '1') updateHintPosition();
                 }
             }
-
             function onEnd(e) {
                 document.removeEventListener('mousemove', onMove);
                 document.removeEventListener('mouseup', onEnd);
@@ -1712,11 +1677,9 @@
                     isDragging = false; hasMoved = false;
                 }
             }
-
             el.addEventListener('mousedown', onStart, { passive: false });
             el.addEventListener('touchstart', onStart, { passive: false });
         }
-
         // ==================== INTERVALO DO HINT ====================
         let hintInterval = null;
         function startDraggableHintInterval() {
@@ -1729,7 +1692,6 @@
                 }
             }, 20000);
         }
-
         // ==================== RESIZE ====================
         function fixMapOnResize() {
             let lastWidth = window.innerWidth;
@@ -1750,7 +1712,6 @@
                 lastWidth = currentWidth;
             });
         }
-
         // ==================== INICIALIZAÇÃO ====================
         const init = () => {
             const savedProfile = localStorage.getItem('userProfile');
@@ -1761,19 +1722,15 @@
             updateSidebarAvatar();
             loadProfileForm();
             aplicarModo();
-
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             const homeItem = document.querySelector('.nav-item[data-target="home"]');
             if (homeItem) homeItem.classList.add('active');
-
             setTimeout(initHomeMap, 600);
             statusIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle></svg>`;
-
             profileImagePreview.style.cursor = 'pointer';
             profileImagePreview.addEventListener('click', () => {
                 profileImagemInput.click();
             });
-
             fixMapOnResize();
         };
         init();
