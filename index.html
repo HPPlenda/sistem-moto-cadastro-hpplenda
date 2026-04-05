@@ -167,14 +167,13 @@
             height: 24px;
             flex-shrink: 0;
         }
-        /* Active sidebar item adjustments for themes (sem alterar o light) */
         body.dim .nav-item.active,
         body.dark .nav-item.active {
             background-color: transparent;
             border: 2px solid var(--black);
             box-shadow: none;
         }
-        /* ==================== NOVA ABA DETALHES DA CONTA (fixa no rodapé esquerdo) ==================== */
+        /* ==================== NOVA ABA DETALHES DA CONTA ==================== */
         .user-profile {
             margin-top: auto;
             padding: 12px 24px;
@@ -182,7 +181,7 @@
             border-radius: 0 999px 999px 0;
             display: flex;
             align-items: center;
-            gap: 16px; /* ALTERADO PARA 16PX (igual aos itens do menu) para alinhamento vertical perfeito do ícone */
+            gap: 16px;
             cursor: pointer;
             transition: all 0.2s;
             color: var(--black);
@@ -196,7 +195,6 @@
         body.dim .user-profile:hover {
             background-color: rgba(255, 255, 255, 0.08);
         }
-        /* NOVO: ESTILO PARA ABA ATIVA (igual nav-item) */
         .user-profile.active {
             background-color: var(--white);
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
@@ -207,7 +205,6 @@
             border: 2px solid var(--black);
             box-shadow: none;
         }
-        /* TEXTO DA ABA LATERAL - MESMO TAMANHO DAS OUTRAS ABAS + QUEBRA DE LINHA */
         .user-profile > div:last-of-type {
             font-size: 16px;
             white-space: normal;
@@ -222,7 +219,6 @@
             text-overflow: unset;
             white-space: normal;
         }
-        /* ==================== MOBILE SIDEBAR - CORREÇÃO DE CORTE DO TEXTO "PERFIL E CONFIGURAÇÕES" ==================== */
         @media (max-width: 861px) {
             .user-profile > div:last-of-type {
                 font-size: 15px;
@@ -278,7 +274,6 @@
         .btn-primary:hover {
             background-color: var(--gray-800);
         }
-        /* ==================== BOTÃO UPLOAD PERSONALIZADO ==================== */
         .custom-upload-btn {
             background-color: var(--black);
             color: var(--white);
@@ -307,15 +302,12 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             overflow: hidden;
         }
-        /* ==================== ESTILO PARA ESTOQUE BAIXO (mantido para futuro uso) ==================== */
         .low-stock-card {
             margin-top: 24px;
         }
         /* ==================== RESPONSIVE ==================== */
         @media (max-width: 861px) {
-            body {
-                min-height: 100svh;
-            }
+            body { min-height: 100svh; }
             .logo-container { display: none; }
             .mobile-header { display: flex; z-index: 3000; }
             .sidebar {
@@ -330,46 +322,20 @@
                 flex-direction: column;
                 z-index: 3100;
             }
-            .nav-menu {
-                margin-top: 5px;
-            }
-            .sidebar.open {
-                left: 0;
-                padding-bottom: calc(env(safe-area-inset-bottom) + 1px);
-            }
+            .nav-menu { margin-top: 5px; }
+            .sidebar.open { left: 0; padding-bottom: calc(env(safe-area-inset-bottom) + 1px); }
             .main-content { padding-top: 60px; width: 100%; }
             body { flex-direction: column; }
             .view-section { padding: 20px 16px 85px 16px; }
-            .header {
-                margin-bottom: 24px;
-                flex-direction: row;
-                align-items: flex-start;
-                justify-content: space-between;
-                gap: 12px;
-            }
+            .header { margin-bottom: 24px; flex-direction: row; align-items: flex-start; justify-content: space-between; gap: 12px; }
             .header h1 { font-size: 26px; }
             .modal { max-width: 95%; }
             .modal-large { max-width: 95%; }
-            .mode-btn {
-                width: 36px;
-                height: 36px;
-            }
-            .mode-btn svg {
-                width: 22px;
-                height: 22px;
-            }
-            .header .mode-btn {
-                display: none;
-            }
-            /* === NOVO: RESPONSIVIDADE DO BOTÃO ONLINE/OFFLINE (Home) === */
-            /* Diminui fonte e padding para evitar vazamento do texto em telas menores */
-            .status-toggle {
-                font-size: 15px;
-                padding: 14px 18px;
-            }
-            #statusLabel {
-                font-size: 15px;
-            }
+            .mode-btn { width: 36px; height: 36px; }
+            .mode-btn svg { width: 22px; height: 22px; }
+            .header .mode-btn { display: none; }
+            .status-toggle { font-size: 15px; padding: 14px 18px; }
+            #statusLabel { font-size: 15px; }
         }
         @media (min-width: 862px) {
             .mobile-header { display: none; }
@@ -381,16 +347,10 @@
             .header h1 { font-size: 30px; }
             .logo-container { padding: 10px 0; }
             .logo-container img { max-height: 110px; }
-            .header .mode-btn {
-                position: relative;
-                z-index: 1100;
-            }
+            .header .mode-btn { position: relative; z-index: 1100; }
         }
-        /* ==================== NOVOS ESTILOS PARA MODAL PRODUTO (mantido para futuro uso) ==================== */
-        #productModal {
-            padding: 40px 20px;
-            align-items: flex-start;
-        }
+        /* ==================== NOVOS ESTILOS PARA MODAL PRODUTO (mantido) ==================== */
+        #productModal { padding: 40px 20px; align-items: flex-start; }
         #productModal .modal {
             max-width: 450px;
             max-height: 92vh;
@@ -398,13 +358,8 @@
             flex-direction: column;
             overflow: hidden;
         }
-        /* ==================== ALTERAÇÕES ESPECÍFICAS PARA MODAIS NO MOBILE (mantido) ==================== */
         @media (max-width: 861px) {
-            #productModal {
-                align-items: flex-start;
-                padding-top: 80px;
-                padding-bottom: 67px;
-            }
+            #productModal { align-items: flex-start; padding-top: 80px; padding-bottom: 67px; }
             #productModal .modal {
                 display: flex;
                 flex-direction: column;
@@ -412,7 +367,6 @@
                 max-width: 95%;
             }
         }
-        /* ==================== SIDEBAR OVERLAY (ÁREA VERMELHA PARA FECHAR) ==================== */
         .sidebar-overlay {
             display: none;
             position: fixed;
@@ -427,7 +381,6 @@
         @media (max-width: 861px) {
             .sidebar-overlay.active { display: block; }
         }
-        /* ==================== BOTÃO DE MODO (LIGHT / DARK / DIM) ==================== */
         .mode-btn {
             width: 48px;
             height: 48px;
@@ -447,12 +400,7 @@
             transform: scale(1.12);
             box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
         }
-        .mode-btn svg {
-            width: 28px;
-            height: 28px;
-        }
-        /* ==================== AJUSTES SOLICITADOS (SEM ALTERAR NADA QUE JÁ ESTAVA BOM) ==================== */
-        /* Inputs transparentes em todos os modos para expor o fundo real do tema (modal/card) */
+        .mode-btn svg { width: 28px; height: 28px; }
         .form-control {
             background-color: transparent;
             color: var(--black);
@@ -467,27 +415,22 @@
             outline: none;
             border-color: var(--black);
         }
-        /* Botões primários agora transparentes em dark/dim com borda branca para expor o fundo do tema (conforme imagem 1) */
         body.dark .btn-primary,
         body.dim .btn-primary {
             background-color: transparent;
             color: var(--black);
             border: 2px solid var(--black);
         }
-        /* Todos os cards no modo escuro com borda mais grossa e cinza */
         body.dark .card,
         body.dark .stat-card,
         body.dim .card,
         body.dim .stat-card {
             border: 2px solid var(--gray-300);
         }
-        /* NOVO: Bordas mais finas apenas no modo DIM (cinza) conforme solicitado */
         body.dim .card,
         body.dim .stat-card {
             border: 1px solid var(--gray-300);
         }
-        /* ==================== NOVOS AJUSTES EXCLUSIVOS PARA A ABA DETALHES DA CONTA ==================== */
-        /* Botão "Escolher foto" transparente em TODOS os modos, menor e centralizado */
         #customProfileUploadBtn {
             background-color: transparent !important;
             color: var(--black) !important;
@@ -502,18 +445,19 @@
             background-color: var(--white) !important;
             color: var(--black) !important;
         }
-        /* Botão "Atualizar Informações" transparente em TODOS os modos */
         #updateProfileBtn {
             background-color: transparent !important;
             color: var(--black) !important;
             border: 2px solid var(--black) !important;
         }
-        /* Centraliza o círculo da foto de perfil */
         #profileImagePreview {
             margin: 16px auto !important;
             display: block !important;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        /* Botão "Excluir foto" com mesmo estilo arredondado do "Atualizar Informações" */
         #deleteProfilePhotoBtn {
             border-radius: 6px !important;
             padding: 8px 20px !important;
@@ -522,8 +466,6 @@
             margin: 0 auto 8px !important;
             transition: all 0.2s;
         }
-        /* ==================== NOVO ESTILO DE BOTÕES POR MODO (EXATAMENTE COMO PEDIDO) ==================== */
-        /* Light (padrão): preto fundo + branco texto */
         .btn-primary,
         .custom-upload-btn,
         .btn-secondary {
@@ -531,7 +473,6 @@
             color: var(--white);
             border: none;
         }
-        /* Dark: cinza fundo + branco texto (AGORA IGUAL AOS BOTÕES DA ABA PERFIL) */
         body.dark .btn-primary,
         body.dark .custom-upload-btn,
         body.dark .btn-secondary {
@@ -539,7 +480,6 @@
             color: var(--black);
             border: none;
         }
-        /* Dim (cinza): preto fundo + branco texto */
         body.dim .btn-primary,
         body.dim .custom-upload-btn,
         body.dim .btn-secondary {
@@ -547,7 +487,6 @@
             color: var(--white);
             border: none;
         }
-        /* ==================== BOTÕES ESPECÍFICOS PARA ABA DETALHES DA CONTA (alteração solicitada - só aqui) ==================== */
         #customProfileUploadBtn,
         #updateProfileBtn,
         #deleteProfilePhotoBtn {
@@ -557,7 +496,6 @@
             margin: 0 auto 8px !important;
             transition: all 0.2s;
         }
-        /* Light: preto fundo + branco texto */
         body:not(.dark):not(.dim) #customProfileUploadBtn,
         body:not(.dark):not(.dim) #updateProfileBtn,
         body:not(.dark):not(.dim) #deleteProfilePhotoBtn {
@@ -565,7 +503,6 @@
             color: var(--white) !important;
             border: none !important;
         }
-        /* Dark: cinza fundo + preto texto */
         body.dark #customProfileUploadBtn,
         body.dark #updateProfileBtn,
         body.dark #deleteProfilePhotoBtn {
@@ -573,7 +510,6 @@
             color: var(--black) !important;
             border: none !important;
         }
-        /* Dim (cinza): preto fundo + branco texto */
         body.dim #customProfileUploadBtn,
         body.dim #updateProfileBtn,
         body.dim #deleteProfilePhotoBtn {
@@ -581,8 +517,6 @@
             color: var(--white) !important;
             border: none !important;
         }
-        /* ==================== DESABILITAR TAP HIGHLIGHT COLOR GLOBALMENTE (MOBILE) ==================== */
-        /* Remove completamente o destaque azul/cinza ao tocar em qualquer elemento clicável */
         * {
             -webkit-tap-highlight-color: transparent !important;
         }
@@ -591,8 +525,6 @@
             -webkit-tap-highlight-color: transparent !important;
             tap-highlight-color: transparent !important;
         }
-        /* ==================== NOVOS ESTILOS PARA FORMULÁRIO NA ABA DETALHES DA CONTA ==================== */
-        /* (apenas o que você pediu: responsividade total, centralização, bordas 10% arredondadas, placeholders atualizados) */
         #detalhesConta .card {
             max-width: 620px;
             margin: 0 auto;
@@ -611,14 +543,9 @@
             color: var(--black);
         }
         @media (max-width: 861px) {
-            .config-section {
-                padding: 24px 20px;
-            }
-            .form-group {
-                margin-bottom: 22px;
-            }
+            .config-section { padding: 24px 20px; }
+            .form-group { margin-bottom: 22px; }
         }
-        /* ==================== NOVO: TEXTO "MOTO SYSTEM" (APENAS O QUE VOCÊ PEDIU) ==================== */
         .moto-system {
             font-weight: 800;
             letter-spacing: -0.5px;
@@ -630,9 +557,7 @@
             display: none;
         }
         @media (min-width: 862px) {
-            .desktop-moto {
-                display: block;
-            }
+            .desktop-moto { display: block; }
         }
         .mobile-moto {
             font-size: 20px;
@@ -642,20 +567,15 @@
             display: block;
         }
         @media (min-width: 862px) {
-            .mobile-moto {
-                display: none;
-            }
+            .mobile-moto { display: none; }
         }
-        /* ==================== CENTRALIZAR img2.svg NA ÁREA BRANCA (EXATAMENTE ONDE VOCÊ MARCOU DE AZUL) ==================== */
         .desktop-moto {
             max-height: 52px;
             width: auto;
             flex-shrink: 0;
         }
         @media (min-width: 862px) {
-            .header {
-                position: relative;
-            }
+            .header { position: relative; }
             .desktop-moto {
                 position: absolute;
                 left: 50%;
@@ -663,12 +583,8 @@
                 top: 0;
                 z-index: 1;
             }
-            .header > div:first-child {
-                flex: 1;
-                min-width: 240px;
-            }
+            .header > div:first-child { flex: 1; min-width: 240px; }
         }
-        /* ==================== NOVO: IMG2.SVG CENTRALIZADA NA SIDEBAR MOBILE (acima do Dashboard) ==================== */
         .sidebar-moto-mobile {
             padding: 20px 24px 10px 24px;
             text-align: center;
@@ -681,12 +597,8 @@
             margin: 0 auto;
         }
         @media (max-width: 861px) {
-            .sidebar-moto-mobile {
-                display: block;
-            }
+            .sidebar-moto-mobile { display: block; }
         }
-        /* ==================== NOVOS ESTILOS PARA AS NOVAS ABAS (adicionados sem mexer em nada antigo) ==================== */
-        /* Mapa Leaflet - adapta borda ao tema */
         .leaflet-map-container {
             border: 2px solid var(--gray-300);
             border-radius: 12px;
@@ -699,7 +611,6 @@
         body.dim .leaflet-map-container {
             border-color: var(--gray-300);
         }
-        /* BOTÃO DE MUDANÇA DE MODO DO MAPA (dentro do mapa, superior direito) */
         .map-layer-toggle {
             position: absolute;
             top: 12px;
@@ -720,7 +631,6 @@
             transition: all 0.2s ease;
             white-space: nowrap;
         }
-        /* BOTÃO DE EXPANSÃO DO MAPA (canto superior esquerdo) - ÍCONES ATUALIZADOS */
         .map-expand-toggle {
             position: absolute;
             top: 12px;
@@ -741,27 +651,22 @@
             transition: all 0.2s ease;
             white-space: nowrap;
         }
-        /* ESTILOS ESPECÍFICOS POR TEMA PARA OS BOTÕES DENTRO DO MAPA (Home) */
-        /* Dark: cinza fundo + ícone/fonte branco */
         body.dark .map-layer-toggle,
         body.dark .map-expand-toggle {
             background-color: #6b7280;
             color: #ffffff;
             border: none;
         }
-        /* Dim (cinza): branco fundo + ícone/fonte preto */
         body.dim .map-layer-toggle,
         body.dim .map-expand-toggle {
             background-color: #ffffff;
             color: #000000;
             border: 1px solid var(--gray-300);
         }
-        /* ESTADO EXPANDIDO DO MAPA (agora cobre 100% da aba Home abaixo do header, sem cobrir a barra superior) */
         .leaflet-map-container.expanded {
             height: calc(100vh - 120px) !important;
             margin-top: 0 !important;
         }
-        /* NOVO: EXPANSÃO TOTAL COBRINDO TODA A ABA HOME (header + status + botão simular ocultos, mapa cobre tudo, status aparece DENTRO do mapa) */
         #home.map-expanded {
             padding: 0 !important;
         }
@@ -781,7 +686,6 @@
             border-radius: 0 !important;
             z-index: 100 !important;
         }
-        /* Toggle Online/Offline - grande e claro + SEM QUEBRA DE LINHA + RESPONSIVO + SEM BORDA + TRANSITION 0.4s */
         .status-toggle {
             width: 100%;
             padding: 20px 24px;
@@ -807,7 +711,6 @@
         #statusLabel {
             white-space: nowrap;
         }
-        /* ==================== ALINHAMENTO PERFEITO DA BOLINHA (ÍCONE) COM O TEXTO NO BOTÃO ONLINE/OFFLINE ==================== */
         .status-toggle #statusIcon {
             display: flex;
             align-items: center;
@@ -816,7 +719,6 @@
         .status-toggle #statusIcon svg {
             vertical-align: middle;
         }
-        /* Cards de resumo para Ganhos e Histórico - VALORES SEM QUEBRA DE LINHA + RESPONSIVO */
         .summary-card {
             background-color: var(--white);
             border: 2px solid var(--gray-300);
@@ -835,10 +737,9 @@
         }
         @media (max-width: 861px) {
             .summary-card h2 {
-                font-size: 22px !important; /* garantido que o preço NUNCA vaze ou suma da visão do usuário em telas menores */
+                font-size: 22px !important;
             }
         }
-        /* Modal de Nova Chamada */
         .nova-chamada-modal {
             position: fixed;
             top: 0;
@@ -865,7 +766,7 @@
             background-color: var(--white);
             color: var(--black);
         }
-        /* ==================== NOVO: ESTILO EXCLUSIVO PARA BOTÃO FLUTUANTE DE CHAT (Pedido Ativo) - ATUALIZADO CONFORME SOLICITAÇÃO ==================== */
+        /* ==================== BOTÃO FLUTUANTE CHAT (Pedido Ativo) ==================== */
         .chat-float-btn {
             background-color: #ffffff;
             border: 2px solid var(--black);
@@ -893,25 +794,22 @@
             width: 32px;
             height: 32px;
         }
-        /* Dark: fundo preto + sombra branca */
         body.dark .chat-float-btn {
             background-color: #000000 !important;
             color: #ffffff !important;
             border: 2px solid #ffffff !important;
             box-shadow: 0 4px 15px rgba(255, 255, 255, 0.5) !important;
         }
-        /* Dim (cinza): fundo cinza + sombra branca */
         body.dim .chat-float-btn {
             background-color: #6b7280 !important;
             color: #ffffff !important;
-            border: none !important;
+            border: 2px solid #ffffff !important;
             box-shadow: 0 4px 15px rgba(255, 255, 255, 0.5) !important;
         }
-        /* ==================== AJUSTE EXCLUSIVO PARA INPUTS DA ABA PERFIL (sem bordas arredondadas) ==================== */
         #detalhesConta .form-control {
             border-radius: 4px;
         }
-        /* ==================== NOVO: HINT "CHAT ARRASTÁVEL" (Pedido Ativo) ==================== */
+        /* ==================== HINT "CHAT ARRASTÁVEL" COM CORES POR TEMA ==================== */
         .draggable-hint {
             position: fixed;
             background-color: rgba(0, 0, 0, 0.92);
@@ -932,10 +830,30 @@
             max-width: 180px;
             transform: translateX(-50%);
         }
+        body.dark .draggable-hint {
+            background-color: #6b7280 !important;
+            color: #ffffff !important;
+        }
+        /* DIM: fundo branco + texto PRETO (conforme solicitado) */
+        body.dim .draggable-hint {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+        }
+        /* ==================== MAPA LEAFLET - ESTILOS POR TEMA (mantido exatamente como estava) ==================== */
+        #map {
+            transition: filter 0.4s ease;
+        }
+        body.dark #map {
+            filter: invert(0.92) hue-rotate(180deg) brightness(0.95) contrast(1.05);
+        }
+        body.dim #map {
+            filter: brightness(0.75) contrast(1.15) saturate(0.85);
+        }
     </style>
 </head>
 <body>
-    <!-- CONTEÚDO DO SISTEMA (apenas as abas solicitadas) -->
+    <!-- CONTEÚDO DO SISTEMA -->
     <aside id="sidebar" class="sidebar">
         <div class="logo-container">
             <div style="position: relative; display: inline-block;">
@@ -943,40 +861,32 @@
                 <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;"></div>
             </div>
         </div>
-        <!-- NOVO: img2.svg centralizada na sidebar mobile acima do botão Home -->
         <div class="sidebar-moto-mobile">
             <img src="img2.svg" alt="Moto System">
         </div>
         <nav class="nav-menu" id="navMenu">
-            <!-- === ABA 1: HOME (substituiu Dashboard) === -->
             <button class="nav-item active" data-target="home">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 Home
             </button>
-            <!-- === ABA 2: PEDIDO ATIVO === -->
             <button class="nav-item" data-target="pedidoAtivo">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
                 Pedido Ativo
             </button>
-            <!-- === ABA 3: GANHOS E EXTRATO === -->
             <button class="nav-item" data-target="ganhos">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                 Ganhos e Extrato
             </button>
-            <!-- === ABA 4: HISTÓRICO DE CORRIDAS === -->
             <button class="nav-item" data-target="historico">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                 Histórico
             </button>
-            <!-- === ABA 5: CENTRAL DE MENSAGENS (Chat) === -->
             <button class="nav-item" data-target="chat">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                 Central de Mensagens
             </button>
         </nav>
-        <!-- ABA PERFIL E CONFIGURAÇÕES (mantida no rodapé - sexta aba) -->
         <div class="user-profile" id="userProfileLink">
-            <!-- ÍCONE DO USUÁRIO AUMENTADO EM 40% (24px → 33.6px) - NADA MAIS FOI ALTERADO -->
             <div id="sidebarAvatar" style="width: 33.6px; height: 33.6px; background-color: var(--gray-200); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--gray-300); flex-shrink: 0; overflow: hidden;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
             </div>
@@ -1002,9 +912,9 @@
                 </button>
             </div>
         </div>
-        <!-- OVERLAY PARA FECHAR A SIDEBAR -->
         <div id="sidebarOverlay" class="sidebar-overlay"></div>
-        <!-- ==================== ABA 1: HOME ==================== -->
+
+        <!-- ABA 1: HOME -->
         <section id="home" class="view-section active">
             <div class="header">
                 <div>
@@ -1014,26 +924,23 @@
                 <img src="img2.svg" alt="Moto System" class="moto-system desktop-moto">
                 <button class="mode-btn"></button>
             </div>
-            <!-- Toggle Online/Offline -->
             <button id="statusToggleBtn" class="status-toggle offline">
                 <span id="statusIcon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle></svg>
                 </span>
                 <span id="statusLabel">Offline • Toque para ficar Online</span>
             </button>
-            <!-- Mapa Interativo Leaflet (sem controles de zoom + botão de satélite no canto superior direito) -->
             <div class="leaflet-map-container" style="height: calc(100vh - 280px); margin-top: 24px; position: relative;">
-                <!-- NOVO BOTÃO DE EXPANSÃO (canto superior esquerdo) -->
                 <button id="mapExpandToggle" class="map-expand-toggle"></button>
                 <div id="map" style="height: 100%; width: 100%;"></div>
                 <button id="mapLayerToggle" class="map-layer-toggle"></button>
             </div>
-            <!-- Botão de teste para simular nova chamada (você pode remover depois) -->
             <button onclick="simularNovaChamada()" style="margin-top: 16px; width: 100%; padding: 14px; font-size: 15px; background-color: var(--gray-200); color: var(--black); border: none; border-radius: 8px;">
                 Simular Nova Chamada (para teste)
             </button>
         </section>
-        <!-- ==================== ABA 2: PEDIDO ATIVO (A ROTA) ==================== -->
+
+        <!-- ABA 2: PEDIDO ATIVO -->
         <section id="pedidoAtivo" class="view-section">
             <div class="header">
                 <div>
@@ -1057,18 +964,14 @@
                         <label>Cliente</label>
                         <div style="padding: 14px 20px; background: var(--gray-100); border-radius: 10px;">Maria Silva - Rua das Flores, 234</div>
                     </div>
-                    <!-- Mapa da Rota (Leaflet pronto para você inicializar) -->
                     <div style="margin-top: 24px;">
                         <label style="display: block; margin-bottom: 8px;">Rota em tempo real</label>
                         <div id="routeMap" class="leaflet-map-container" style="height: 320px;"></div>
                     </div>
-                    <!-- Botão flutuante de Chat - agora com long press de 0.3s para mover (não fixo) -->
                     <button id="chatFloatBtn" class="chat-float-btn" style="position: fixed; bottom: 90px; right: 20px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                     </button>
-                    <!-- NOVO: HINT "CHAT ARRASTÁVEL" - aparece a cada 20s abaixo do botão (sempre visível, nunca cortado) -->
                     <div id="draggableHint" class="draggable-hint">chat arrastável</div>
-                    <!-- Validação de Entrega (QR Code) - centralizado e sem emoji -->
                     <div style="margin-top: 40px; text-align: center;">
                         <button onclick="iniciarScanQR()" class="btn-primary" style="padding: 16px 40px; font-size: 17px; margin: 0 auto; display: block;">
                             Escanear QR Code do Cliente
@@ -1078,7 +981,8 @@
                 </div>
             </div>
         </section>
-        <!-- ==================== ABA 3: GANHOS E EXTRATO ==================== -->
+
+        <!-- ABA 3: GANHOS E EXTRATO -->
         <section id="ganhos" class="view-section">
             <div class="header">
                 <div>
@@ -1089,7 +993,6 @@
             </div>
             <div class="card">
                 <div class="config-section">
-                    <!-- Resumo Diário / Semanal -->
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px;">
                         <div class="summary-card">
                             <p style="font-size: 13px; color: var(--gray-500);">Hoje</p>
@@ -1100,7 +1003,6 @@
                             <h2 style="font-size: 32px; font-weight: 800;">R$ 687,50</h2>
                         </div>
                     </div>
-                    <!-- Detalhamento por distância -->
                     <h3 style="margin-bottom: 16px;">Corridas concluídas</h3>
                     <div style="display: flex; flex-direction: column; gap: 12px;">
                         <div style="padding: 16px; background: var(--gray-100); border-radius: 10px; display: flex; justify-content: space-between;">
@@ -1125,7 +1027,8 @@
                 </div>
             </div>
         </section>
-        <!-- ==================== ABA 4: HISTÓRICO DE CORRIDAS ==================== -->
+
+        <!-- ABA 4: HISTÓRICO -->
         <section id="historico" class="view-section">
             <div class="header">
                 <div>
@@ -1161,7 +1064,8 @@
                 </div>
             </div>
         </section>
-        <!-- ==================== ABA 5: CENTRAL DE MENSAGENS ==================== -->
+
+        <!-- ABA 5: CENTRAL DE MENSAGENS -->
         <section id="chat" class="view-section">
             <div class="header">
                 <div>
@@ -1186,7 +1090,8 @@
                 </div>
             </div>
         </section>
-        <!-- ==================== ABA 6: PERFIL E CONFIGURAÇÕES (mantida e renomeada) ==================== -->
+
+        <!-- ABA 6: PERFIL E CONFIGURAÇÕES -->
         <section id="detalhesConta" class="view-section">
             <div class="header">
                 <div>
@@ -1198,48 +1103,43 @@
             <div class="card">
                 <div class="config-section">
                     <form id="profileForm" onsubmit="saveProfile(event)">
-                        <!-- Foto -->
                         <div class="form-group">
                             <label for="profileImagem">Foto do Usuário (PNG ou JPEG)</label>
                             <input type="file" id="profileImagem" accept="image/png, image/jpeg" style="display: none;">
                             <button type="button" id="customProfileUploadBtn" class="custom-upload-btn">
                                 Escolher foto
                             </button>
-                            <div id="profileImagePreview" style="margin: 16px auto; width: 120px; height: 120px; border-radius: 50%; overflow: hidden; border: 3px solid var(--gray-200); background-color: var(--gray-100);"></div>
+                            <!-- ÁREA DA FOTO CLICÁVEL + ÍCONE CENTRALIZADO (SVG com tamanho ajustado para centralização perfeita) -->
+                            <div id="profileImagePreview" style="margin: 16px auto; width: 120px; height: 120px; border-radius: 50%; overflow: hidden; border: 3px solid var(--gray-200); background-color: var(--gray-100); display: flex; align-items: center; justify-content: center;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            </div>
                             <button type="button" id="deleteProfilePhotoBtn" onclick="deleteProfilePhoto()">Excluir foto</button>
                         </div>
-                        <!-- Nome Completo -->
                         <div class="form-group">
                             <label for="profileNome">Nome Completo</label>
                             <input type="text" id="profileNome" class="form-control" placeholder="ex: Mario Silva Santos...">
                         </div>
-                        <!-- E-mail -->
                         <div class="form-group">
                             <label for="profileEmail">E-mail</label>
                             <input type="email" id="profileEmail" class="form-control" placeholder="ex: seu@gmail.com">
                         </div>
-                        <!-- CPF (único campo de documento - removido Tipo de Documento e PJ) -->
                         <div class="form-group">
                             <label for="cpfInput">CPF</label>
                             <input type="text" id="cpfInput" class="form-control">
                         </div>
-                        <!-- Telefone -->
                         <div class="form-group">
                             <label for="telefoneInput">Telefone Celular</label>
                             <input type="tel" id="telefoneInput" class="form-control">
                             <small style="color: var(--gray-500); font-size: 12px; display: block; margin-top: 6px;">De preferência, informe um número que possua WhatsApp para facilitar o contato.</small>
                         </div>
-                        <!-- NOVO: Placa da Moto -->
                         <div class="form-group">
                             <label for="placaInput">Placa da Moto</label>
                             <input type="text" id="placaInput" class="form-control" placeholder="ABC-1D23" maxlength="8">
                         </div>
-                        <!-- NOVO: CNH do Motoboy -->
                         <div class="form-group">
                             <label for="cnhInput">CNH do Motoboy</label>
                             <input type="text" id="cnhInput" class="form-control" placeholder="00000000000" maxlength="11">
                         </div>
-                        <!-- Botão centralizado -->
                         <div style="margin-top: 40px; text-align: center;">
                             <button type="submit" id="updateProfileBtn" class="btn-primary" style="width: auto; padding: 14px 40px; font-size: 16px;" disabled>Atualizar Informações</button>
                         </div>
@@ -1248,7 +1148,8 @@
             </div>
         </section>
     </main>
-    <!-- MODAL NOVA CHAMADA (pop-up sobre o mapa) -->
+
+    <!-- MODAL NOVA CHAMADA -->
     <div id="novaChamadaModal" class="nova-chamada-modal">
         <div class="nova-chamada-content">
             <h2 style="margin-bottom: 20px; text-align: center;">Nova Corrida Disponível</h2>
@@ -1277,28 +1178,18 @@
             <p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--gray-500);">A corrida expira automaticamente em 30 segundos</p>
         </div>
     </div>
+
     <script>
-        // Leaflet JS (carregado via CDN)
-        // ==================== DADOS INICIAIS (zerados) ====================
-        let userProfile = {
-            foto: '',
-            nome: '',
-            email: '',
-            cpf: '',
-            telefone: '',
-            placa: '',
-            cnh: ''
-        };
+        // ==================== DADOS INICIAIS ====================
+        let userProfile = { foto: '', nome: '', email: '', cpf: '', telefone: '', placa: '', cnh: '' };
         let currentProfileBase64 = '';
         let isOnline = false;
-        let currentTimer = null;
         let mapInstance = null;
-        let routeMapInstance = null;
         let originalStatusParent = null;
         let originalStatusNextSibling = null;
-        // ==================== NOVO: CONTADOR DO HINT (só 4 exibições por entrada na aba Pedido Ativo) ====================
         let hintShowCount = 0;
         const MAX_HINT_SHOWS = 4;
+
         // ==================== ELEMENTOS DOM ====================
         const hamburger = document.getElementById('hamburger');
         const sidebarEl = document.getElementById('sidebar');
@@ -1322,19 +1213,19 @@
         const statusLabel = document.getElementById('statusLabel');
         const novaChamadaModal = document.getElementById('novaChamadaModal');
         const chatFloatBtn = document.getElementById('chatFloatBtn');
-        // NOVO: Elemento do hint do botão flutuante (Pedido Ativo)
         const draggableHint = document.getElementById('draggableHint');
+
         // ==================== FUNÇÕES AUXILIARES ====================
         const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString('pt-BR');
-        // ==================== NOVO: UPLOAD E PREVIEW DA FOTO DO PERFIL + CONTROLE DE BOTÕES ====================
+
         function updatePhotoButtons() {
             const hasPhoto = !!(currentProfileBase64 || userProfile.foto);
             customProfileUploadBtn.style.display = hasPhoto ? 'none' : 'block';
             deleteProfilePhotoBtn.style.display = hasPhoto ? 'block' : 'none';
         }
-        customProfileUploadBtn.addEventListener('click', function() {
-            profileImagemInput.click();
-        });
+
+        customProfileUploadBtn.addEventListener('click', () => profileImagemInput.click());
+
         profileImagemInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file && (file.type === 'image/png' || file.type === 'image/jpeg')) {
@@ -1347,20 +1238,22 @@
                 reader.readAsDataURL(file);
             }
         });
+
+        // ==================== ÍCONE CENTRALIZADO (tamanho ajustado para ficar perfeitamente no centro) ====================
+        const defaultPreviewHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>`;
+
         function deleteProfilePhoto() {
             currentProfileBase64 = '';
             userProfile.foto = '';
-            profileImagePreview.innerHTML = `
-                <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color: var(--gray-500);">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                        <polyline points="21 15 16 10 5 21"></polyline>
-                    </svg>
-                </div>`;
+            profileImagePreview.innerHTML = defaultPreviewHTML;
             updatePhotoButtons();
         }
-        // ==================== MÁSCARAS (CPF, TELEFONE, PLACA, CNH) ====================
+
+        // ==================== MÁSCARAS ====================
         telefoneInput.addEventListener('input', () => {
             let val = telefoneInput.value.replace(/\D/g, '').slice(0, 11);
             let formatted = '';
@@ -1378,17 +1271,16 @@
             if (val.length > 9) formatted = formatted.slice(0,11) + '-' + val.slice(9);
             cpfInput.value = formatted;
         });
-        // Máscara simples para placa (maiúscula, só letras e números)
         placaInput.addEventListener('input', () => {
             let val = placaInput.value.replace(/[^A-Z0-9]/gi, '').toUpperCase().slice(0, 8);
             placaInput.value = val;
         });
-        // Máscara para CNH (apenas números, 11 dígitos)
         cnhInput.addEventListener('input', () => {
             let val = cnhInput.value.replace(/\D/g, '').slice(0, 11);
             cnhInput.value = val;
         });
-        // ==================== VALIDAÇÃO DO FORMULÁRIO DE PERFIL (agora só com CPF) ====================
+
+        // ==================== VALIDAÇÃO ====================
         function isValidProfile() {
             const nome = profileNomeInput.value.trim();
             const email = profileEmailInput.value.trim().toLowerCase();
@@ -1412,7 +1304,7 @@
         function checkAndEnableButton() {
             updateProfileBtn.disabled = !isValidProfile();
         }
-        // ==================== CARREGAR PERFIL NO FORMULÁRIO ====================
+
         function loadProfileForm() {
             profileNomeInput.value = userProfile.nome || '';
             profileEmailInput.value = userProfile.email || '';
@@ -1425,19 +1317,12 @@
                 profileImagePreview.innerHTML = `<img src="${userProfile.foto}" style="width:100%; height:100%; object-fit:cover;">`;
             } else {
                 currentProfileBase64 = '';
-                profileImagePreview.innerHTML = `
-                    <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color: var(--gray-500);">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                            <polyline points="21 15 16 10 5 21"></polyline>
-                        </svg>
-                    </div>`;
+                profileImagePreview.innerHTML = defaultPreviewHTML;
             }
             updatePhotoButtons();
             checkAndEnableButton();
         }
-        // ==================== SALVAR PERFIL + REDIRECIONAMENTO PARA HOME ====================
+
         function saveProfile(e) {
             e.preventDefault();
             if (!isValidProfile()) {
@@ -1454,7 +1339,6 @@
             localStorage.setItem('userProfile', JSON.stringify(userProfile));
             updateSidebarAvatar();
             alert('Informações atualizadas com sucesso!');
-            // REDIRECIONA AUTOMATICAMENTE PARA HOME
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.querySelectorAll('.user-profile').forEach(n => n.classList.remove('active'));
             const homeItem = document.querySelector('.nav-item[data-target="home"]');
@@ -1464,7 +1348,7 @@
             const mainContentEl = document.querySelector('.main-content');
             if (mainContentEl) mainContentEl.scrollTop = 0;
         }
-        // ==================== ATUALIZAR FOTO NO SIDEBAR ====================
+
         function updateSidebarAvatar() {
             if (userProfile.foto) {
                 sidebarAvatar.innerHTML = `<img src="${userProfile.foto}" alt="Foto do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
@@ -1472,17 +1356,18 @@
                 sidebarAvatar.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="33.6" height="33.6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
             }
         }
-        // ==================== FECHAR SIDEBAR NO MOBILE ====================
+
+        // ==================== FECHAR SIDEBAR ====================
         const closeMobileSidebar = () => {
             if (sidebarEl.classList.contains('open')) {
                 sidebarEl.classList.remove('open');
                 hamburger.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>`;
                 sidebarOverlay.classList.remove('active');
-                // Garante que o botão de chat volte ao z-index normal quando sidebar fecha
                 if (chatFloatBtn) chatFloatBtn.style.zIndex = '4000';
             }
         };
-        // ==================== NAVEGAÇÃO (funciona para todas as novas abas) ====================
+
+        // ==================== NAVEGAÇÃO ====================
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', () => {
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -1492,11 +1377,7 @@
                 document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
                 document.getElementById(target).classList.add('active');
                 if (window.innerWidth < 862) closeMobileSidebar();
-                // Inicializa mapa da Home quando necessário
-                if (target === 'home') {
-                    setTimeout(initHomeMap, 300);
-                }
-                // Torna o botão de chat DRAGGABLE (com long press) quando abre Pedido Ativo + inicia hint a cada 20s
+                if (target === 'home') setTimeout(initHomeMap, 300);
                 if (target === 'pedidoAtivo' && chatFloatBtn) {
                     setTimeout(() => {
                         makeDraggable(chatFloatBtn);
@@ -1505,7 +1386,7 @@
                 }
             });
         });
-        // ==================== CLIQUE NA ABA PERFIL E CONFIGURAÇÕES ====================
+
         userProfileLink.addEventListener('click', () => {
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             userProfileLink.classList.add('active');
@@ -1514,15 +1395,14 @@
             loadProfileForm();
             if (window.innerWidth < 862) closeMobileSidebar();
         });
-        // ==================== HAMBURGER + OVERLAY ====================
+
+        // ==================== HAMBURGER ====================
         hamburger.addEventListener('click', () => {
             const open = sidebarEl.classList.toggle('open');
             if (open) {
                 hamburger.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
                 sidebarOverlay.classList.add('active');
-                // Quando sidebar abre, botão de chat fica atrás (z-index menor que sidebar 3100)
                 if (chatFloatBtn) chatFloatBtn.style.zIndex = '2000';
-                // Esconde hint para não aparecer sobre a sidebar
                 if (draggableHint) draggableHint.style.opacity = '0';
             } else {
                 hamburger.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>`;
@@ -1531,17 +1411,20 @@
             }
         });
         sidebarOverlay.addEventListener('click', closeMobileSidebar);
-        // ==================== LISTENERS DE VALIDAÇÃO DO PERFIL ====================
+
+        // ==================== VALIDAÇÃO PERFIL ====================
         [profileNomeInput, profileEmailInput, cpfInput, telefoneInput, placaInput, cnhInput].forEach(el => {
             el.addEventListener('input', checkAndEnableButton);
         });
-        // ==================== FUNCIONALIDADE COMPLETA DO BOTÃO LIGHT / DARK / DIM ====================
+
+        // ==================== MODO LIGHT/DARK/DIM ====================
         const modes = [
             { name: "light", iconColor: "#000000", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>` },
             { name: "dark", iconColor: "#ffffff", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>` },
             { name: "dim", iconColor: "#ffffff", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H6.5a5 5 0 0 1-1-9.9 5 5 0 0 1 9.78-1.78 5 5 0 0 1 3.72 8.68z"></path></svg>` }
         ];
         let currentIndex = 0;
+
         function aplicarModo() {
             const modo = modes[currentIndex];
             document.body.classList.remove('light', 'dark', 'dim');
@@ -1558,7 +1441,8 @@
                 aplicarModo();
             });
         });
-        // ==================== NOVO: TOGGLE ONLINE / OFFLINE COM SVG ====================
+
+        // ==================== TOGGLE ONLINE/OFFLINE ====================
         function toggleOnlineStatus() {
             isOnline = !isOnline;
             if (isOnline) {
@@ -1574,37 +1458,20 @@
             }
         }
         statusToggleBtn.addEventListener('click', toggleOnlineStatus);
-        // ==================== MAPA LEAFLET HOME (sem zoom + botão satélite + expansão) ====================
+
+        // ==================== MAPA HOME ====================
         function initHomeMap() {
-            if (mapInstance) {
-                mapInstance.invalidateSize();
-                return;
-            }
+            if (mapInstance) { mapInstance.invalidateSize(); return; }
             const mapEl = document.getElementById('map');
-            mapInstance = L.map(mapEl, {
-                zoomControl: false,
-                attributionControl: false,
-                zoomSnap: 0.5,
-                zoomDelta: 0.5,
-                minZoom: 10,
-                maxZoom: 18,
-            }).setView([-3.119, -60.021], 14);
-            // Camadas do mapa
-            const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap'
-            });
-            const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                attribution: '© Esri'
-            });
-            // ==================== INÍCIO EM MODO SATÉLITE (conforme solicitado) ====================
+            mapInstance = L.map(mapEl, { zoomControl: false, attributionControl: false, zoomSnap: 0.5, zoomDelta: 0.5, minZoom: 10, maxZoom: 18 }).setView([-3.119, -60.021], 14);
+            const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' });
+            const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: '© Esri' });
             satelliteLayer.addTo(mapInstance);
-            // ==================== ÍCONES SEM EMOJI (conforme solicitado) ====================
             const mapIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>`;
             const satelliteIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 2L2 12l10 10 10-10z"></path><circle cx="12" cy="12" r="2"></circle></svg>`;
-            // Botão de troca de modo (dentro do mapa) - agora com ícones
             const toggleBtn = document.getElementById('mapLayerToggle');
             let isSatellite = true;
-            toggleBtn.innerHTML = `${satelliteIconSVG} Satélite`; // inicia em satélite
+            toggleBtn.innerHTML = `${satelliteIconSVG} Satélite`;
             toggleBtn.addEventListener('click', () => {
                 if (isSatellite) {
                     mapInstance.removeLayer(satelliteLayer);
@@ -1618,10 +1485,8 @@
                     isSatellite = true;
                 }
             });
-            // ==================== ÍCONES DO BOTÃO DE EXPANSÃO (agora Font Awesome conforme solicitado) ====================
             const expandIcon = `<i class="fa-solid fa-expand"></i>`;
             const contractIcon = `<i class="fa-solid fa-compress"></i>`;
-  
             let isMapExpanded = false;
             const expandBtn = document.getElementById('mapExpandToggle');
             expandBtn.innerHTML = expandIcon;
@@ -1630,11 +1495,9 @@
                 const container = document.querySelector('.leaflet-map-container');
                 const statusToggle = document.getElementById('statusToggleBtn');
                 const homeSection = document.getElementById('home');
-      
                 if (isMapExpanded) {
                     container.classList.add('expanded');
                     expandBtn.innerHTML = contractIcon;
-                    // === EXPANSÃO TOTAL + STATUS DENTRO DO MAPA ===
                     homeSection.classList.add('map-expanded');
                     if (!originalStatusParent) {
                         originalStatusParent = statusToggle.parentNode;
@@ -1646,14 +1509,8 @@
                     statusToggle.style.transform = 'translateX(-50%)';
                     statusToggle.style.zIndex = '1001';
                     statusToggle.style.width = 'calc(100% - 40px)';
-                    // === POSICIONAMENTO EXATO NO MOBILE (conforme pedido) ===
                     const isMobile = window.innerWidth <= 861;
-                    if (isMobile) {
-                        statusToggle.style.top = '75px'; // 4px abaixo da barra superior mobile
-                    } else {
-                        statusToggle.style.top = '70px';
-                    }
-                    // Reposiciona os botões do mapa 5px abaixo do botão Online/Offline (apenas mobile)
+                    statusToggle.style.top = isMobile ? '75px' : '70px';
                     setTimeout(() => {
                         const expandB = document.getElementById('mapExpandToggle');
                         const layerB = document.getElementById('mapLayerToggle');
@@ -1671,14 +1528,10 @@
                 } else {
                     container.classList.remove('expanded');
                     expandBtn.innerHTML = expandIcon;
-                    // === CONTRAIÇÃO - VOLTA TUDO AO NORMAL ===
                     homeSection.classList.remove('map-expanded');
                     if (originalStatusParent) {
-                        if (originalStatusNextSibling) {
-                            originalStatusParent.insertBefore(statusToggle, originalStatusNextSibling);
-                        } else {
-                            originalStatusParent.appendChild(statusToggle);
-                        }
+                        if (originalStatusNextSibling) originalStatusParent.insertBefore(statusToggle, originalStatusNextSibling);
+                        else originalStatusParent.appendChild(statusToggle);
                     }
                     statusToggle.style.position = '';
                     statusToggle.style.top = '';
@@ -1686,42 +1539,29 @@
                     statusToggle.style.transform = '';
                     statusToggle.style.zIndex = '';
                     statusToggle.style.width = '';
-                    // Reset dos botões do mapa para posição original
                     const expandB = document.getElementById('mapExpandToggle');
                     const layerB = document.getElementById('mapLayerToggle');
                     expandB.style.top = '12px';
                     layerB.style.top = '12px';
                 }
-                if (mapInstance) {
-                    setTimeout(() => {
-                        mapInstance.invalidateSize();
-                    }, 300);
-                }
+                if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
             });
-            // Localização em tempo real do motoboy
             if (navigator.geolocation) {
                 navigator.geolocation.watchPosition((position) => {
                     const { latitude, longitude } = position.coords;
                     mapInstance.setView([latitude, longitude], 16);
-                    if (window.motoboyMarker) {
-                        window.motoboyMarker.setLatLng([latitude, longitude]);
-                    } else {
+                    if (window.motoboyMarker) window.motoboyMarker.setLatLng([latitude, longitude]);
+                    else {
                         window.motoboyMarker = L.marker([latitude, longitude], {
-                            icon: L.divIcon({
-                                className: 'custom-marker',
-                                html: `<div style="background:#10b981;width:28px;height:28px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 4px #10b981;"></div>`,
-                                iconSize: [28, 28]
-                            })
+                            icon: L.divIcon({ className: 'custom-marker', html: `<div style="background:#10b981;width:28px;height:28px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 4px #10b981;"></div>`, iconSize: [28, 28] })
                         }).addTo(mapInstance).bindPopup('Você está aqui');
                     }
                 }, () => {}, { enableHighAccuracy: true });
             }
-            // Garantia extra de renderização correta após carregamento
-            setTimeout(() => {
-                if (mapInstance) mapInstance.invalidateSize();
-            }, 300);
+            setTimeout(() => { if (mapInstance) mapInstance.invalidateSize(); }, 300);
         }
-        // ==================== NOVA CHAMADA (modal + timer) ====================
+
+        // ==================== NOVA CHAMADA ====================
         let timerInterval = null;
         function simularNovaChamada() {
             document.getElementById('distLoja').textContent = '1,8 km';
@@ -1735,10 +1575,7 @@
             timerInterval = setInterval(() => {
                 timeLeft--;
                 timerEl.textContent = timeLeft + 's';
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    rejeitarCorrida(true);
-                }
+                if (timeLeft <= 0) { clearInterval(timerInterval); rejeitarCorrida(true); }
             }, 1000);
         }
         function aceitarCorrida() {
@@ -1751,7 +1588,6 @@
             if (pedidoBtn) pedidoBtn.classList.add('active');
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.getElementById('pedidoAtivo').classList.add('active');
-            // GARANTIA DE QUE O BOTÃO CHAT FIQUE ARRASTÁVEL AO ACEITAR CORRIDA (correção solicitada)
             setTimeout(() => {
                 if (chatFloatBtn) {
                     makeDraggable(chatFloatBtn);
@@ -1762,53 +1598,42 @@
         function rejeitarCorrida(auto = false) {
             clearInterval(timerInterval);
             novaChamadaModal.style.display = 'none';
-            if (auto) {
-                alert('Tempo esgotado. Corrida rejeitada automaticamente.');
-            } else {
-                alert('Corrida rejeitada.');
-            }
+            if (auto) alert('Tempo esgotado. Corrida rejeitada automaticamente.');
+            else alert('Corrida rejeitada.');
         }
-        // ==================== BOTÃO CHAT RÁPIDO (Pedido Ativo) ====================
+
         function abrirChatRapido() {
             alert('Chat tripartido aberto (PME + Cliente + Você)\n\n(Implementação completa do chat já existe fora deste arquivo)');
         }
-        // ==================== SUPORTE DO CHAT ====================
         function abrirChatSuporte() {
             alert('Canal de Suporte da Plataforma aberto.\n\nFale diretamente com o ADM do Moto System.');
         }
-        // ==================== SCAN QR CODE (simulado) ====================
         function iniciarScanQR() {
             alert('Câmera aberta (Web API do WebView)\n\nQR Code lido com sucesso! Corrida finalizada e baixa registrada no mapa.');
         }
-        // ==================== NOVA FUNÇÃO HELPER - centraliza o hint abaixo do botão (distância reduzida em 60%) ====================
+
+        // ==================== HINT POSITION ====================
         function updateHintPosition() {
             if (!chatFloatBtn || !draggableHint) return;
             const btnRect = chatFloatBtn.getBoundingClientRect();
             let left = btnRect.left + (btnRect.width / 2);
-            let top = btnRect.bottom + 6; // distância reduzida em 60% (de 14px para ~6px)
-            if (top + 50 > window.innerHeight) {
-                top = btnRect.top - 42;
-            }
+            let top = btnRect.bottom + 6;
+            if (top + 50 > window.innerHeight) top = btnRect.top - 42;
             draggableHint.style.left = `${left}px`;
             draggableHint.style.top = `${top}px`;
         }
-        // ==================== HINT ATUALIZADA (sempre centralizado abaixo do botão) ====================
+
         function showDraggableHint() {
             if (!chatFloatBtn || !draggableHint || !document.getElementById('pedidoAtivo').classList.contains('active')) return;
             if (hintShowCount >= MAX_HINT_SHOWS) return;
-            // NÃO exibe hint quando sidebar estiver aberta (evita aparecer sobre a barra lateral)
             if (sidebarEl.classList.contains('open')) return;
-           
             updateHintPosition();
             draggableHint.style.opacity = '1';
             hintShowCount++;
-           
-            setTimeout(() => {
-                draggableHint.style.opacity = '0';
-            }, 3000);
+            setTimeout(() => { draggableHint.style.opacity = '0'; }, 3000);
         }
-        // ==================== FUNÇÃO PARA TORNAR O BOTÃO DE CHAT DRAGGABLE COM LONG PRESS (0.3s) ====================
-        // VERSÃO TOTALMENTE REESCRITA E OTIMIZADA PARA MOBILE + LEAFLET (sem alterar nada fora desta função)
+
+        // ==================== DRAGGABLE CHAT ====================
         function makeDraggable(el) {
             if (el.dataset.draggableInitialized === 'true') return;
             el.dataset.draggableInitialized = 'true';
@@ -1818,28 +1643,25 @@
             let initialLeft = 0, initialTop = 0;
             let currentLeft = 0, currentTop = 0;
             const MIN_MOVE_THRESHOLD = 12;
+
             function getCoords(e) {
-                if (e.touches && e.touches.length > 0) {
-                    return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-                }
+                if (e.touches && e.touches.length > 0) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
                 return { x: e.clientX, y: e.clientY };
             }
+
             function onStart(e) {
                 if (e.type === 'mousedown' && e.button !== 0) return;
                 const coords = getCoords(e);
-                startX = coords.x;
-                startY = coords.y;
-                hasMoved = false;
-                isDragging = false;
+                startX = coords.x; startY = coords.y;
+                hasMoved = false; isDragging = false;
                 const rect = el.getBoundingClientRect();
-                initialLeft = rect.left;
-                initialTop = rect.top;
+                initialLeft = rect.left; initialTop = rect.top;
                 el.style.position = 'fixed';
                 el.style.left = `${initialLeft}px`;
                 el.style.top = `${initialTop}px`;
                 el.style.bottom = 'auto';
                 el.style.right = 'auto';
-                el.style.transition = 'none'; // drag imediato (sem transição durante o movimento)
+                el.style.transition = 'none';
                 if (e.type === 'touchstart') {
                     document.addEventListener('touchmove', onMove, { passive: false });
                     document.addEventListener('touchend', onEnd, { passive: false });
@@ -1847,83 +1669,72 @@
                     document.addEventListener('mousemove', onMove);
                     document.addEventListener('mouseup', onEnd);
                 }
-                e.preventDefault();
-                e.stopImmediatePropagation();
+                e.preventDefault(); e.stopImmediatePropagation();
             }
+
             function onMove(e) {
                 const coords = getCoords(e);
                 const deltaX = coords.x - startX;
                 const deltaY = coords.y - startY;
                 if (Math.abs(deltaX) > MIN_MOVE_THRESHOLD || Math.abs(deltaY) > MIN_MOVE_THRESHOLD) {
-                    hasMoved = true;
-                    isDragging = true;
+                    hasMoved = true; isDragging = true;
                 }
                 if (isDragging) {
-                    e.preventDefault();
-                    e.stopImmediatePropagation();
+                    e.preventDefault(); e.stopImmediatePropagation();
                     currentLeft = initialLeft + deltaX;
                     currentTop = initialTop + deltaY;
-                    // === NUNCA ULTRAPASSAR A BARRA SUPERIOR (mobile-header ~60px + margem) ===
-                    const minTop = 75;
+                    const isDesktop = window.innerWidth >= 862;
+                    const sidebarWidth = isDesktop ? 260 : 0;
+                    const minLeft = sidebarWidth + 20;
                     const maxLeft = window.innerWidth - el.offsetWidth - 20;
                     const maxTop = window.innerHeight - el.offsetHeight - 20;
-                    currentLeft = Math.max(20, Math.min(currentLeft, maxLeft));
+                    const minTop = 75;
+                    currentLeft = Math.max(minLeft, Math.min(currentLeft, maxLeft));
                     currentTop = Math.max(minTop, Math.min(currentTop, maxTop));
                     el.style.left = `${currentLeft}px`;
                     el.style.top = `${currentTop}px`;
-                    // === NOVA LÓGICA: O HINT ACOMPANHA O BOTÃO DURANTE O ARRASTO (se estiver visível) ===
-                    if (draggableHint && draggableHint.style.opacity === '1') {
-                        updateHintPosition();
-                    }
+                    if (draggableHint && draggableHint.style.opacity === '1') updateHintPosition();
                 }
             }
+
             function onEnd(e) {
                 document.removeEventListener('mousemove', onMove);
                 document.removeEventListener('mouseup', onEnd);
                 document.removeEventListener('touchmove', onMove);
                 document.removeEventListener('touchend', onEnd);
-                // === DELAY DE 0.2 SEGUNDOS APÓS O USUÁRIO SOLTAR O BOTÃO (conforme pedido) ===
                 if (isDragging) {
                     setTimeout(() => {
                         el.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-                        isDragging = false;
-                        hasMoved = false;
+                        isDragging = false; hasMoved = false;
                     }, 200);
                 } else {
-                    if (!hasMoved) {
-                        abrirChatRapido();
-                    }
-                    isDragging = false;
-                    hasMoved = false;
+                    if (!hasMoved) abrirChatRapido();
+                    isDragging = false; hasMoved = false;
                 }
             }
+
             el.addEventListener('mousedown', onStart, { passive: false });
             el.addEventListener('touchstart', onStart, { passive: false });
         }
-        // ==================== NOVO: HINT "CHAT ARRASTÁVEL" (a cada 20 segundos, 3s de duração, sempre visível) ====================
+
+        // ==================== INTERVALO DO HINT ====================
         let hintInterval = null;
         function startDraggableHintInterval() {
-            hintShowCount = 0; // RESETA O CONTADOR toda vez que o usuário entra na aba Pedido Ativo
+            hintShowCount = 0;
             if (hintInterval) clearInterval(hintInterval);
-            // Primeira aparição rápida ao abrir a aba
-            setTimeout(() => {
-                if (hintShowCount < MAX_HINT_SHOWS) {
-                    showDraggableHint();
-                }
-            }, 800);
-            // Depois a cada 20 segundos (só até 4 exibições)
+            setTimeout(() => { if (hintShowCount < MAX_HINT_SHOWS) showDraggableHint(); }, 800);
             hintInterval = setInterval(() => {
                 if (document.getElementById('pedidoAtivo').classList.contains('active') && hintShowCount < MAX_HINT_SHOWS) {
                     showDraggableHint();
                 }
             }, 20000);
         }
-        // ==================== CORREÇÃO GLOBAL DE ZOOM NO MAPA (resize + invalidate) + RESET DO BOTÃO CHAT AO MUDAR ENTRE MOBILE/DESKTOP ====================
+
+        // ==================== RESIZE ====================
         function fixMapOnResize() {
             let lastWidth = window.innerWidth;
             window.addEventListener('resize', () => {
                 const currentWidth = window.innerWidth;
-                // Reset do botão chat para posição inicial quando alternar entre mobile e desktop
                 if (document.getElementById('pedidoAtivo').classList.contains('active') && chatFloatBtn) {
                     const crossedToMobile = (lastWidth > 861 && currentWidth <= 861);
                     const crossedToDesktop = (lastWidth <= 861 && currentWidth > 861);
@@ -1935,46 +1746,41 @@
                         chatFloatBtn.style.top = 'auto';
                     }
                 }
-                setTimeout(() => {
-                    if (mapInstance) mapInstance.invalidateSize();
-                }, 150);
+                setTimeout(() => { if (mapInstance) mapInstance.invalidateSize(); }, 150);
                 lastWidth = currentWidth;
             });
         }
+
         // ==================== INICIALIZAÇÃO ====================
         const init = () => {
             const savedProfile = localStorage.getItem('userProfile');
             if (savedProfile) {
                 const parsed = JSON.parse(savedProfile);
-                userProfile = {
-                    foto: parsed.foto || '',
-                    nome: parsed.nome || '',
-                    email: parsed.email || '',
-                    cpf: parsed.cpf || '',
-                    telefone: parsed.telefone || '',
-                    placa: parsed.placa || '',
-                    cnh: parsed.cnh || ''
-                };
+                userProfile = { foto: parsed.foto || '', nome: parsed.nome || '', email: parsed.email || '', cpf: parsed.cpf || '', telefone: parsed.telefone || '', placa: parsed.placa || '', cnh: parsed.cnh || '' };
             }
             updateSidebarAvatar();
             loadProfileForm();
             aplicarModo();
-            // Home sempre ativa no início
+
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             const homeItem = document.querySelector('.nav-item[data-target="home"]');
             if (homeItem) homeItem.classList.add('active');
-            // Inicia o mapa da Home
+
             setTimeout(initHomeMap, 600);
-            // Define ícone inicial offline
             statusIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle></svg>`;
-            // Ativa correção de zoom no mapa + reset do botão chat em resize
+
+            profileImagePreview.style.cursor = 'pointer';
+            profileImagePreview.addEventListener('click', () => {
+                profileImagemInput.click();
+            });
+
             fixMapOnResize();
         };
         init();
     </script>
-    <!-- Leaflet JS (carregado depois do HTML) -->
+    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- SCRIPT DO SERVICE WORKER (mantido) -->
+    <!-- Service Worker -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
