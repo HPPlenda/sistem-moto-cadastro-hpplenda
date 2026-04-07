@@ -456,6 +456,14 @@
             place-items: center !important;
             cursor: pointer;
         }
+        /* NOVO: ícone fa-user no preview agora usa a cor padrão do tema (var(--black)) e obedece light/dark/dim */
+        #profileImagePreview i.fa-solid.fa-user {
+            color: var(--black) !important;
+            font-size: 55px !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
         #deleteProfilePhotoBtn {
             border-radius: 6px !important;
             padding: 8px 20px !important;
@@ -798,8 +806,9 @@
             border: 2px solid #ffffff !important;
             box-shadow: 0 4px 15px rgba(255, 255, 255, 0.5) !important;
         }
+        /* ALTERAÇÃO SOLICITADA: no modo DIM o fundo cinza do botão agora é 10% mais escuro que o cinza atual do sistema */
         body.dim .chat-float-btn {
-            background-color: #6b7280 !important;
+            background-color: #606773 !important;
             color: #ffffff !important;
             border: 2px solid #ffffff !important;
             box-shadow: 0 4px 15px rgba(255, 255, 255, 0.5) !important;
@@ -1106,7 +1115,7 @@
                             </button>
                             <!-- ÁREA DA FOTO CLICÁVEL (ícone de usuário perfeitamente centralizado quando não há foto) -->
                             <div id="profileImagePreview" style="margin: 16px auto; width: 120px; height: 120px; border-radius: 50%; overflow: hidden; border: 3px solid var(--gray-200); background-color: var(--gray-100); display: grid; place-items: center;">
-                                <i class="fa-solid fa-user" style="font-size: 55px; color: #2563eb; line-height: 1; margin: 0; padding: 0;"></i>
+                                <i class="fa-solid fa-user" style="font-size: 55px; line-height: 1; margin: 0; padding: 0;"></i>
                             </div>
                             <button type="button" id="deleteProfilePhotoBtn" onclick="deleteProfilePhoto()">Excluir foto</button>
                         </div>
@@ -1229,7 +1238,7 @@
         function deleteProfilePhoto() {
             currentProfileBase64 = '';
             userProfile.foto = '';
-            profileImagePreview.innerHTML = `<i class="fa-solid fa-user" style="font-size: 55px; color: #2563eb; line-height: 1; margin: 0; padding: 0;"></i>`;
+            profileImagePreview.innerHTML = `<i class="fa-solid fa-user" style="font-size: 55px; line-height: 1; margin: 0; padding: 0;"></i>`;
             updatePhotoButtons();
         }
         // ==================== MÁSCARAS ====================
@@ -1294,7 +1303,7 @@
                 profileImagePreview.innerHTML = `<img src="${userProfile.foto}" style="width:100%; height:100%; object-fit:cover;">`;
             } else {
                 currentProfileBase64 = '';
-                profileImagePreview.innerHTML = `<i class="fa-solid fa-user" style="font-size: 55px; color: #2563eb; line-height: 1; margin: 0; padding: 0;"></i>`;
+                profileImagePreview.innerHTML = `<i class="fa-solid fa-user" style="font-size: 55px; line-height: 1; margin: 0; padding: 0;"></i>`;
             }
             updatePhotoButtons();
             checkAndEnableButton();
