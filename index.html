@@ -452,11 +452,9 @@
         }
         #profileImagePreview {
             margin: 16px auto !important;
-            display: block !important;
+            display: grid !important;
+            place-items: center !important;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
         #deleteProfilePhotoBtn {
             border-radius: 6px !important;
@@ -1106,8 +1104,9 @@
                             <button type="button" id="customProfileUploadBtn" class="custom-upload-btn">
                                 Escolher foto
                             </button>
-                            <!-- ÁREA DA FOTO CLICÁVEL (sem nenhum ícone padrão) -->
-                            <div id="profileImagePreview" style="margin: 16px auto; width: 120px; height: 120px; border-radius: 50%; overflow: hidden; border: 3px solid var(--gray-200); background-color: var(--gray-100); display: flex; align-items: center; justify-content: center;">
+                            <!-- ÁREA DA FOTO CLICÁVEL (ícone de usuário perfeitamente centralizado quando não há foto) -->
+                            <div id="profileImagePreview" style="margin: 16px auto; width: 120px; height: 120px; border-radius: 50%; overflow: hidden; border: 3px solid var(--gray-200); background-color: var(--gray-100); display: grid; place-items: center;">
+                                <i class="fa-solid fa-user" style="font-size: 55px; color: #2563eb; line-height: 1; margin: 0; padding: 0;"></i>
                             </div>
                             <button type="button" id="deleteProfilePhotoBtn" onclick="deleteProfilePhoto()">Excluir foto</button>
                         </div>
@@ -1230,7 +1229,7 @@
         function deleteProfilePhoto() {
             currentProfileBase64 = '';
             userProfile.foto = '';
-            profileImagePreview.innerHTML = '';
+            profileImagePreview.innerHTML = `<i class="fa-solid fa-user" style="font-size: 55px; color: #2563eb; line-height: 1; margin: 0; padding: 0;"></i>`;
             updatePhotoButtons();
         }
         // ==================== MÁSCARAS ====================
@@ -1295,7 +1294,7 @@
                 profileImagePreview.innerHTML = `<img src="${userProfile.foto}" style="width:100%; height:100%; object-fit:cover;">`;
             } else {
                 currentProfileBase64 = '';
-                profileImagePreview.innerHTML = '';
+                profileImagePreview.innerHTML = `<i class="fa-solid fa-user" style="font-size: 55px; color: #2563eb; line-height: 1; margin: 0; padding: 0;"></i>`;
             }
             updatePhotoButtons();
             checkAndEnableButton();
